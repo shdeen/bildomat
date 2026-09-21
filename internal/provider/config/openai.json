@@ -1,0 +1,705 @@
+{
+  "id": "openai",
+  "displayName": "OpenAI",
+  "apiKeyEnvVar": "OPENAI_API_KEY",
+  "defaultModel": "gpt-image-2.5-flare",
+  "docsURL": "https://developers.openai.com/api/docs/guides/image-generation",
+  "models": [
+    {
+      "id": "gpt-image-2.5-flare",
+      "name": "GPT Image 2.5 Flare",
+      "description": "Fast image generation and editing for everyday creative work.",
+      "media": "image",
+      "aliases": [
+        "gpt",
+        "gpt-2.5-flare"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 10
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "customSize": {
+            "maxRatio": 3.0,
+            "maxEdge": 3840,
+            "minPx": 655360,
+            "maxPx": 8294400,
+            "edgeIncrem": 16,
+            "longEdge": 1536
+          }
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "minValue": 0,
+          "maxValue": 100
+        }
+      ]
+    },
+    {
+      "id": "gpt-image-2.5-sunburst",
+      "name": "GPT Image 2.5 Sunburst",
+      "description": "Generate images and make precise edits from text and image references.",
+      "media": "image",
+      "aliases": [
+        "gpt-2.5-sunburst"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 10
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "customSize": {
+            "maxRatio": 3.0,
+            "maxEdge": 3840,
+            "minPx": 655360,
+            "maxPx": 8294400,
+            "edgeIncrem": 16,
+            "longEdge": 1536
+          }
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "minValue": 0,
+          "maxValue": 100
+        }
+      ]
+    },
+    {
+      "id": "gpt-image-2",
+      "name": "GPT Image 2",
+      "description": "State-of-the-art image generation model.",
+      "media": "image",
+      "aliases": [
+        "gpt-2"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "customSize": {
+            "maxRatio": 3.0,
+            "maxEdge": 3840,
+            "minPx": 655360,
+            "maxPx": 8294400,
+            "edgeIncrem": 16,
+            "longEdge": 1536
+          }
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "gpt-image-1.5",
+      "name": "GPT Image 1.5",
+      "description": "Previous image generation model, with better instruction following and adherence to prompts.",
+      "media": "image",
+      "aliases": [
+        "gpt-1.5"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1024x1536",
+            "1536x1024"
+          ]
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "gpt-image-1",
+      "name": "GPT Image 1",
+      "description": "Generate or edit images with GPT Image 1.",
+      "media": "image",
+      "aliases": [
+        "gpt-1"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1024x1536",
+            "1536x1024"
+          ]
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "chatgpt-image-latest",
+      "name": "ChatGPT Image",
+      "description": "Previous image model used in ChatGPT.",
+      "media": "image",
+      "aliases": [
+        "chatgpt"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1024x1536",
+            "1536x1024"
+          ]
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "gpt-image-1-mini",
+      "name": "GPT Image 1 Mini",
+      "description": "A cost-efficient version of GPT Image 1.",
+      "media": "image",
+      "aliases": [
+        "gpt-1-mini"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1024x1536",
+            "1536x1024"
+          ]
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "transparent",
+            "opaque",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "moderation",
+          "flagID": "moderation-level",
+          "allowedValues": [
+            "low",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "sora-2",
+      "name": "Sora 2",
+      "description": "Flagship video generation with synced audio, creating richly detailed, dynamic clips from natural language or images.",
+      "media": "video",
+      "aliases": [
+        "sora"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "seconds",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "8",
+            "12",
+            "16",
+            "20"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1280x720",
+            "720x1280"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sora-2-pro",
+      "name": "Sora 2 Pro",
+      "description": "State-of-the-art, most advanced media generation model, generating videos with synced audio.",
+      "media": "video",
+      "aliases": [
+        "sora-pro"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "seconds",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "8",
+            "12",
+            "16",
+            "20"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1280x720",
+            "720x1280",
+            "1792x1024",
+            "1024x1792",
+            "1920x1080",
+            "1080x1920"
+          ]
+        }
+      ]
+    }
+  ],
+  "config": {
+    "stringParams": [
+      "duration"
+    ],
+    "imageAPI": {
+      "genURL": "https://api.openai.com/v1/images/generations",
+      "inputMediaURL": "https://api.openai.com/v1/images/edits",
+      "inputMediaPayloadType": "form",
+      "inputMediaProvParam": "image[]",
+      "inputMediaStyle": "parts",
+      "fallbackExt": ".png"
+    },
+    "videoAPI": {
+      "asyncJobsURL": "https://api.openai.com/v1/videos",
+      "jobIDField": "id",
+      "progressStatusText": [
+        "queued",
+        "in_progress"
+      ],
+      "completedStatusText": "completed",
+      "failedStatusText": [
+        "failed"
+      ],
+      "urlContentPath": "/content",
+      "authDownload": true,
+      "inputMediaPayloadType": "form",
+      "inputMediaProvParam": "input_reference",
+      "inputMediaStyle": "parts",
+      "inputMediaMustResize": true,
+      "fallbackExt": ".mp4",
+      "pollInterval": 5,
+      "pollTimeout": 1800
+    }
+  }
+}

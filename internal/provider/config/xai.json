@@ -1,0 +1,327 @@
+{
+  "id": "xai",
+  "displayName": "xAI",
+  "apiKeyEnvVar": "XAI_API_KEY",
+  "defaultModel": "grok-imagine-image",
+  "docsURL": "https://docs.x.ai/developers/model-capabilities/images/generation",
+  "models": [
+    {
+      "id": "grok-imagine-image-quality",
+      "name": "Grok Imagine Image Quality",
+      "media": "image",
+      "aliases": [
+        "grok"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "2:1",
+            "1:2",
+            "19.5:9",
+            "9:19.5",
+            "20:9",
+            "9:20",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1k",
+            "2k"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        }
+      ]
+    },
+    {
+      "id": "grok-imagine-image-quality-latest",
+      "name": "Grok Imagine Image Quality Latest",
+      "aliases": [
+        "grok-latest"
+      ],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "2:1",
+            "1:2",
+            "19.5:9",
+            "9:19.5",
+            "20:9",
+            "9:20",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1k",
+            "2k"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        }
+      ]
+    },
+    {
+      "id": "grok-imagine-image",
+      "name": "Grok Imagine Image",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "2:1",
+            "1:2",
+            "19.5:9",
+            "9:19.5",
+            "20:9",
+            "9:20",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1k",
+            "2k"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        }
+      ]
+    },
+    {
+      "id": "grok-imagine-image-2.0",
+      "name": "Grok Imagine Image 2.0",
+      "media": "image",
+      "aliases": [
+        "grok-2.0",
+        "grok-2"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "2:1",
+            "1:2",
+            "19.5:9",
+            "9:19.5",
+            "20:9",
+            "9:20",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1k",
+            "2k"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        }
+      ]
+    },
+    {
+      "id": "grok-imagine-video",
+      "name": "Grok Imagine Video",
+      "media": "video",
+      "aliases": [
+        "grok-video"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 1,
+          "maxValue": 15
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "grok-imagine-video-1.5",
+      "name": "Grok Imagine Video 1.5",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 1,
+          "maxValue": 15
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    }
+  ],
+  "config": {
+    "imageAPI": {
+      "genURL": "https://api.x.ai/v1/images/generations",
+      "inputMediaURL": "https://api.x.ai/v1/images/edits",
+      "inputMediaPayloadType": "json",
+      "inputMediaProvParam": "image",
+      "inputMediaListProvParam": "images",
+      "inputMediaStyle": "single-or-array",
+      "fixedProvFields": {
+        "response_format": "b64_json"
+      },
+      "fallbackExt": ".jpg",
+      "respImageURL": true
+    },
+    "videoAPI": {
+      "asyncJobsURL": "https://api.x.ai/v1/videos",
+      "urlStartPath": "/generations",
+      "jobIDField": "request_id",
+      "progressStatusText": [
+        "pending"
+      ],
+      "completedStatusText": "done",
+      "failedStatusText": [
+        "expired",
+        "failed"
+      ],
+      "urlPathSeq": [
+        "video",
+        "url"
+      ],
+      "urlPathRequired": true,
+      "inputMediaPayloadType": "json",
+      "inputMediaProvParam": "image",
+      "inputMediaListProvParam": "images",
+      "inputMediaStyle": "single-or-array",
+      "fallbackExt": ".mp4",
+      "pollInterval": 5,
+      "pollTimeout": 1800
+    }
+  }
+}

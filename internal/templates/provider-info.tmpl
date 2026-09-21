@@ -1,0 +1,17 @@
+Provider: {{.Name}}
+{{pad "ID" .LabelWidth}}{{.ID}}
+{{if .DocsURL}}Docs: {{.DocsURL}}
+{{end}}
+{{template "api-key" .Credentials}}
+
+Catalog: {{.ModelCount}} {{if eq .ModelCount 1}}model{{else}}models{{end}} ({{.CatalogMedia}})
+{{range .Sections}}{{$heading := "IMAGE MODELS"}}{{if eq .Media "video"}}{{$heading = "VIDEO MODELS"}}{{end}}
+{{if .HasAliases}}{{pad $heading $.IDWidth}}aliases{{else}}{{$heading}}{{end}}
+{{$.Dim}}────────────────────────────────────────────────────────────────────────────────{{$.Reset}}
+{{range .Roster}}{{.}}
+{{end}}{{end}}{{range .Sections}}
+{{if eq .Media "image"}}IMAGE{{else}}VIDEO{{end}} OPTIONS{{if gt .ModelCount 1}}  (shared unless noted){{end}}
+{{$.Dim}}────────────────────────────────────────────────────────────────────────────────{{$.Reset}}
+{{range $index, $option := .Options}}{{if $index}}
+{{end}}{{range $option}}{{.}}
+{{end}}{{end}}{{end}}

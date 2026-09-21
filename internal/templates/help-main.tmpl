@@ -1,0 +1,21 @@
+Bildomat {{if .Version}}{{.Version}}{{end}}
+https://github.com/shdeen/bildomat
+
+Bildomat (bild) generates and edits images and videos via multiple AI providers
+through a unified interface.
+
+Use 'bild list' for supported providers and models.
+Use 'bild search <term>' to find providers and models by name.
+Use 'bild info <provider|model>' for details.
+
+USAGE:
+{{indent 1 .UsageText}}
+
+{{if .VisibleCommands}}
+COMMANDS:
+{{commandsText .}}
+{{end}}
+OPTIONS:
+{{optionsText .}}
+
+{{tipsText}}

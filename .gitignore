@@ -1,0 +1,9 @@
+.DS_Store
+.serena
+.playwright-mcp
+__pycache__
+tmp
+logs
+*.log
+.rsync-filter
+scripts/roster/fal

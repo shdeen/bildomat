@@ -1,0 +1,16 @@
+{{pad "Provider" .LabelWidth}}{{.ProviderName}} (ID: {{.ProviderID}})
+{{pad "Model" .LabelWidth}}{{.Name}}
+{{pad "ID" .LabelWidth}}{{.ID}}
+{{pad "Full ID" .LabelWidth}}{{.Key}}
+{{if .Aliases}}{{pad "Aliases" .LabelWidth}}{{.Aliases}}
+{{end}}{{pad "Media" .LabelWidth}}{{.MediaLabel}}
+{{if .PromptIgnoredNote}}{{pad "Prompt" .LabelWidth}}{{.PromptIgnoredNote}}
+{{end}}{{if .DocsURL}}Docs: {{.DocsURL}}
+{{end}}
+{{template "api-key" .Credentials}}
+
+OPTIONS
+{{.Dim}}────────────────────────────────────────────────────────────────────────────────{{.Reset}}
+{{range $index, $option := .Options}}{{if $index}}
+{{end}}{{range $option}}{{.}}
+{{end}}{{end}}

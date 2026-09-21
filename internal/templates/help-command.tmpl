@@ -1,0 +1,9 @@
+Bildomat command help: {{.Name}}{{if .Aliases}} (aliases: {{.Aliases}}){{end}}
+
+{{.Usage}}
+
+USAGE:
+{{indent 1 .UsageText}}
+
+OPTIONS:
+{{optionsText .}}

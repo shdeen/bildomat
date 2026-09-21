@@ -1,0 +1,475 @@
+[
+  {
+    "flagID": "size",
+    "dataType": "string",
+    "aliases": [
+      "s"
+    ],
+    "flagName": "Size",
+    "description": "Dimensions in width and height.",
+    "exampleValues": [
+      "1024x768",
+      "1024x4096"
+    ],
+    "comment": "When supported, --size takes precedence over --aspect-ratio and --resolution, if provided.",
+    "textHint": "WxH"
+  },
+  {
+    "flagID": "aspect-ratio",
+    "dataType": "string",
+    "aliases": [
+      "a"
+    ],
+    "flagName": "Aspect ratio",
+    "description": "A value in <x:y> format. Ignored when a specific <size> value is provided for --size.",
+    "exampleValues": [
+      "16:9",
+      "2:3"
+    ],
+    "comment": "Superseded by an explicit --size value when supported.",
+    "textHint": "ratio"
+  },
+  {
+    "flagID": "resolution",
+    "dataType": "string",
+    "aliases": [
+      "r"
+    ],
+    "flagName": "Resolution",
+    "description": "Output resolution: a height class such as 720p, 1080p, or 4K, a size class such as 1K or 2K, or a pixel height. A model declaring allowed values accepts only those; otherwise the resolution and the aspect ratio derive the request size.",
+    "exampleValues": [],
+    "comment": "Superseded by an explicit --size value when supported.",
+    "textHint": "resolution"
+  },
+  {
+    "flagID": "duration",
+    "dataType": "integer",
+    "aliases": [
+      "d"
+    ],
+    "flagName": "Duration",
+    "description": "Video length in seconds, from the values or range the model declares.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "seconds"
+  },
+  {
+    "flagID": "quality",
+    "dataType": "string",
+    "aliases": [
+      "q"
+    ],
+    "flagName": "Quality",
+    "description": "Image quality level, from the values the model declares. A model declaring none passes the level to the provider as given.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "level"
+  },
+  {
+    "flagID": "output-format",
+    "dataType": "string",
+    "aliases": [
+      "f"
+    ],
+    "flagName": "Output format",
+    "description": "Desired output format of the generated image or video, from the formats the model declares. A model declaring none passes the format to the provider as given.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "format"
+  },
+  {
+    "flagID": "num-images",
+    "dataType": "integer",
+    "aliases": [
+      "N"
+    ],
+    "flagName": "Images",
+    "description": "Number of images to generate, within the range the model declares.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "count"
+  },
+  {
+    "flagID": "thinking-level",
+    "dataType": "string",
+    "aliases": [
+      "l"
+    ],
+    "flagName": "Thinking level",
+    "description": "Thinking level to apply to the model's generation effort, from the levels the model declares.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "level"
+  },
+  {
+    "flagID": "include-thoughts",
+    "dataType": "boolean",
+    "aliases": [
+      "n"
+    ],
+    "flagName": "Include thoughts",
+    "description": "Write model thought traces to a markdown file beside the artifact.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": ""
+  },
+  {
+    "flagID": "input-media",
+    "dataType": "string",
+    "aliases": [
+      "i"
+    ],
+    "flagName": "Input media",
+    "description": "File path or HTTP(S) URL of an image or video to edit or use as a reference.",
+    "exampleValues": [],
+    "comment": "Multiple local sources may be provided with repeated flags or in a comma-separated list. Repeat the flag for URLs.",
+    "textHint": "media-file",
+    "allowMultiple": true
+  },
+  {
+    "flagID": "strength",
+    "dataType": "number",
+    "aliases": [],
+    "flagName": "Strength",
+    "description": "How far the result may depart from the input image, from 0 (nearly identical) to 1 (minimal similarity).",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "number"
+  },
+  {
+    "flagID": "seed",
+    "dataType": "integer",
+    "aliases": [
+      "e"
+    ],
+    "flagName": "Seed",
+    "description": "Sampling seed, an integer, used by supporting providers.",
+    "exampleValues": [
+
+    ],
+    "comment": "Exact repetition is not guaranteed.",
+    "textHint": "number"
+  },
+  {
+    "flagID": "background",
+    "dataType": "string",
+    "aliases": [
+
+    ],
+    "flagName": "Background",
+    "description": "Background treatment of the generated image, from the treatments the model declares.",
+    "exampleValues": [],
+    "comment": "Transparent output requires a format with an alpha channel, such as png or webp.",
+    "textHint": "treatment"
+  },
+  {
+    "flagID": "output-compression",
+    "dataType": "integer",
+    "aliases": [
+
+    ],
+    "flagName": "Output compression",
+    "description": "Compression level for jpeg and webp output, within the range the model declares.",
+    "exampleValues": [],
+    "comment": "Ignored for png output.",
+    "textHint": "level"
+  },
+  {
+    "flagID": "safety-tolerance",
+    "dataType": "integer",
+    "aliases": [
+
+    ],
+    "flagName": "Safety tolerance",
+    "description": "Moderation strictness within the range the model declares, where 0 is strictest and higher numbers are more permissive.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "number"
+  },
+  {
+    "flagID": "generate-audio",
+    "dataType": "boolean",
+    "aliases": [
+
+    ],
+    "flagName": "Generate audio",
+    "description": "Generate a soundtrack alongside the video.",
+    "exampleValues": [
+
+    ],
+    "comment": "",
+    "textHint": ""
+  },
+  {
+    "flagID": "prompt-upsampling",
+    "dataType": "boolean",
+    "aliases": [
+
+    ],
+    "flagName": "Prompt upsampling",
+    "description": "Let the provider expand the prompt before generating.",
+    "exampleValues": [
+
+    ],
+    "comment": "",
+    "textHint": ""
+  },
+  {
+    "flagID": "disable-prompt-upsampling",
+    "dataType": "boolean",
+    "aliases": [
+
+    ],
+    "flagName": "Disable prompt upsampling",
+    "description": "Turn off the provider's automatic prompt expansion.",
+    "exampleValues": [
+
+    ],
+    "comment": "Applies to models that expand the prompt by default.",
+    "textHint": ""
+  },
+  {
+    "flagID": "moderation-level",
+    "dataType": "string",
+    "aliases": [
+
+    ],
+    "flagName": "Moderation level",
+    "description": "Content moderation strictness applied by the provider, from the levels the model declares.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "level"
+  },
+  {
+    "flagID": "person-generation",
+    "dataType": "string",
+    "aliases": [
+
+    ],
+    "flagName": "Person generation",
+    "description": "Whether the model may generate people, and of which ages, as a policy word the model's page explains.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "policy"
+  },
+  {
+    "flagID": "negative-prompt",
+    "dataType": "string",
+    "aliases": [
+
+    ],
+    "flagName": "Negative prompt",
+    "description": "Text describing what to keep out of the generated video.",
+    "exampleValues": [
+
+    ],
+    "comment": "",
+    "textHint": "text"
+  },
+  {
+    "flagID": "guidance-scale",
+    "dataType": "number",
+    "aliases": [
+
+    ],
+    "flagName": "Guidance scale",
+    "description": "Strength of prompt guidance, within the range the model declares.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "number"
+  },
+  {
+    "flagID": "steps",
+    "dataType": "integer",
+    "aliases": [
+
+    ],
+    "flagName": "Sampling steps",
+    "description": "Number of generation steps, within the range the model declares.",
+    "exampleValues": [],
+    "comment": "",
+    "textHint": "count"
+  },
+  {
+    "flagID": "expand-top",
+    "dataType": "integer",
+    "flagName": "Top expansion",
+    "description": "Pixels to add above the input image.",
+    "textHint": "pixels"
+  },
+  {
+    "flagID": "expand-bottom",
+    "dataType": "integer",
+    "flagName": "Bottom expansion",
+    "description": "Pixels to add below the input image.",
+    "textHint": "pixels"
+  },
+  {
+    "flagID": "expand-left",
+    "dataType": "integer",
+    "flagName": "Left expansion",
+    "description": "Pixels to add to the left of the input image.",
+    "textHint": "pixels"
+  },
+  {
+    "flagID": "expand-right",
+    "dataType": "integer",
+    "flagName": "Right expansion",
+    "description": "Pixels to add to the right of the input image.",
+    "textHint": "pixels"
+  },
+  {
+    "flagID": "finetune-id",
+    "dataType": "string",
+    "flagName": "Fine-tune ID",
+    "description": "ID of a model customized through provider training. It must already be owned by or shared with your account.",
+    "textHint": "id"
+  },
+  {
+    "flagID": "finetune-strength",
+    "dataType": "number",
+    "flagName": "Fine-tune strength",
+    "description": "How strongly to apply the selected fine-tune.",
+    "textHint": "strength"
+  },
+  {
+    "flagID": "mask",
+    "dataType": "string",
+    "flagName": "Mask",
+    "description": "Encoded mask data or a mask URL, as supported by the model. Local filenames are not loaded.",
+    "textHint": "data-or-url"
+  },
+  {
+    "flagID": "mask-dilation",
+    "dataType": "integer",
+    "flagName": "Mask dilation",
+    "description": "Pixels by which to expand the masked area.",
+    "textHint": "pixels"
+  },
+  {
+    "flagID": "garment-url",
+    "dataType": "string",
+    "flagName": "Garment URL",
+    "description": "Public HTTP(S) URL of the garment image for virtual try-on.",
+    "textHint": "url"
+  },
+  {
+    "flagID": "style-id",
+    "dataType": "string",
+    "flagName": "Style ID",
+    "description": "Identifier of an existing provider style compatible with the selected model.",
+    "textHint": "id"
+  },
+  {
+    "flagID": "style-match",
+    "dataType": "string",
+    "flagName": "Style matching",
+    "description": "How closely the generated image follows the selected style.",
+    "textHint": "mode",
+    "exampleValues": [
+      "precise",
+      "flexible"
+    ]
+  },
+  {
+    "flagID": "watermark",
+    "dataType": "boolean",
+    "flagName": "Watermark",
+    "description": "Include the provider watermark in the generated video.",
+    "textHint": ""
+  },
+  {
+    "flagID": "upscale-factor",
+    "dataType": "number",
+    "flagName": "Upscale factor",
+    "description": "Multiplier applied to the input video dimensions.",
+    "textHint": "factor"
+  },
+  {
+    "flagID": "creativity",
+    "dataType": "integer",
+    "flagName": "Creativity",
+    "description": "Amount of detail the provider may invent while upscaling.",
+    "textHint": "level"
+  },
+  {
+    "flagID": "voice-id",
+    "dataType": "string",
+    "flagName": "Voice ID",
+    "description": "Provider voice identifier used to speak the prompt.",
+    "exampleValues": [
+      "16a09e4706f74997ba4ed05ea11470f6",
+      "6be73833ef9a4eb0aeee399b8fe9d62b"
+    ],
+    "textHint": "id"
+  },
+  {
+    "flagID": "motion-prompt",
+    "dataType": "string",
+    "flagName": "Motion prompt",
+    "description": "Describe the avatar gestures and movement.",
+    "textHint": "text"
+  },
+  {
+    "flagID": "expressiveness",
+    "dataType": "string",
+    "flagName": "Expressiveness",
+    "description": "Avatar expression and movement intensity.",
+    "textHint": "level",
+    "exampleValues": [
+      "low",
+      "medium",
+      "high"
+    ]
+  },
+  {
+    "flagID": "image-fit",
+    "dataType": "string",
+    "flagName": "Image fit",
+    "description": "How the avatar image fits the output canvas.",
+    "textHint": "mode",
+    "exampleValues": [
+      "contain",
+      "cover"
+    ]
+  },
+  {
+    "flagID": "remove-background",
+    "dataType": "boolean",
+    "flagName": "Remove background",
+    "description": "Remove the original background from the avatar image.",
+    "textHint": ""
+  },
+  {
+    "flagID": "voice-speed",
+    "dataType": "number",
+    "flagName": "Voice speed",
+    "description": "Playback speed multiplier for generated speech.",
+    "textHint": "factor"
+  },
+  {
+    "flagID": "voice-pitch",
+    "dataType": "number",
+    "flagName": "Voice pitch",
+    "description": "Pitch adjustment in semitones.",
+    "textHint": "semitones"
+  },
+  {
+    "flagID": "voice-volume",
+    "dataType": "number",
+    "flagName": "Voice volume",
+    "description": "Volume of generated speech, from silent to full volume.",
+    "textHint": "volume"
+  },
+  {
+    "flagID": "voice-locale",
+    "dataType": "string",
+    "flagName": "Voice locale",
+    "description": "Locale or accent hint for a multilingual voice.",
+    "textHint": "locale",
+    "exampleValues": [
+      "en-US",
+      "en-GB"
+    ]
+  }
+]

@@ -1,0 +1,831 @@
+version: '2'
+formatters:
+  settings:
+    golines:
+      # Target maximum line length.
+      max-len: 200
+      # Shorten single-line comments.
+      shorten-comments: true
+  enable:
+    # The standard Go formatter.
+    - gofmt
+
+    # A stricter formatter than gofmt, with rules gofmt leaves optional.
+    - gofumpt
+
+    # Formats like gofmt and also sorts and repairs the import block.
+    - goimports
+linters:
+  exclusions:
+    rules:
+      - path: '(.+)_test\.go'
+        linters:
+          - gocritic
+          - errcheck
+          - varnamelen
+          - cyclop
+          - err113
+          - goconst
+          # A test asserts on fixture data it built, so its type assertions are
+          # exact, and a helper's raw error reaches the test's own failure report.
+          - forcetypeassert
+          - revive
+          - wrapcheck
+          # Table-driven tests have the shape these linters measure: long
+          # bodies and deep branching over their cases.
+          - funlen
+          - gocognit
+          - gocyclo
+          - maintidx
+          - nestif
+          # Two tests carry the deliberately mistyped setting key default-modle;
+          # the fixer would correct it and make the unknown key valid.
+          - misspell
+      # The sentinel file is the one sanctioned home of error text, and the
+      # copy generator cannot draw its diagnostics from the catalog it builds.
+      - path: 'internal/errs/sentinel\.go'
+        linters:
+          - goconst
+      - path: 'internal/errs/sentinel\.go'
+        linters:
+          - gocritic
+        text: 'hardcoded copy'
+      - path: 'tools/copygen/copygen\.go'
+        linters:
+          - goconst
+      # The flag record generator imports nothing from this module, so its
+      # sentinels have a sentinel file of their own.
+      - path: 'tools/flagsetup/sentinel\.go'
+        linters:
+          - goconst
+      - path: 'tools/flagsetup/sentinel\.go'
+        linters:
+          - gocritic
+        text: 'hardcoded copy'
+      # The copy generator prints its output; every other program message goes
+      # through internal/output.
+      - path: 'tools/copygen/copygen\.go'
+        linters:
+          - forbidigo
+      - path: 'tools/copygen/copygen\.go'
+        linters:
+          - gocritic
+        text: 'hardcoded copy'
+  #     funlen
+  #     goconst
+  #     godoclint
+  #     gosec
+  #     mnd
+  #     modernize
+  #     prealloc
+  #     revive
+  #     tagliatelle
+  #     unparam
+  #     wrapcheck
+  default: standard
+  settings:
+    cyclop:
+      max-complexity: 15
+    funlen:
+      # The guideline's forty to fifty lines; a function over either measure
+      # is split by the operations it performs.
+      lines: 50
+      statements: 40
+    gocognit:
+      min-complexity: 20
+    gocyclo:
+      min-complexity: 15
+    lll:
+      line-length: 200
+    mnd:
+      # The numbers a name would not improve: -1, 0, 1, and 2; the bases the
+      # code divides and compares by, 10, 60, and 100; and the three file
+      # modes in use.
+      ignored-numbers: ['-1', '0', '1', '2', '10', '60', '100', '0o600', '0o644', '0o755']
+    copyloopvar:
+      # Check all assigning the loop variable to another variable
+      # Default: false
+      check-alias: true
+    exhaustive:
+      # A switch with a default case covers the enum members it does not list.
+      default-signifies-exhaustive: true
+    errcheck:
+      # assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`
+      check-blank: true
+      exclude-functions:
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+        - fmt.Print
+        - fmt.Printf
+        - fmt.Println
+      # Report the forbidden call by its full function signature rather than its name
+      verbose: true
+    gocritic:
+      enabled-checks:
+        # Detects `append` chains to the same slice that can be done in a single `append` call.
+        - appendCombine
+        # Detects suspicious mutex lock/unlock operations.
+        - badLock
+        # Detects suspicious regexp patterns.
+        - badRegexp
+        # Detects bad usage of sort package.
+        - badSorting
+        # Detects bad usage of sync.OnceFunc.
+        - badSyncOnceFunc
+        # Detects bool expressions that can be simplified.
+        - boolExprSimplify
+        # Detects when predeclared identifiers are shadowed in assignments.
+        - builtinShadow
+        # Detects top-level declarations that shadow the predeclared identifiers.
+        - builtinShadowDecl
+        # Detects commented-out code inside function bodies.
+        - commentedOutCode
+        # Detects commented-out imports.
+        - commentedOutImport
+        # Detects loops inside functions that use defer.
+        - deferInLoop
+        # Detects deferred function literals that can be simplified.
+        - deferUnlambda
+        # Detects comments that silence go lint complaints about doc-comment.
+        - docStub
+        # Detects multiple imports of the same package under different aliases.
+        - dupImport
+        # Detects duplicated option function arguments in variadic function calls.
+        - dupOption
+        # Detects suspicious formatting strings usage.
+        - dynamicFmtString
+        # Detects suspicious empty declarations blocks.
+        - emptyDecl
+        # Detects fallthrough that can be avoided by using multi case values.
+        - emptyFallthrough
+        # Detects empty string checks that can be written more idiomatically.
+        - emptyStringTest
+        # Detects unoptimal strings/bytes case-insensitive comparison.
+        - equalFold
+        # Detects unwanted dependencies on the evaluation order.
+        - evalOrder
+        # Detects exposed methods from sync.Mutex and sync.RWMutex.
+        - exposedSyncMutex
+        # Detects suspicious reassignment of error from another package.
+        - externalErrorReassign
+        # Detects problems in filepath.Join() function calls.
+        - filepathJoin
+        # Detects hex literals that have mixed case letter digits.
+        - hexLiteral
+        # Detects nil usages in http.NewRequest calls, suggesting http.NoBody as an alternative.
+        - httpNoBody
+        # Detects params that incur excessive amount of copying.
+        - hugeParam
+        # Detects when imported package names shadowed in the assignments.
+        - importShadow
+        # Detects strings.Index calls that may cause unwanted allocs.
+        - indexAlloc
+        # Detects non-assignment statements inside if/switch init clause.
+        - initClause
+        # Detects method expression call that can be replaced with a method call.
+        - methodExprCall
+        # Finds where nesting level could be reduced.
+        - nestingReduce
+        # Detects return statements those results evaluate to nil.
+        - nilValReturn
+        # Detects old-style octal literals.
+        - octalLiteral
+        # Detects if function parameters could be combined by type and suggest the way to do it.
+        - paramTypeCombine
+        # Detects expressions like []rune(s)[0] that may cause unwanted rune slice allocation.
+        - preferDecodeRune
+        # Detects concatenation with os.PathSeparator which can be replaced with filepath.Join.
+        - preferFilepathJoin
+        # Detects fmt.Sprint(f/ln) calls which can be replaced with fmt.Fprint(f/ln).
+        - preferFprint
+        # Detects w.Write or io.WriteString calls which can be replaced with w.WriteString.
+        - preferStringWriter
+        # Detects WriteRune calls with rune literal argument that is single byte and reports to use WriteByte instead.
+        - preferWriteByte
+        # Detects input and output parameters that have a type of pointer to referential type.
+        - ptrToRefParam
+        # Detects append all its data while range it.
+        - rangeAppendAll
+        # Detects expensive copies of `for` loop range expressions.
+        - rangeExprCopy
+        # Detects loops that copy big objects during each iteration.
+        - rangeValCopy
+        # Detects redundant fmt.Sprint calls.
+        - redundantSprint
+        # Detects suspicious regexp patterns.
+        - regexpPattern
+        # Detects regexp patterns that can be simplified.
+        - regexpSimplify
+        # Detects suspicious http.Error call without following return.
+        - returnAfterHttpError
+        # Runs the rules in the ruleguard file named under settings.
+        - ruleguard
+        # Detects slice clear loops, suggests an idiom that is recognized by the Go compiler.
+        - sliceClear
+        # Detects suspicious/confusing re-assignments.
+        - sloppyReassign
+        # Detects suspicious sort.Slice calls.
+        - sortSlice
+        # Detects "%s" formatting directives that can be replaced with %q.
+        - sprintfQuotedString
+        # Detects string concat operations that can be simplified.
+        - stringConcatSimplify
+        # Detects redundant conversions between string and []byte.
+        - stringXbytes
+        # Detects strings.Compare usage.
+        - stringsCompare
+        # Detects sync.Map load+delete operations that can be replaced with LoadAndDelete.
+        - syncMapLoadAndDelete
+        # Detects manual conversion to milli- or microseconds.
+        - timeExprSimplify
+        # Detects TODO comments without detail/assignee.
+        - todoCommentWithoutDetail
+        # Detects function with too many results.
+        - tooManyResultsChecker
+        # Detects potential truncation issues when comparing ints of different sizes.
+        - truncateCmp
+        # Detects repeated type assertions and suggests to replace them with type switch statement.
+        - typeAssertChain
+        # Detects method declarations preceding the type definition itself.
+        - typeDefFirst
+        # Detects unneeded parenthesis inside type expressions and suggests to remove them.
+        - typeUnparen
+        # Detects unchecked errors in if statements.
+        - uncheckedInlineErr
+        # Detects redundant statement labels.
+        - unlabelStmt
+        # Detects unnamed results that may benefit from names.
+        - unnamedResult
+        # Detects unnecessary braced statement blocks.
+        - unnecessaryBlock
+        # Detects redundantly deferred calls.
+        - unnecessaryDefer
+        # Detects conditions that are unsafe due to not being exhaustive.
+        - weakCond
+        # Ensures that `//nolint` comments include an explanation.
+        - whyNoLint
+        # Detects Yoda style expressions and suggests to replace them.
+        - yodaStyleExpr
+        # Detects bytes.Repeat with 0 value.
+        - zeroByteRepeat
+      settings:
+        ruleguard:
+          # The repository's own rules: hardcoded copy passed as a call argument.
+          rules: '${base-path}/gorules.go'
+          failOn: dsl
+    govet:
+      # Every analyzer, except the two that report layout and shadowing rather
+      # than defects.
+      enable-all: true
+      disable:
+        - fieldalignment
+        - shadow
+    revive:
+      # Listing rules replaces revive's default set, so the defaults are named
+      # here ahead of the four rules this repository adds.
+      rules:
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: empty-block
+        - name: error-naming
+        - name: error-return
+        - name: error-strings
+        - name: errorf
+        - name: exported
+        - name: increment-decrement
+        - name: indent-error-flow
+        - name: package-comments
+        - name: range
+        - name: receiver-naming
+        - name: redefines-builtin-id
+        - name: superfluous-else
+        - name: time-naming
+        - name: unexported-return
+        - name: unreachable-code
+        - name: unused-parameter
+        - name: var-declaration
+        - name: var-naming
+        - name: unchecked-type-assertion
+        - name: identical-switch-branches
+        - name: confusing-naming
+        - name: unused-receiver
+    wrapcheck:
+      # An error born in this module is wrapped with its sentinel at the source;
+      # only an error from another module needs wrapping at the call site.
+      ignore-package-globs:
+        - github.com/shdeen/bildomat/*
+    goconst:
+      # Report every literal of three or more characters, including the ones
+      # passed as call arguments, and every value declared under two names.
+      min-len: 3
+      min-occurrences: 1
+      find-duplicates: true
+      # A constant derived from another declaration is one source, not a
+      # duplicate; only a repeated literal is.
+      eval-const-expressions: false
+      ignore-calls: false
+      # A string made only of format verbs and punctuation is a wrapping shape
+      # such as "%q, %w", not copy; a format string carrying words is reported.
+      ignore-string-values:
+        - '^(%[-+# 0-9.*\[\]]*[a-zA-Z]|[^a-zA-Z%])*$'
+    godoclint:
+      # Default set of rules to enable.
+      # Possible values are: `basic`, `all` or `none`.
+      # Default: `basic` (enables `pkg-doc`, `single-pkg-doc`, `start-with-name`, and `deprecated`)
+      default: basic
+      # List of rules to enable in addition to the default set.
+      enable:
+        # Require godoc for all public symbols.
+        - require-doc
+    depguard:
+      rules:
+        # internal/errs, internal/templates and internal/provider/config sit at the
+        # bottom of the project: they import nothing else of ours.
+        bottom-layer:
+          files:
+            - '**/internal/errs/**'
+            - '**/internal/templates/**'
+            - '**/internal/provider/config/**'
+          deny:
+            - pkg: github.com/shdeen/bildomat/internal
+              desc: the bottom layer imports no other package of this project
+        # Catalog descriptions are independent of execution, credentials, and rendering.
+        catalog-layer:
+          files:
+            - '**/internal/catalog/**'
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/shdeen/bildomat/internal/params
+            - github.com/shdeen/bildomat/internal/media
+            - github.com/shdeen/bildomat/internal/errs
+        # Generation prepares inputs without performing HTTP or terminal work.
+        generation-layer:
+          files:
+            - '**/internal/generation/**'
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/shdeen/bildomat/internal/catalog
+            - github.com/shdeen/bildomat/internal/params
+            - github.com/shdeen/bildomat/internal/media
+            - github.com/shdeen/bildomat/internal/artifact
+            - github.com/shdeen/bildomat/internal/metadata
+            - github.com/shdeen/bildomat/internal/errs
+        config-layer:
+          files:
+            - '**/internal/config/**'
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/shdeen/bildomat/internal/errs
+            - github.com/goccy/go-yaml
+        # A provider speaks to its own API through the domain types. It never
+        # reads the settings file, never writes to the terminal, and never
+        # reaches into another provider or the package that gathers them.
+        provider-layer:
+          files:
+            - '**/internal/provider/**'
+          # In lax mode the deny list rules and the allow list is its list of
+          # exceptions, so the built-in config package stays importable.
+          list-mode: lax
+          allow:
+            - github.com/shdeen/bildomat/internal/provider/config
+            - github.com/shdeen/bildomat/internal/provider$
+          deny:
+            - pkg: github.com/shdeen/bildomat/internal/config
+              desc: providers use descriptions, preparation, shared execution, transport, and errors
+            - pkg: github.com/shdeen/bildomat/internal/output
+              desc: providers use descriptions, preparation, shared execution, transport, and errors
+            - pkg: github.com/shdeen/bildomat/internal/templates
+              desc: providers use descriptions, preparation, shared execution, transport, and errors
+            - pkg: github.com/shdeen/bildomat/internal/provider
+              desc: a provider imports neither another provider nor the package that gathers them
+        # internal/output renders. It reads the domain types and the embedded
+        # documents, and knows nothing of providers or the settings file.
+        output-layer:
+          files:
+            - '**/internal/output/**'
+            - '!$test'
+          deny:
+            - pkg: github.com/shdeen/bildomat/internal/config
+              desc: output renders descriptive results without provider execution
+            - pkg: github.com/shdeen/bildomat/internal/provider
+              desc: output renders descriptive results without provider execution
+    ireturn:
+      allow:
+        # The linter's own defaults, which this list replaces rather than extends.
+        - anon
+        - error
+        - empty
+        - stdlib
+        # A type parameter's own type is not an interface the caller has to unwrap.
+        - generic
+        # The two interfaces the project deliberately returns.
+        - github.com/shdeen/bildomat/internal/generation.Generator
+        - github.com/urfave/cli/v3.Flag
+    tagliatelle:
+      case:
+        rules:
+          # Go's initialisms stay upper case: genURL, not genUrl.
+          json: goCamel
+          # The settings file bild reads from ~/.bildomat/config.yml spells its
+          # keys with hyphens.
+          yaml: kebab
+        overrides:
+          # A provider's request and response tags copy that provider's API
+          # verbatim, so no convention of ours describes them. Google alone
+          # sends mime_type on one endpoint and generateVideoResponse on another.
+          - pkg: internal/provider/bfl
+            ignore: true
+          - pkg: internal/provider/google
+            ignore: true
+          - pkg: internal/provider/kling
+            ignore: true
+          - pkg: internal/provider/sourceful
+            ignore: true
+    nolintlint:
+      # A directive states the reason it exists, after a second //.
+      require-explanation: true
+      # A directive names the linter it silences; a bare //nolint is reported.
+      require-specific: true
+    thelper:
+      # A helper takes its testing parameter first and calls Helper() first. The
+      # parameter is named test throughout this codebase, so the name rule is off.
+      test:
+        name: false
+      benchmark:
+        name: false
+      tb:
+        name: false
+      fuzz:
+        name: false
+    varnamelen:
+      # Ignore "ok" variables that hold the bool return value of a type assertion.
+      ignore-type-assert-ok: true
+      # Ignore "ok" variables that hold the bool return value of a map index.
+      ignore-map-index-ok: true
+      # Ignore "ok" variables that hold the bool return value of a channel receive.
+      ignore-chan-recv-ok: true
+      # Optional list of variable names that should be ignored completely.
+      # Default: []
+      ignore-names:
+        - err
+        - ok
+      ignore-decls:
+        - c echo.Context
+        - t testing.T
+        - f *foo.Bar
+        - e error
+        - i int
+        - const C
+        - T any
+        - m map[string]int
+        - w io.Writer
+        - f os.File
+        - f *os.File
+        - b strings.Builder
+        - p Provider
+        - p *Provider
+        - c *cli.Command
+  enable:
+    # Reports a []any passed as a single argument to a variadic func(...any),
+    # which sends the slice as one value instead of spreading its elements.
+    - asasalint
+
+    # Reports an identifier containing a non-ASCII character.
+    - asciicheck
+
+    # Reports a Unicode direction-control character, which can make a line of
+    # code read differently than it runs.
+    - bidichk
+
+    # Reports an HTTP response body that is never closed.
+    - bodyclose
+
+    # Reports an HTTP header name written in other than its canonical form, such
+    # as x-key for X-Key. Fixable.
+    - canonicalheader
+
+    # Reports a struct that stores a context in a field instead of taking
+    # one as a parameter.
+    - containedctx
+
+    # Reports a call that starts a fresh context where it should pass along
+    # the context it was given.
+    - contextcheck
+
+    # Reports a loop that copies its own loop variable into a new one, which
+    # Go 1.22 made unnecessary. Fixable.
+    - copyloopvar
+
+    # Reports a function with more branches than the limit allows.
+    # The limit is set under settings.
+    - cyclop
+
+    # Reports types, constants, variables and functions declared out of the
+    # order the settings require.
+    - decorder
+
+    # Reports an import the layering rules do not allow that package to make.
+    - depguard
+
+    # Reports an assignment that discards several results at once, as in
+    # _, _, _, value := f().
+    - dogsled
+
+    # Reports two stretches of code that are near-identical copies.
+    - dupl
+
+    # Reports a word accidentally repeated in a comment or string, such as
+    # "the the". Fixable.
+    - dupword
+
+    # Reports two durations multiplied together, which is almost never what
+    # the author meant.
+    - durationcheck
+
+    # Reports a struct whose embedded fields are not set apart from its named
+    # fields by a blank line. Fixable.
+    - embeddedstructfieldcheck
+
+    # Reports an error built or compared as a bare value instead of through a
+    # declared sentinel.
+    - err113
+
+    # Reports a returned error the caller ignores.
+    - errcheck
+
+    # Reports a value passed to a JSON encoder that cannot be encoded, and an
+    # error check on an encoding that cannot fail.
+    - errchkjson
+
+    # Reports a sentinel not named ErrSomething and an error type not named
+    # SomethingError.
+    - errname
+
+    # Reports error handling that breaks wrapping: %v where %w belongs, an
+    # equality test that should be errors.Is, an assertion that should be errors.As.
+    - errorlint
+
+    # Reports a switch over an enumerated type that leaves one of its values
+    # unhandled.
+    - exhaustive
+
+    # Reports a call into golang.org/x/exp that the standard library now
+    # provides. Fixable.
+    - exptostd
+
+    # Reports a context wrapped again on every pass of a loop, so the layers
+    # pile up.
+    - fatcontext
+
+    # Reports a call to an identifier the settings forbid; by default the fmt
+    # print functions.
+    - forbidigo
+
+    # Reports a type assertion written without its ok result, which panics when
+    # the value is another type.
+    - forcetypeassert
+
+    # Reports a type's methods declared out of the expected order: exported
+    # before unexported, constructor first.
+    - funcorder
+
+    # Reports a function longer than the line or statement count set under
+    # settings.
+    - funlen
+
+    # Reports a malformed //go: directive. A misspelled one is not an error: the
+    # compiler reads it as an ordinary comment and the directive silently does nothing.
+    - gocheckcompilerdirectives
+
+    # Reports a package-level variable.
+    - gochecknoglobals
+
+    # Reports an init function.
+    - gochecknoinits
+
+    # Reports a switch over a closed set of types that leaves one case out.
+    - gochecksumtype
+
+    # Reports a function harder to follow than the limit allows, counting nesting
+    # more heavily than plain branches. The limit is set under settings.
+    - gocognit
+
+    # Reports a string written the same way several times, where a named constant
+    # belongs.
+    - goconst
+
+    # A broad set of bug, performance and style checks. Partly fixable.
+    - gocritic
+
+    # Reports a function with more branches than the limit allows, counting every
+    # branch equally. The limit is set under settings.
+    - gocyclo
+
+    # Reports a doc comment that breaks Go's documentation conventions.
+    - godoclint
+
+    # Reports a comment that does not end in a period. Fixable.
+    - godot
+
+    # Reports a TODO, FIXME or similar marker left behind in a comment.
+    - godox
+
+    # Reports a replace, exclude or retract directive in go.mod that the settings
+    # do not allow.
+    - gomoddirectives
+
+    # Reports a function that takes a format string and its values but whose name
+    # does not end in f.
+    - goprintffuncname
+
+    # Reports common security problems: weak randomness, unchecked file paths,
+    # credentials written into the source.
+    - gosec
+
+    # The checks go vet runs, such as a printf call whose arguments do not match
+    # its format string.
+    - govet
+
+    # Reports declarations the settings require to sit in one block.
+    - grouper
+
+    # Reports an interface whose method set duplicates another interface in the
+    # same package. Its unused-interface and concrete-type checks are not enabled.
+    - iface
+
+    # Reports an import alias other than the one the settings assign that package.
+    # - importas
+
+    # Reports an interface method whose parameters are declared without names.
+    - inamedparam
+
+    # Reports a value assigned to a variable that nothing ever reads.
+    - ineffassign
+
+    # Reports an interface with more methods than the limit allows.
+    - interfacebloat
+
+    # Reports a counting loop that Go's integer range form replaces. Fixable.
+    - intrange
+
+    # Reports a const block that mixes iota constants with ordinary ones, where
+    # inserting a line silently renumbers the rest.
+    - iotamixing
+
+    # Reports a function that returns an interface where a concrete type would do.
+    - ireturn
+
+    # Reports a line longer than the limit.
+    # - lll
+
+    # Reports a mismatched or odd key-value pair passed to a structured logger.
+    # - loggercheck
+
+    # Reports a function whose maintainability score falls below the limit.
+    - maintidx
+
+    # Reports a slice made with a length and then appended to, which leaves the
+    # first entries empty ahead of the appended ones.
+    - makezero
+
+    # Reports a needless string/[]byte conversion where the standard library has
+    # the matching call for the type already held. Fixable.
+    - mirror
+
+    # Reports a commonly misspelled English word. Fixable.
+    - misspell
+
+    # Reports a number written straight into the code where a named constant
+    # belongs. The exempt numbers are listed under settings.
+    - mnd
+
+    # Reports code that a newer standard library feature simplifies. Fixable.
+    - modernize
+
+    # Reports a struct encoded or decoded as JSON with no field tags, so its wire
+    # names follow the Go field names by accident.
+    - musttag
+
+    # Reports a bare return in a function long enough that the reader cannot see
+    # what it returns. Fixable.
+    - nakedret
+
+    # Reports an if statement nested deeper than the limit.
+    - nestif
+
+    # Reports a function that finds the error non-nil and then returns nil anyway.
+    - nilerr
+
+    # Reports a function that finds one error non-nil and then returns a different
+    # error variable that is nil, so the failure is lost.
+    - nilnesserr
+
+    # Reports a return of a nil value with a nil error, which leaves the caller
+    # nothing to test.
+    - nilnil
+
+    # Wants a blank line before return, break and continue. Fixable.
+    - nlreturn
+
+    # Reports an HTTP request or similar call made without a context, so nothing
+    # can cancel it.
+    - noctx
+
+    # Reports a nolint directive that is malformed, gives no reason, or suppresses
+    # nothing. Fixable.
+    - nolintlint
+
+    # Reports a host and port joined with Sprintf, which produces a broken URL for
+    # an IPv6 address.
+    - nosprintfhostport
+
+    # Reports a Sprintf that a direct strconv call replaces. Fixable.
+    - perfsprint
+
+    # Reports a slice appended to in a loop whose final length is already known,
+    # where make can reserve that capacity once instead of regrowing.
+    - prealloc
+
+    # Reports a name that shadows a Go builtin such as len, cap, new or max.
+    - predeclared
+
+    # Reports a protobuf field read directly instead of through its getter. Fixable.
+    # - protogetter
+
+    # Reports an assignment to a variable another package exported.
+    - reassign
+
+    # Reports a type whose methods mix pointer and value receivers.
+    - recvcheck
+
+    # A configurable rule set covering naming, documentation and structure.
+    # The rules in force are listed under settings.
+    - revive
+
+    # Reports inconsistent use of log/slog. Fixable.
+    # - sloglint
+
+    # A large rule set: real bugs, dead code, and simplifications. Fixable.
+    - staticcheck
+
+    # Reports struct tags that do not line up. Fixable.
+    - tagalign
+
+    # Reports a struct tag whose name breaks the naming convention the settings
+    # declare.
+    - tagliatelle
+
+    # Reports an Example function with no expected output, which the test runner
+    # compiles but never checks.
+    - testableexamples
+
+    # Reports misuse of the testify assertion library. Fixable.
+    # - testifylint
+
+    # Reports a test helper that does not call t.Helper() first, which points
+    # failures at the helper instead of the test.
+    - thelper
+
+    # Reports a parent test that calls t.Parallel() while its subtests do not, or
+    # the reverse.
+    - tparallel
+
+    # Reports a conversion of a value to the type it already has.
+    - unconvert
+
+    # Reports a parameter every caller passes the same value for, and a result
+    # no caller reads.
+    - unparam
+
+    # Reports a constant, variable, function or type nothing uses.
+    - unused
+
+    # Reports a literal that a standard library constant replaces, such as "GET"
+    # or the number 200. Fixable.
+    - usestdlibvars
+
+    # Reports a call the testing package supersedes, such as os.Setenv where
+    # t.Setenv belongs. Fixable.
+    - usetesting
+
+    # Reports a variable whose name is too short for the number of lines it
+    # stays alive across.
+    - varnamelen
+
+    # Reports a value assigned and then overwritten before anything reads it.
+    - wastedassign
+
+    # Reports a stray blank line at the start or end of a block. Fixable.
+    - whitespace
+
+    # Reports an error from another package returned without wrapping.
+    - wrapcheck
+
+    # Governs the blank lines between statements. Fixable.
+    - wsl_v5

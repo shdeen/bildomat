@@ -1,0 +1,365 @@
+{
+  "id": "kling",
+  "displayName": "Kling",
+  "apiKeyEnvVar": "KLING_API_KEY",
+  "defaultModel": "kling-v3",
+  "docsURL": "https://kling.ai/document-api",
+  "models": [
+    {
+      "id": "kling-v3",
+      "name": "Kling Image 3.0",
+      "aliases": ["kling-3"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["1k", "2k"]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 9
+        },
+        {
+          "paramID": "negative_prompt",
+          "flagID": "negative-prompt",
+          "modelInfoComment": "Kling refuses --negative-prompt when --input-media is supplied."
+        },
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "kling-v3-omni",
+      "name": "Kling Image 3.0 Omni",
+      "aliases": ["kling-3-omni"],
+      "media": "image",
+      "family": "omni",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["1k", "2k", "4k"]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 9
+        },
+        {
+          "paramID": "image_list",
+          "flagID": "input-media",
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "kling-image-o1",
+      "name": "Kling Image O1",
+      "aliases": ["kling-1"],
+      "media": "image",
+      "family": "omni",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["1k", "2k"]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 9
+        },
+        {
+          "paramID": "image_list",
+          "flagID": "input-media",
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "kling-v2-1",
+      "name": "Kling Image 2.1",
+      "aliases": ["kling-2.1"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["1k", "2k"]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 9
+        },
+        {
+          "paramID": "negative_prompt",
+          "flagID": "negative-prompt",
+          "modelInfoComment": "Kling refuses --negative-prompt when --input-media is supplied."
+        },
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "kling-3.0",
+      "name": "Kling 3.0",
+      "aliases": ["kling-3-video", "kling-video"],
+      "media": "video",
+      "params": [
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["720p", "1080p", "4k"]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 3,
+          "maxValue": 15
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": ["16:9", "9:16", "1:1"]
+        },
+        {
+          "paramID": "audio",
+          "flagID": "generate-audio"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 2
+        }
+      ]
+    },
+    {
+      "id": "kling-3.0-turbo",
+      "name": "Kling 3.0 Turbo",
+      "media": "video",
+      "aliases": ["kling-3-turbo-video"],
+      "params": [
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["720p", "1080p"]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 3,
+          "maxValue": 15
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": ["16:9", "9:16", "1:1"]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "kling-3.0-omni",
+      "name": "Kling 3.0 Omni",
+      "media": "video",
+      "family": "omni",
+      "aliases": ["kling-3-omni-video"],
+      "params": [
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["720p", "1080p", "4k"]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 3,
+          "maxValue": 15
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": ["16:9", "9:16", "1:1"]
+        },
+        {
+          "paramID": "audio",
+          "flagID": "generate-audio"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 7
+        }
+      ]
+    },
+    {
+      "id": "kling-o1",
+      "name": "Kling O1",
+      "aliases": ["kling-o1-video", "kling-1-video"],
+      "media": "video",
+      "family": "omni",
+      "params": [
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["720p", "1080p"]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 3,
+          "maxValue": 10
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": ["16:9", "9:16", "1:1"]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 7
+        }
+      ]
+    },
+    {
+      "id": "kling-2.6",
+      "name": "Kling 2.6",
+      "aliases": ["kling-2.6-video"],
+      "media": "video",
+      "params": [
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["720p", "1080p"]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": ["5", "10"]
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": ["16:9", "9:16", "1:1"]
+        },
+        {
+          "paramID": "audio",
+          "flagID": "generate-audio",
+          "modelInfoComment": "Kling 2.6 requires 1080p for generated audio and frame input."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 2
+        }
+      ]
+    },
+    {
+      "id": "kling-2.5-turbo",
+      "name": "Kling 2.5 Turbo",
+      "aliases": ["kling-2.5-turbo-video"],
+      "media": "video",
+      "params": [
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": ["720p", "1080p"]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": ["5", "10"]
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": ["16:9", "9:16", "1:1"]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    }
+  ],
+  "config": {
+    "adapterAPI": {
+      "apiBase": "https://api-singapore.klingai.com",
+      "pollInterval": 5,
+      "pollTimeout": 1800,
+      "imageFallbackExt": ".png",
+      "videoFallbackExt": ".mp4"
+    }
+  }
+}

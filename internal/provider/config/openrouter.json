@@ -1,0 +1,4677 @@
+{
+  "id": "openrouter",
+  "displayName": "OpenRouter",
+  "apiKeyEnvVar": "OPENROUTER_API_KEY",
+  "defaultModel": "google/gemini-3.1-flash-image",
+  "docsURL": "https://openrouter.ai/docs",
+  "aggregator": true,
+  "models": [
+    {
+      "id": "openai/gpt-image-2.5-flare",
+      "name": "OpenAI: GPT Image 2.5 Flare",
+      "description": "Fast image generation and editing for everyday creative work.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 10
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "minValue": 0,
+          "maxValue": 100
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-image-2.5-sunburst",
+      "name": "OpenAI: GPT Image 2.5 Sunburst",
+      "description": "Generate images and make precise edits from text and image references.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 10
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "minValue": 0,
+          "maxValue": 100
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux.2-flex",
+      "name": "Black Forest Labs: FLUX.2 Flex",
+      "description": "FLUX.2 [flex] excels at rendering complex text, typography, and fine details, and supports multi-reference editing in the same unified architecture. Pricing is [per the BFL docs](https://bfl.ai/pricing?category=flux.2).",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux.2-klein-4b",
+      "name": "Black Forest Labs: FLUX.2 Klein 4B",
+      "description": "FLUX.2 [klein] 4B is the fastest and most cost-effective model in the FLUX.2 family, optimized for high-throughput use cases while maintaining excellent image quality.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux.2-max",
+      "name": "Black Forest Labs: FLUX.2 Max",
+      "description": "FLUX.2 [max] is the new top-tier image model from Black Forest Labs, pushing image quality, prompt understanding, and editing consistency to the highest level yet.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux.2-pro",
+      "name": "Black Forest Labs: FLUX.2 Pro",
+      "description": "A high-end image generation and editing model focused on frontier-level visual quality and reliability. It delivers strong prompt adherence, stable lighting, sharp textures, and consistent character/style reproduction across multi-reference inputs.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux-3-video",
+      "name": "Black Forest Labs: FLUX.3 Video",
+      "description": "FLUX.3 Video is a video generation model from Black Forest Labs. It supports text-to-video, image-guided generation with opening and closing keyframes, and video continuation workflows.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "21:9",
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20"
+          ]
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "bytedance-seed/seedream-4.5",
+      "name": "ByteDance Seed: Seedream 4.5",
+      "description": "Seedream 4.5 is the latest in-house image generation model developed by ByteDance. Compared with Seedream 4.0, it delivers comprehensive improvements, especially in editing consistency, including better preservation of subject details.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:2",
+            "2:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "9:19.5",
+            "19.5:9",
+            "9:20",
+            "20:9",
+            "9:21",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "bytedance-seed/seedream-5-0-pro",
+      "name": "ByteDance Seed: Seedream 5.0 Pro",
+      "description": "Seedream 5.0 Pro is an image generation and editing model from ByteDance Seed. It is suited for commercial visual-production workflows that require precise editing control, lifelike scenes, and natural rendering.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:2",
+            "2:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "9:19.5",
+            "19.5:9",
+            "9:20",
+            "20:9",
+            "9:21",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "bytedance-seed/seedream-5-0-lite",
+      "name": "ByteDance Seed: Seedream 5.0 Lite",
+      "description": "Seedream 5.0 Lite is an image generation and editing model from ByteDance Seed.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:2",
+            "2:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "9:19.5",
+            "19.5:9",
+            "9:20",
+            "20:9",
+            "9:21",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 4,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-2.5-flash-image",
+      "name": "Google: Nano Banana (Gemini 2.5 Flash Image)",
+      "description": "Gemini 2.5 Flash Image, a.k.a. \"Nano Banana,\" is now generally available. It is a state of the art image generation model with contextual understanding.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-3-pro-image",
+      "name": "Google: Nano Banana Pro (Gemini 3 Pro Image)",
+      "description": "Nano Banana Pro is Google’s most advanced image-generation and editing model, built on Gemini 3 Pro. It extends the original Nano Banana with significantly improved multimodal reasoning and real-world grounding.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-3-pro-image-preview",
+      "name": "Google: Nano Banana Pro (Gemini 3 Pro Image Preview)",
+      "description": "Nano Banana Pro is Google’s most advanced image-generation and editing model, built on Gemini 3 Pro. It extends the original Nano Banana with significantly improved multimodal reasoning and real-world grounding.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-3.1-flash-image",
+      "name": "Google: Nano Banana 2 (Gemini 3.1 Flash Image)",
+      "description": "Gemini 3.1 Flash Image, a.k.a. \"Nano Banana 2,\" is Google’s latest state of the art image generation and editing model, delivering Pro-level visual quality at Flash speed.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:4",
+            "1:8",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:1",
+            "4:3",
+            "4:5",
+            "5:4",
+            "8:1",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "512",
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-3.1-flash-image-preview",
+      "name": "Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview)",
+      "description": "Gemini 3.1 Flash Image Preview, a.k.a. \"Nano Banana 2,\" is Google’s latest state of the art image generation and editing model, delivering Pro-level visual quality at Flash speed.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:4",
+            "1:8",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:1",
+            "4:3",
+            "4:5",
+            "5:4",
+            "8:1",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "512",
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-3.1-flash-lite-image",
+      "name": "Google: Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)",
+      "description": "Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image) is Google's fastest, most cost-efficient Gemini image model, built for high-velocity developer pipelines and rapid-fire visual exploration.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:4",
+            "1:8",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:1",
+            "4:3",
+            "4:5",
+            "5:4",
+            "8:1",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "krea/krea-2-large",
+      "name": "Krea: Krea 2 Large",
+      "description": "Krea 2 Large is Krea's high-capability image generation model, more than twice the size of Krea 2 Medium. Its lighter post-training gives images a rawer, more textured quality.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:2",
+            "16:9",
+            "4:5",
+            "2:3",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "krea/krea-2-medium",
+      "name": "Krea: Krea 2 Medium",
+      "description": "Krea 2 Medium is Krea's balanced, cost-efficient image generation model and a practical starting point for a broad range of use cases. Its extensive post-training supports stable, consistent generations.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:2",
+            "16:9",
+            "4:5",
+            "2:3",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "krea/krea-2-medium-turbo",
+      "name": "Krea: Krea 2 Medium Turbo",
+      "description": "Krea 2 Medium Turbo is a distilled, speed-focused variant of Krea 2 Medium from Krea. It is designed for rapid iteration and graphic design exploration where fast generation is the priority.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:2",
+            "16:9",
+            "4:5",
+            "2:3",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "microsoft/mai-image-2.5",
+      "name": "Microsoft: MAI-Image-2.5",
+      "description": "Microsoft's MAI-Image-2.5 is a high-quality image generation model available via Azure AI Foundry. It produces photorealistic and artistic images from text prompts with support for various aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "3:2",
+            "2:3",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "microsoft/mai-image-2.5-pro",
+      "name": "Microsoft: MAI-Image-2.5 Pro",
+      "description": "Microsoft's MAI-Image-2.5 is a high-quality image generation model available via Azure AI Foundry. It produces photorealistic and artistic images from text prompts with support for various aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "3:2",
+            "2:3",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-5-image",
+      "name": "OpenAI: GPT-5 Image",
+      "description": "[GPT-5](https://openrouter.ai/openai/gpt-5) Image combines OpenAI's GPT-5 model with state-of-the-art image generation capabilities. It offers major improvements in reasoning, code quality, and user experience while incorporating GPT Image 1's superior instruction following.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-5-image-mini",
+      "name": "OpenAI: GPT-5 Image Mini",
+      "description": "GPT-5 Image Mini combines OpenAI's advanced language capabilities, powered by [GPT-5 Mini](https://openrouter.ai/openai/gpt-5-mini), with GPT Image 1 Mini for efficient image generation. This natively multimodal model features superior instruction following.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-5.4-image-2",
+      "name": "OpenAI: GPT-5.4 Image 2",
+      "description": "[GPT-5.4](https://openrouter.ai/openai/gpt-5.4) Image 2 combines OpenAI's GPT-5.4 model with state-of-the-art image generation capabilities from GPT Image 2. It enables rich multimodal workflows, allowing users to seamlessly move between reasoning, coding, and image generation.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-image-1",
+      "name": "OpenAI: GPT Image 1",
+      "description": "OpenAI's GPT Image 1 generates and edits images via the dedicated Images API. Features accurate text rendering, transparent backgrounds, and up to 16 reference images for edits.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:2",
+            "2:3",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-image-1-mini",
+      "name": "OpenAI: GPT Image 1 Mini",
+      "description": "A cost-efficient variant of GPT Image 1 for high-quality image generation at reduced latency and cost via OpenAI's dedicated Images API.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:2",
+            "2:3",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-image-2",
+      "name": "OpenAI: GPT Image 2",
+      "description": "OpenAI's latest image generation model. Supports high-fidelity image generation and editing via the dedicated Images API.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "auto",
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 10,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 16
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "qwen/qwen-image-3",
+      "name": "Qwen: Qwen Image 3",
+      "description": "Qwen Image 3 is a unified image generation and editing model from Qwen. It supports precise rendering of text and details as small as 10px, along with a richer world knowledge.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:2",
+            "1:4",
+            "2:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:1",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "qwen/qwen-image-3-pro",
+      "name": "Qwen: Qwen Image 3 Pro",
+      "description": "Qwen Image 3 Pro is an image generation and editing model from Qwen. It supports precise rendering of text and details as small as 10px, along with richer world knowledge.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:2",
+            "1:4",
+            "2:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:1",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v3",
+      "name": "Recraft: Recraft V3",
+      "description": "Recraft V3 is an image generation model from Recraft. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4",
+      "name": "Recraft: Recraft V4",
+      "description": "Recraft V4 is an image generation model from Recraft. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-pro",
+      "name": "Recraft: Recraft V4 Pro",
+      "description": "Recraft V4 Pro is an image generation model from Recraft. It supports text and image inputs with image output at ~2K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-pro-vector",
+      "name": "Recraft: Recraft V4 Pro Vector",
+      "description": "Recraft V4 Pro Vector is the vector (SVG) variant of Recraft V4 Pro. It supports text and image inputs and produces vector image output across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-styles",
+      "name": "Recraft: Recraft V4 Styles",
+      "description": "Recraft V4 Styles is a style-consistent image generation model from Recraft. Every request requires at least one style reference image.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-styles-pro",
+      "name": "Recraft: Recraft V4 Styles Pro",
+      "description": "Recraft V4 Styles Pro is a style-consistent image generation model from Recraft. Every request requires at least one style reference image.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-styles-pro-vector",
+      "name": "Recraft: Recraft V4 Styles Pro Vector",
+      "description": "Recraft V4 Styles Pro Vector is a style-consistent vector image generation model from Recraft. Every request requires at least one style reference image.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "svg"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-styles-vector",
+      "name": "Recraft: Recraft V4 Styles Vector",
+      "description": "Recraft V4 Styles Vector is a style-consistent vector image generation model from Recraft. Every request requires at least one style reference image.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "svg"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4-vector",
+      "name": "Recraft: Recraft V4 Vector",
+      "description": "Recraft V4 Vector is the vector (SVG) variant of Recraft V4. It supports text and image inputs and produces vector image output across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4.1",
+      "name": "Recraft: Recraft V4.1",
+      "description": "Recraft V4.1 is an image generation model from Recraft tuned for high aesthetics. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4.1-pro",
+      "name": "Recraft: Recraft V4.1 Pro",
+      "description": "Recraft V4.1 Pro is an image generation model from Recraft tuned for high aesthetics. It supports text and image inputs with image output at ~2K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4.1-pro-vector",
+      "name": "Recraft: Recraft V4.1 Pro Vector",
+      "description": "Recraft V4.1 Pro Vector is the vector (SVG) variant of Recraft V4.1 Pro, tuned for high aesthetics. It supports text and image inputs and produces higher-resolution SVG image output across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4.1-utility",
+      "name": "Recraft: Recraft V4.1 Utility",
+      "description": "Recraft V4.1 Utility is a general-purpose image generation model from Recraft. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4.1-utility-pro",
+      "name": "Recraft: Recraft V4.1 Utility Pro",
+      "description": "Recraft V4.1 Utility Pro is a general-purpose image generation model from Recraft. It supports text and image inputs with image output at ~2K resolution across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "recraft/recraft-v4.1-vector",
+      "name": "Recraft: Recraft V4.1 Vector",
+      "description": "Recraft V4.1 Vector is the vector (SVG) variant of Recraft V4.1, tuned for high aesthetics. It supports text and image inputs and produces SVG image output across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution"
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 6,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "sourceful/riverflow-v2-fast",
+      "name": "Sourceful: Riverflow V2 Fast",
+      "description": "Riverflow V2 Fast is the fastest variant of Sourceful's Riverflow 2.0 lineup, best for production deployments and latency-critical workflows. The Riverflow 2.0 series represents SOTA performance on image generation.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "sourceful/riverflow-v2-pro",
+      "name": "Sourceful: Riverflow V2 Pro",
+      "description": "Riverflow V2 Pro is the most powerful variant of Sourceful's Riverflow 2.0 lineup, best for top-tier control and perfect text rendering. The Riverflow 2.0 series represents SOTA performance on image generation.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 10
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "sourceful/riverflow-v2.5-fast",
+      "name": "Sourceful: Riverflow V2.5 Fast",
+      "description": "Riverflow V2.5 Fast is the speed-optimized variant of Sourceful's Riverflow 2.5 lineup, best for production deployments and latency-critical workflows. The Riverflow 2.5 series is a unified text-to-image and image-to-image family across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "sourceful/riverflow-v2.5-pro",
+      "name": "Sourceful: Riverflow V2.5 Pro",
+      "description": "Riverflow V2.5 Pro is the most powerful variant of Sourceful's Riverflow 2.5 lineup, best for top-tier control and quality-sensitive outputs. The Riverflow 2.5 series is a unified text-to-image and image-to-image family across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3",
+            "16:9",
+            "9:16",
+            "21:9",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 10
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "x-ai/grok-imagine-image-2.0",
+      "name": "xAI: Grok Imagine Image 2.0",
+      "description": "Grok Imagine Image 2.0 is an image generation and editing model from xAI. It is suited for creating images from text prompts and editing images from references, with low and high fidelity options across multiple aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:4",
+            "4:3",
+            "9:16",
+            "16:9",
+            "2:3",
+            "3:2",
+            "9:19.5",
+            "19.5:9",
+            "9:20",
+            "20:9",
+            "1:2",
+            "2:1",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality",
+          "allowedValues": [
+            "low",
+            "medium"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "x-ai/grok-imagine-image-quality",
+      "name": "SpaceXAI: Grok Imagine Image Quality",
+      "description": "Grok Imagine Image Quality is SpaceXAI's fast, high-fidelity image generation and editing model. It accepts text prompts and optional reference images, producing photorealistic outputs at 1K or 2K across a range of aspect ratios.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:4",
+            "4:3",
+            "9:16",
+            "16:9",
+            "2:3",
+            "3:2",
+            "9:19.5",
+            "19.5:9",
+            "9:20",
+            "20:9",
+            "1:2",
+            "2:1",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K"
+          ]
+        },
+        {
+          "paramID": "quality",
+          "flagID": "quality"
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "maxValue": 1,
+          "minValue": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "jpeg",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3
+        },
+        {
+          "paramID": "background",
+          "flagID": "background",
+          "allowedValues": [
+            "auto",
+            "transparent",
+            "opaque"
+          ]
+        },
+        {
+          "paramID": "output_compression",
+          "flagID": "output-compression",
+          "maxValue": 100,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "alibaba/happyhorse-1.0",
+      "name": "Alibaba: HappyHorse 1.0",
+      "description": "HappyHorse 1.0 is a video generation model from Alibaba. It generates short videos from a text prompt, a single starting image, or a set of reference images.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "21:9",
+            "9:21"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "alibaba/happyhorse-1.1",
+      "name": "Alibaba: HappyHorse 1.1",
+      "description": "HappyHorse 1.1 is a video generation model from Alibaba. It generates short videos from a text prompt, a single starting image, or a set of reference images.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "21:9",
+            "9:21"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "alibaba/wan-2.6",
+      "name": "Alibaba: Wan 2.6",
+      "description": "Alibaba's most advanced video generation model, supporting over 10 visual creation capabilities in a unified system. Wan 2.6 generates 1080p video at 24fps from text, images, reference videos, or audio.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "5",
+            "10"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "alibaba/wan-2.7",
+      "name": "Alibaba: Wan 2.7",
+      "description": "Wan 2.7 is a video generation model from Alibaba. It supports text-to-video, image-to-video with first and last frame control, and reference-to-video, where multiple reference images guide the style and content.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "alibaba/wan-3.0",
+      "name": "Alibaba: Wan 3.0",
+      "description": "Wan 3.0 is a video generation model from Alibaba for text-to-video, image-to-video, and reference-guided video generation. It produces 480p, 720p, or 1080p video with durations from 2 to 30 seconds.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "maxValue": 30,
+          "minValue": 2
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "modelInfoComment": "Special usage: <[first:]media-file>. To use the image as the opening frame, add the 'first:' prefix (for example, first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "alibaba/wan-3.0-prime",
+      "name": "Alibaba: Wan 3.0 Prime",
+      "description": "Wan 3.0 Prime is a fast-mode variant of Wan 3.0 from Alibaba. It supports text-to-video and first-frame image-to-video generation.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "maxValue": 30,
+          "minValue": 2
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "modelInfoComment": "Special usage: <[first:]media-file>. To use the image as the opening frame, add the 'first:' prefix (for example, first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "bytedance/seedance-1-5-pro",
+      "name": "ByteDance: Seedance 1.5 Pro",
+      "description": "ByteDance's next-generation audio-visual generation model with a 4.5B parameter Dual-Branch Diffusion Transformer architecture. Seedance 1.5 Pro generates video and audio simultaneously in a single unified pass — eliminating the timing issues between audio and video.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:4",
+            "9:16",
+            "9:21",
+            "4:3",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "bytedance/seedance-2.0",
+      "name": "ByteDance: Seedance 2.0",
+      "description": "Seedance 2.0 is a video generation model from ByteDance. It supports text-to-video, image-to-video with first and last frame control, and multimodal reference-to-video. It is particularly strong at preserving character consistency.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:4",
+            "9:16",
+            "4:3",
+            "16:9",
+            "21:9",
+            "9:21"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "bytedance/seedance-2.0-fast",
+      "name": "ByteDance: Seedance 2.0 Fast",
+      "description": "Seedance 2.0 Fast is a video generation model from ByteDance. It supports text-to-video, image-to-video with first and last frame control, and multimodal reference-to-video. It prioritizes generation speed and lower cost.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:4",
+            "9:16",
+            "4:3",
+            "16:9",
+            "21:9",
+            "9:21"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "bytedance/seedance-2.0-mini",
+      "name": "ByteDance: Seedance 2.0 Mini",
+      "description": "Seedance 2.0 Mini is a video generation model from ByteDance. It supports text-to-video, image-to-video with first and last frame control, and multimodal reference-to-video with image, video, and audio inputs.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "3:4",
+            "9:16",
+            "4:3",
+            "16:9",
+            "21:9",
+            "9:21"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "bytedance/seedance-2.5",
+      "name": "ByteDance: Seedance 2.5",
+      "description": "Seedance 2.5 is a video generation model from ByteDance. It is suited for long-form storytelling, multimodal reference-based generation, video editing, and video extension. It supports first-frame and first-and-last-frame control.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15",
+            "16",
+            "17",
+            "18",
+            "19",
+            "20",
+            "21",
+            "22",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "google/veo-3.1",
+      "name": "Google: Veo 3.1",
+      "description": "Google's state-of-the-art video generation model, built for maximum visual fidelity in final production cuts. Veo 3.1 generates high-quality 1080p video from text or image prompts with native synchronized audio —...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "6",
+            "8"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "google/veo-3.1-fast",
+      "name": "Google: Veo 3.1 Fast",
+      "description": "Google's mid-tier video generation model balancing speed and quality. Veo 3.1 Fast generates high-quality video from text or image prompts with native synchronized audio, offering faster turnaround than Veo 3.1...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "6",
+            "8"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "google/veo-3.1-lite",
+      "name": "Google: Veo 3.1 Lite",
+      "description": "Google's most cost-effective video generation model, designed for high-volume applications and rapid iteration. Veo 3.1 Lite generates 720p and 1080p video from text or image prompts with native synchronized audio...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "6",
+            "8"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "kwaivgi/kling-v3.0-pro",
+      "name": "Kling: Video v3.0 Pro",
+      "description": "Kling v3.0 Pro is Kuaishou's premium video generation model, offering higher visual quality than the Standard tier. It supports text-to-video and image-to-video workflows, with first-frame and last-frame control for precise...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "kwaivgi/kling-v3.0-std",
+      "name": "Kling: Video v3.0 Standard",
+      "description": "Kling v3.0 Standard is a video generation model from Kuaishou. It supports text-to-video and image-to-video workflows, with first-frame and last-frame control for guided scene composition. Clips range from 3 to...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "kwaivgi/kling-video-o1",
+      "name": "Kling: Video O1",
+      "description": "Kling Video O1 is a video generation model from Kuaishou. It supports text and image inputs with video output, enabling text-to-video and image-to-video workflows. It is suited for cinematic content...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "5",
+            "10"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "minimax/hailuo-2.3",
+      "name": "MiniMax: Hailuo 2.3",
+      "description": "Hailuo 2.3 is a video generation model from MiniMax. It accepts text prompts and reference images as input and generates video output, supporting both text-to-video and image-to-video workflows. It is...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "6",
+            "10"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        }
+      ]
+    },
+    {
+      "id": "minimax/hailuo-3",
+      "name": "MiniMax: H3",
+      "description": "MiniMax H3 is a lightweight, open-weights video generation model from MiniMax. It is designed for precise multimodal editing and controlled content generation, including instruction-guided edits, text and brand rendering, and...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "21:9",
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "2K"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "openai/sora-2-pro",
+      "name": "OpenAI: Sora 2 Pro",
+      "description": "OpenAI's flagship video generation model, delivering production-quality video with physics-accurate motion, synchronized audio, and world-state persistence across shots. Sora 2 Pro follows intricate multi-shot instructions while maintaining consistent spatial relationships...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "8",
+            "12",
+            "16",
+            "20"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        }
+      ]
+    },
+    {
+      "id": "runway/aleph-2",
+      "name": "Runway: Aleph 2.0",
+      "description": "Runway Aleph 2.0 is an in-context video editing model from Runway. It applies text instructions to existing footage.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "4:3",
+            "3:2",
+            "1:1",
+            "2:3",
+            "3:4",
+            "9:16",
+            "21:9"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "runway/gen-4.5",
+      "name": "Runway: Gen-4.5",
+      "description": "Runway Gen-4.5 is a video generation model from Runway for text-to-video and image-to-video workflows. It is designed for cinematic scene creation with strong motion quality, visual fidelity, and prompt adherence....",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        }
+      ]
+    },
+    {
+      "id": "x-ai/grok-imagine-video",
+      "name": "SpaceXAI: Grok Imagine Video",
+      "description": "Grok Imagine Video is SpaceXAI's fast, text-, image-, and reference-conditioned video generation model. It produces short videos (1–15 seconds, 24 fps) at 480p or 720p across seven aspect ratios -...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        }
+      ]
+    },
+    {
+      "id": "x-ai/grok-imagine-video-1.5",
+      "name": "SpaceXAI: Grok Imagine Video 1.5",
+      "description": "Grok Imagine Video 1.5 is a video generation model from SpaceXAI. It creates videos from text prompts, with an optional starting image to guide the scene. It can direct subject...",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "allowedValues": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13",
+            "14",
+            "15"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "modelInfoComment": "Special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        }
+      ]
+    },
+    {
+      "id": "microsoft/mai-image-2.6",
+      "name": "Microsoft: MAI Image 2.6",
+      "description": "Generate or edit an image using up to five image references.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "3:2",
+            "2:3",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 5
+        }
+      ]
+    },
+    {
+      "id": "microsoft/mai-image-2.6-flash",
+      "name": "Microsoft: MAI Image 2.6 Flash",
+      "description": "Generate or edit an image using up to five image references.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "4:3",
+            "3:4",
+            "16:9",
+            "9:16",
+            "3:2",
+            "2:3",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 1
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 5
+        }
+      ]
+    },
+    {
+      "id": "minimax/hailuo-3-max",
+      "name": "MiniMax: Hailuo 3 Max",
+      "description": "Generate video from text or opening and closing frames.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "21:9",
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "768p",
+            "480p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 5,
+          "maxValue": 15
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 2,
+          "modelInfoComment": "Prefix images with first: or last: to select the opening or closing frame. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation."
+        },
+        {
+          "paramID": "provider.options.minimax.aigc_watermark",
+          "flagID": "watermark"
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux-video-edit",
+      "name": "Black Forest Labs: FLUX Video Edit",
+      "description": "Edit an input video using a text prompt.",
+      "media": "video",
+      "params": [
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1,
+          "modelInfoComment": "Supply one public HTTPS video URL. Local video files are rejected by this route. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation."
+        },
+        {
+          "paramID": "provider.options.black-forest-labs.safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 5
+        }
+      ]
+    },
+    {
+      "id": "black-forest-labs/flux-video-upscale",
+      "name": "Black Forest Labs: FLUX Video Upscale",
+      "description": "Increase an input video resolution.",
+      "media": "video",
+      "params": [
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1,
+          "modelInfoComment": "Supply one public HTTPS video URL. Local video files are rejected by this route. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation."
+        },
+        {
+          "paramID": "upscale_factor",
+          "flagID": "upscale-factor",
+          "minValue": 1.5,
+          "maxValue": 3
+        },
+        {
+          "paramID": "creativity",
+          "flagID": "creativity",
+          "allowedValues": [
+            "0",
+            "1"
+          ]
+        },
+        {
+          "paramID": "provider.options.black-forest-labs.safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 5
+        }
+      ]
+    },
+    {
+      "id": "heygen/avatar-iv",
+      "name": "HeyGen: Avatar IV",
+      "description": "Animate a portrait and speak the prompt using a selected provider voice.",
+      "media": "video",
+      "params": [
+        {
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1,
+          "modelInfoComment": "Supply one portrait image. The prompt is spoken using --voice-id. Audio input is not supported."
+        },
+        {
+          "paramID": "provider.options.heygen.voice_id",
+          "flagID": "voice-id",
+          "required": true,
+          "modelInfoComment": "The example IDs have been verified with this endpoint. Find other voice IDs at https://developers.heygen.com/reference/list-voices."
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16",
+            "1:1"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "provider.options.heygen.motion_prompt",
+          "flagID": "motion-prompt"
+        },
+        {
+          "paramID": "provider.options.heygen.expressiveness",
+          "flagID": "expressiveness"
+        },
+        {
+          "paramID": "provider.options.heygen.fit",
+          "flagID": "image-fit"
+        },
+        {
+          "paramID": "provider.options.heygen.remove_background",
+          "flagID": "remove-background"
+        },
+        {
+          "paramID": "provider.options.heygen.voice_settings.speed",
+          "flagID": "voice-speed",
+          "minValue": 0.5,
+          "maxValue": 1.5
+        },
+        {
+          "paramID": "provider.options.heygen.voice_settings.pitch",
+          "flagID": "voice-pitch",
+          "modelInfoComment": "Pitch adjustment from -50 to +50 semitones."
+        },
+        {
+          "paramID": "provider.options.heygen.voice_settings.volume",
+          "flagID": "voice-volume",
+          "minValue": 0,
+          "maxValue": 1
+        },
+        {
+          "paramID": "provider.options.heygen.voice_settings.locale",
+          "flagID": "voice-locale"
+        }
+      ]
+    }
+  ],
+  "config": {
+    "imageAPI": {
+      "genURL": "https://openrouter.ai/api/v1/images",
+      "inputMediaPayloadType": "json",
+      "inputMediaProvParam": "input_references",
+      "inputMediaStyle": "nested",
+      "fallbackExt": ".png"
+    },
+    "videoAPI": {
+      "asyncJobsURL": "https://openrouter.ai/api/v1/videos",
+      "jobIDField": "id",
+      "progressStatusText": [
+        "pending",
+        "in_progress"
+      ],
+      "completedStatusText": "completed",
+      "failedStatusText": [
+        "failed",
+        "cancelled",
+        "expired"
+      ],
+      "urlPathSeq": [
+        "unsigned_urls",
+        "0"
+      ],
+      "urlContentPath": "/content?index=0",
+      "authDownload": true,
+      "inputMediaPayloadType": "json",
+      "inputMediaProvParam": "input_references",
+      "inputMediaStyle": "nested",
+      "frameMediaProvParam": "frame_images",
+      "frameRoleProvParam": "frame_type",
+      "firstFrameProvValue": "first_frame",
+      "lastFrameProvValue": "last_frame",
+      "fallbackExt": ".mp4",
+      "pollInterval": 30,
+      "pollTimeout": 1800
+    }
+  }
+}

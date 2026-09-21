@@ -1,0 +1,1158 @@
+{
+  "id": "bfl",
+  "displayName": "Black Forest Labs",
+  "apiKeyEnvVar": "BFL_API_KEY",
+  "defaultModel": "flux-2-pro",
+  "docsURL": "https://docs.bfl.ai/",
+  "models": [
+    {
+      "id": "flux-2-pro",
+      "name": "FLUX.2 [pro]",
+      "description": "Generate or edit an image with FLUX.2 [pro].",
+      "media": "image",
+      "aliases": [
+        "flux.2-pro"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        },
+        {
+          "paramID": "disable_pup",
+          "flagID": "disable-prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-2-pro-preview",
+      "name": "FLUX.2 [pro] (preview)",
+      "description": "Generate or edit an image with FLUX.2 [pro] (preview).",
+      "media": "image",
+      "aliases": [
+        "flux.2-pro-preview"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        },
+        {
+          "paramID": "disable_pup",
+          "flagID": "disable-prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-2-max",
+      "name": "FLUX.2 [max]",
+      "description": "Generate or edit an image with FLUX.2 [max].",
+      "media": "image",
+      "aliases": [
+        "flux.2-max"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        },
+        {
+          "paramID": "disable_pup",
+          "flagID": "disable-prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-2-flex",
+      "name": "FLUX.2 [flex]",
+      "description": "Generate or edit an image with FLUX.2 [flex].",
+      "media": "image",
+      "aliases": [
+        "flux.2-flex"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 8
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        },
+        {
+          "paramID": "guidance",
+          "flagID": "guidance-scale",
+          "maxValue": 10.0,
+          "minValue": 1.5
+        },
+        {
+          "paramID": "steps",
+          "flagID": "steps",
+          "maxValue": 50,
+          "minValue": 1
+        }
+      ]
+    },
+    {
+      "id": "flux-2-klein-4b",
+      "name": "FLUX.2 [klein] 4B",
+      "description": "Generate or edit an image with FLUX.2 [klein] 4B.",
+      "media": "image",
+      "aliases": [
+        "flux.2-klein-4b"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "flux-2-klein-9b",
+      "name": "FLUX.2 [klein] 9B",
+      "description": "Generate or edit an image with FLUX.2 [klein] 9B.",
+      "media": "image",
+      "aliases": [
+        "flux.2-klein-9b"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "flux-2-klein-9b-preview",
+      "name": "FLUX.2 [klein] 9B (preview)",
+      "description": "Generate or edit an image with FLUX.2 [klein] 9B (preview).",
+      "media": "image",
+      "aliases": [
+        "flux.2-klein-9b-preview"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "flux-pro-1.1",
+      "name": "FLUX1.1 [pro]",
+      "aliases": [
+        "flux1.1-pro",
+        "flux.1.1-pro",
+        "flux-1.1-pro"
+      ],
+      "description": "Generate an image with FLUX1.1 [pro].",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 256,
+            "maxEdge": 1440,
+            "edgeIncrem": 32,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 6,
+          "minValue": 0
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-dev",
+      "name": "FLUX.1 [dev]",
+      "description": "Generate an image with FLUX.1 [dev].",
+      "media": "image",
+      "aliases": [
+        "flux.1-dev"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "flagID": "resolution"
+        },
+        {
+          "flagID": "size",
+          "customSize": {
+            "minEdge": 256,
+            "maxEdge": 1440,
+            "edgeIncrem": 32,
+            "longEdge": 1024
+          }
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 6,
+          "minValue": 0
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        },
+        {
+          "paramID": "guidance",
+          "flagID": "guidance-scale",
+          "maxValue": 5.0,
+          "minValue": 1.5
+        },
+        {
+          "paramID": "steps",
+          "flagID": "steps",
+          "maxValue": 50,
+          "minValue": 1
+        }
+      ]
+    },
+    {
+      "id": "flux-pro-1.1-ultra",
+      "name": "FLUX1.1 [pro] ultra",
+      "description": "Generate an image with FLUX1.1 [pro] ultra mode.",
+      "media": "image",
+      "aliases": [
+        "flux1.1-pro-ultra",
+        "flux.1.1-pro-ultra",
+        "flux-1.1-pro-ultra"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 6,
+          "minValue": 0
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-pro-1.0-fill",
+      "name": "FLUX.1 Fill [pro]",
+      "description": "Inpaint an image with FLUX.1 Fill [pro] using an input image.",
+      "media": "image",
+      "aliases": [
+        "flux.1-fill-pro",
+        "flux-1-fill-pro"
+      ],
+      "params": [
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "steps",
+          "flagID": "steps",
+          "maxValue": 50,
+          "minValue": 15
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "guidance",
+          "flagID": "guidance-scale",
+          "maxValue": 100,
+          "minValue": 1.5
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 6,
+          "minValue": 0
+        }
+      ]
+    },
+    {
+      "id": "flux-kontext-pro",
+      "name": "FLUX.1 Kontext [pro]",
+      "description": "Edit or create an image with FLUX.1 Kontext [pro].",
+      "media": "image",
+      "aliases": [
+        "flux.1-kontext-pro"
+      ],
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 6,
+          "minValue": 0
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-kontext-max",
+      "name": "FLUX.1 Kontext [max]",
+      "aliases": [
+        "flux.1-kontext-max",
+        "flux-1-kontext-max"
+      ],
+      "description": "Edit or create an image with FLUX.1 Kontext [max].",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio"
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 4
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 6,
+          "minValue": 0
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-tools/outpainting-v1",
+      "promptIgnored": true,
+      "name": "FLUX Outpainting",
+      "aliases":["flux-outpainting-v1","flux-outpainting"],
+      "description": "Extend an input image to a larger canvas.",
+      "media": "image",
+      "params": [
+        {
+          "flagID": "size",
+          "required": true,
+          "customSize": {
+            "minEdge": 64,
+            "maxPx": 4194304
+          }
+        },
+        {
+          "paramID": "input_image",
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        },
+        {
+          "paramID": "disable_pup",
+          "flagID": "disable-prompt-upsampling"
+        }
+      ]
+    },
+    {
+      "id": "flux-tools/deblur-v1",
+      "promptIgnored": true,
+      "name": "FLUX.2 Deblur",
+      "aliases": ["flux-deblur-v1","flux-deblur"],
+      "description": "Remove blur from an image.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "required": true,
+          "maxMultiple": 1
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 5,
+          "minValue": 0
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flux-3-video",
+      "name": "FLUX.3 Video",
+      "aliases": [
+        "flux-3",
+        "flux.3-video",
+        "flux-video"
+      ],
+      "description": "FLUX.3 Video is a video generation model from Black Forest Labs. It supports text-to-video, image-guided generation with opening and closing keyframes, and video continuation workflows.",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "auto",
+            "21:9",
+            "2:1",
+            "16:9",
+            "4:3",
+            "1:1",
+            "3:4",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "hd",
+            "fhd"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 5,
+          "maxValue": 20
+        },
+        {
+          "paramID": "generate_audio",
+          "flagID": "generate-audio"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "maxValue": 4,
+          "minValue": 0
+        },
+        {
+          "paramID": "keyframes",
+          "flagID": "input-media",
+          "maxMultiple": 10,
+          "modelInfoComment": "Flux.3 Video special usage: <[keyframe:]media-file>. For each media input to appear a number of seconds into the clip, use an optional keyframe value in seconds (e.g., Specify '3:image.png' for the image to appear 3 seconds into the clip.) See online docs for details on keyframe usage and supporting models: https://bildomat.com/docs."
+        }
+      ]
+    },
+    {
+      "id": "flux-pro-1.0-expand",
+      "name": "FLUX.1 Expand [pro]",
+      "description": "Expand an image by specifying the number of pixels to add on each side.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "required": true,
+          "modelInfoComment": "Supply the image to expand. Set at least one --expand-* margin. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "top",
+          "flagID": "expand-top",
+          "minValue": 0,
+          "maxValue": 2048
+        },
+        {
+          "paramID": "bottom",
+          "flagID": "expand-bottom",
+          "minValue": 0,
+          "maxValue": 2048
+        },
+        {
+          "paramID": "left",
+          "flagID": "expand-left",
+          "minValue": 0,
+          "maxValue": 2048
+        },
+        {
+          "paramID": "right",
+          "flagID": "expand-right",
+          "minValue": 0,
+          "maxValue": 2048
+        },
+        {
+          "paramID": "steps",
+          "flagID": "steps",
+          "minValue": 15,
+          "maxValue": 50
+        },
+        {
+          "paramID": "guidance",
+          "flagID": "guidance-scale",
+          "minValue": 1.5,
+          "maxValue": 100
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 6
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flux-pro-1.0-fill-finetuned",
+      "name": "FLUX.1 Fill [pro] Finetuned",
+      "description": "Inpaint an image with an existing fine-tune and an encoded mask or image alpha channel.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "required": true,
+          "modelInfoComment": "Supply the image to inpaint. Use its alpha channel or provide --mask as raw base64 image data."
+        },
+        {
+          "paramID": "finetune_id",
+          "flagID": "finetune-id",
+          "required": true,
+          "modelInfoComment": "Use an existing owned or shared fine-tune ID. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "finetune_strength",
+          "flagID": "finetune-strength",
+          "minValue": 0,
+          "maxValue": 2
+        },
+        {
+          "paramID": "mask",
+          "flagID": "mask",
+          "modelInfoComment": "Raw base64 mask image data; URLs and local filenames are not loaded. The mask must match the source dimensions. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "steps",
+          "flagID": "steps",
+          "minValue": 15,
+          "maxValue": 50
+        },
+        {
+          "paramID": "guidance",
+          "flagID": "guidance-scale",
+          "minValue": 1.5,
+          "maxValue": 100
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 6
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flux-pro-1.1-ultra-finetuned",
+      "name": "FLUX1.1 [pro] Ultra Finetuned",
+      "description": "Generate an image with an existing fine-tune and an optional image prompt.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "finetune_id",
+          "flagID": "finetune-id",
+          "required": true,
+          "modelInfoComment": "Use an existing owned or shared fine-tune ID. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "finetune_strength",
+          "flagID": "finetune-strength",
+          "minValue": 0,
+          "maxValue": 2
+        },
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "modelInfoComment": "Ratios from 21:9 through 9:21 are supported."
+        },
+        {
+          "paramID": "image_prompt",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "required": false,
+          "modelInfoComment": "Optional reference image for generation."
+        },
+        {
+          "paramID": "image_prompt_strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1
+        },
+        {
+          "paramID": "prompt_upsampling",
+          "flagID": "prompt-upsampling"
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 6
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flux-tools/erase-v1",
+      "promptIgnored": true,
+      "name": "FLUX Erase",
+      "description": "Remove objects identified by a mask from an input image.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "image",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "required": true,
+          "modelInfoComment": "Supply the image to erase from. Also supply --mask."
+        },
+        {
+          "paramID": "mask",
+          "flagID": "mask",
+          "required": true,
+          "modelInfoComment": "Public HTTP(S) URL or raw base64 mask image data. Local filenames are not loaded. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "dilate_pixels",
+          "flagID": "mask-dilation",
+          "minValue": 0,
+          "maxValue": 25
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 5
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flux-tools/vto-v1",
+      "name": "FLUX Virtual Try-On V1",
+      "description": "Dress the person in an input image using a garment image URL.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "person",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "required": true,
+          "modelInfoComment": "Supply the person image. Supply the clothing image with --garment-url."
+        },
+        {
+          "paramID": "garment",
+          "flagID": "garment-url",
+          "required": true,
+          "modelInfoComment": "Public HTTP(S) URL of the garment image. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 5
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flux-tools/vto-v2",
+      "name": "FLUX Virtual Try-On V2",
+      "description": "Dress the person in an input image using a garment image URL.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "person",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "required": true,
+          "modelInfoComment": "Supply the person image. Supply the clothing image with --garment-url."
+        },
+        {
+          "paramID": "garment",
+          "flagID": "garment-url",
+          "required": true,
+          "modelInfoComment": "Public HTTP(S) URL of the garment image. See https://api.bfl.ai/openapi.json."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 5
+        },
+        {
+          "paramID": "output_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "jpeg",
+            "png",
+            "webp"
+          ]
+        }
+      ]
+    }
+  ],
+  "config": {
+    "adapterAPI": {
+      "apiBase": "https://api.bfl.ai/v1",
+      "pollInterval": 2,
+      "pollTimeout": 1800,
+      "pendingStatusText": [
+        "Pending",
+        "Reasoning",
+        "Generating"
+      ],
+      "readyStatusText": "Ready",
+      "failedStatusText": [
+        "Request Moderated",
+        "Content Moderated",
+        "Error",
+        "Failed",
+        "Task not found"
+      ],
+      "imageFallbackExt": ".jpg",
+      "videoFallbackExt": ".mp4"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{{define "api-key"}}───
+Configure API keys as environment variables or in ~/.bildomat/config.yml.
+
+Env variable    {{.EnvVar}}
+Config key      api-keys.{{.ProviderID}}
+{{- end -}}

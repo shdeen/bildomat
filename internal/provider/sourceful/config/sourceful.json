@@ -1,0 +1,172 @@
+{
+  "id": "sourceful",
+  "displayName": "Sourceful",
+  "apiKeyEnvVar": "SOURCEFUL_API_KEY",
+  "defaultModel": "riverflow-2.5-fast",
+  "docsURL": "https://www.riverflow.ai/app/platform-api/docs",
+  "models": [
+    {
+      "id": "riverflow-2.5-pro",
+      "name": "Riverflow 2.5 Pro",
+      "media": "image",
+      "aliases": [
+        "riverflow",
+        "riverflow-v2.5-pro",
+        "riverflow-pro"
+      ],
+      "params": [
+        {
+          "flagID": "aspect-ratio",
+          "paramID": "output.aspectRatio",
+          "allowedValues": [
+            "auto",
+            "21:9",
+            "16:9",
+            "3:2",
+            "4:3",
+            "5:4",
+            "1:1",
+            "4:5",
+            "3:4",
+            "2:3",
+            "9:16"
+          ]
+        },
+        {
+          "flagID": "resolution",
+          "paramID": "output.resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "flagID": "output-format",
+          "paramID": "output.format",
+          "allowedValues": [
+            "webp",
+            "png",
+            "jpg",
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "background",
+          "paramID": "output.background.mode",
+          "allowedValues": [
+            "original",
+            "transparent"
+          ]
+        },
+        {
+          "flagID": "thinking-level",
+          "paramID": "thinkingLevel",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        },
+        {
+          "flagID": "prompt-upsampling",
+          "paramID": "enhancePrompt"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 10
+        }
+      ]
+    },
+    {
+      "id": "riverflow-2.5-fast",
+      "name": "Riverflow 2.5 Fast",
+      "media": "image",
+      "aliases": [
+        "riverflow-v2.5-fast"
+      ],
+      "params": [
+        {
+          "flagID": "aspect-ratio",
+          "paramID": "output.aspectRatio",
+          "allowedValues": [
+            "auto",
+            "21:9",
+            "16:9",
+            "3:2",
+            "4:3",
+            "5:4",
+            "1:1",
+            "4:5",
+            "3:4",
+            "2:3",
+            "9:16"
+          ]
+        },
+        {
+          "flagID": "resolution",
+          "paramID": "output.resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "flagID": "output-format",
+          "paramID": "output.format",
+          "allowedValues": [
+            "webp",
+            "png",
+            "jpg",
+            "jpeg"
+          ]
+        },
+        {
+          "flagID": "background",
+          "paramID": "output.background.mode",
+          "allowedValues": [
+            "original",
+            "transparent"
+          ]
+        },
+        {
+          "flagID": "thinking-level",
+          "paramID": "thinkingLevel",
+          "allowedValues": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        },
+        {
+          "flagID": "prompt-upsampling",
+          "paramID": "enhancePrompt"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 10
+        }
+      ]
+    }
+  ],
+  "config": {
+    "adapterAPI": {
+      "apiBase": "https://design-api.sourceful.com",
+      "pollInterval": 3,
+      "pollTimeout": 1800,
+      "pendingStatusText": [
+        "pending",
+        "generating"
+      ],
+      "readyStatusText": "completed",
+      "failedStatusText": [
+        "error",
+        "cancelled"
+      ],
+      "imageFallbackExt": ".webp"
+    }
+  }
+}

@@ -1,0 +1,422 @@
+{
+  "id": "google",
+  "displayName": "Google",
+  "apiKeyEnvVar": "GOOGLE_API_KEY",
+  "defaultModel": "gemini-3.1-flash-image",
+  "docsURL": "https://ai.google.dev/gemini-api/docs/image-generation",
+  "models": [
+    {
+      "id": "veo-3.1-generate-preview",
+      "name": "Veo 3.1",
+      "media": "video",
+      "family": "veo",
+      "aliases": [
+        "veo",
+        "veo-3.1"
+      ],
+      "params": [
+        {
+          "paramID": "aspectRatio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p",
+            "4k"
+          ]
+        },
+        {
+          "paramID": "durationSeconds",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "6",
+            "8"
+          ],
+          "ruleDescription": "forced to 8 when reference images are supplied, when extending a video, or when the resolution is 1080p or 4k"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3,
+          "modelInfoComment": "Veo 3.1 special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "personGeneration",
+          "flagID": "person-generation",
+          "modelInfoComment": "Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted."
+        },
+        {
+          "paramID": "negativePrompt",
+          "flagID": "negative-prompt"
+        }
+      ]
+    },
+    {
+      "id": "veo-3.1-fast-generate-preview",
+      "name": "Veo 3.1 fast",
+      "media": "video",
+      "family": "veo",
+      "aliases": [
+        "veo-3.1-fast"
+      ],
+      "params": [
+        {
+          "paramID": "aspectRatio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p",
+            "4k"
+          ]
+        },
+        {
+          "paramID": "durationSeconds",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "6",
+            "8"
+          ],
+          "ruleDescription": "forced to 8 when reference images are supplied, when extending a video, or when the resolution is 1080p or 4k"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 3,
+          "modelInfoComment": "Veo 3.1 family special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "personGeneration",
+          "flagID": "person-generation",
+          "modelInfoComment": "Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted."
+        },
+        {
+          "paramID": "negativePrompt",
+          "flagID": "negative-prompt"
+        }
+      ]
+    },
+    {
+      "id": "veo-3.1-lite-generate-preview",
+      "name": "Veo 3.1 lite",
+      "media": "video",
+      "family": "veo",
+      "aliases": [
+        "veo-3.1-lite"
+      ],
+      "params": [
+        {
+          "paramID": "aspectRatio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "durationSeconds",
+          "flagID": "duration",
+          "allowedValues": [
+            "4",
+            "6",
+            "8"
+          ],
+          "ruleDescription": "forced to 8 when reference images are supplied or the resolution is 1080p"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "modelInfoComment": "Veo 3.1 family special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+        },
+        {
+          "paramID": "seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "personGeneration",
+          "flagID": "person-generation",
+          "modelInfoComment": "Google accepts allow_all for text-to-video and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted."
+        }
+      ]
+    },
+    {
+      "id": "gemini-3-pro-image",
+      "name": "Gemini 3 Pro Image",
+      "media": "image",
+      "aliases": [
+        "gemini-3-pro"
+      ],
+      "params": [
+        {
+          "paramID": "response_format.aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "response_format.image_size",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "generation_config.thinking_level",
+          "flagID": "thinking-level",
+          "allowedValues": [
+            "low",
+            "high"
+          ]
+        },
+        {
+          "flagID": "include-thoughts"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        }
+      ]
+    },
+    {
+      "id": "gemini-3.1-flash-image",
+      "name": "Gemini 3.1 Flash Image",
+      "media": "image",
+      "aliases": [
+        "gemini",
+        "gemini-3.1",
+        "gemini-3.1-flash",
+        "gemini-flash",
+        "nano-banana"
+      ],
+      "params": [
+        {
+          "paramID": "response_format.aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "1:4",
+            "1:8",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:1",
+            "4:3",
+            "4:5",
+            "5:4",
+            "8:1",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "response_format.image_size",
+          "flagID": "resolution",
+          "allowedValues": [
+            "512",
+            "1K",
+            "2K",
+            "4K"
+          ]
+        },
+        {
+          "paramID": "generation_config.thinking_level",
+          "flagID": "thinking-level",
+          "allowedValues": [
+            "minimal",
+            "high"
+          ]
+        },
+        {
+          "flagID": "include-thoughts"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        }
+      ]
+    },
+    {
+      "id": "gemini-3.1-flash-lite-image",
+      "name": "Gemini 3.1 Flash Lite Image",
+      "media": "image",
+      "aliases": [
+        "gemini-3.1-lite",
+        "gemini-3.1-flash-lite"
+      ],
+      "params": [
+        {
+          "paramID": "response_format.aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "paramID": "response_format.image_size",
+          "flagID": "resolution",
+          "allowedValues": [
+            "1K"
+          ]
+        },
+        {
+          "paramID": "generation_config.thinking_level",
+          "flagID": "thinking-level",
+          "allowedValues": [
+            "low",
+            "high"
+          ]
+        },
+        {
+          "flagID": "include-thoughts"
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 14
+        }
+      ]
+    },
+    {
+      "id": "gemini-2.5-flash-image",
+      "name": "Gemini 2.5 Flash Preview Image",
+      "media": "image",
+      "aliases": [
+        "gemini-2.5",
+        "gemini-2.5-flash"
+      ],
+      "params": [
+        {
+          "paramID": "response_format.aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:3",
+            "3:2",
+            "3:4",
+            "4:3",
+            "4:5",
+            "5:4",
+            "9:16",
+            "16:9",
+            "21:9"
+          ]
+        },
+        {
+          "flagID": "input-media"
+        }
+      ]
+    },
+    {
+      "id": "gemini-omni-1.1-flash",
+      "name": "Gemini Omni 1.1 Flash",
+      "media": "video",
+      "params": [
+        {
+          "paramID": "response_format.aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "response_format.resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "360p",
+            "720p",
+            "1080p",
+            "4k"
+          ]
+        },
+        {
+          "flagID": "input-media"
+        }
+      ]
+    },
+    {
+      "id": "gemini-omni-flash-preview",
+      "name": "Gemini Omni Flash Preview",
+      "media": "video",
+      "aliases": [
+        "gemini-omni",
+        "gemini-omni-flash"
+      ],
+      "params": [
+        {
+          "paramID": "response_format.aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "flagID": "input-media"
+        }
+      ]
+    }
+  ],
+  "config": {
+    "adapterAPI": {
+      "apiBase": "https://generativelanguage.googleapis.com/v1beta",
+      "pollInterval": 15,
+      "pollTimeout": 1800,
+      "filePollInterval": 5,
+      "filePollTimeout": 1800,
+      "imageFallbackExt": ".png",
+      "videoFallbackExt": ".mp4"
+    }
+  }
+}

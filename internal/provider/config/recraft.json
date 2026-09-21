@@ -1,0 +1,1089 @@
+{
+  "id": "recraft",
+  "displayName": "Recraft",
+  "apiKeyEnvVar": "RECRAFT_API_KEY",
+  "defaultModel": "recraftv4_1",
+  "docsURL": "https://www.recraft.ai/docs/api-reference",
+  "models": [
+    {
+      "id": "recraftv4_1",
+      "name": "Recraft V4.1",
+      "aliases": [
+        "recraft-v4.1",
+        "recraft-4.1"
+      ],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1536x768",
+            "768x1536",
+            "1280x832",
+            "832x1280",
+            "1216x896",
+            "896x1216",
+            "1152x896",
+            "896x1152",
+            "832x1344",
+            "1280x896",
+            "896x1280",
+            "1344x768",
+            "768x1344"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_utility",
+      "name": "Recraft V4.1 Utility",
+      "media": "image",
+      "aliases": [
+        "recraft-v4.1-utility",
+        "recraft-4.1-utility"
+      ],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1536x768",
+            "768x1536",
+            "1280x832",
+            "832x1280",
+            "1216x896",
+            "896x1216",
+            "1152x896",
+            "896x1152",
+            "832x1344",
+            "1280x896",
+            "896x1280",
+            "1344x768",
+            "768x1344"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4",
+      "name": "Recraft V4",
+      "aliases": [
+        "recraft-v4",
+        "recraft-4"
+      ],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1536x768",
+            "768x1536",
+            "1280x832",
+            "832x1280",
+            "1216x896",
+            "896x1216",
+            "1152x896",
+            "896x1152",
+            "832x1344",
+            "1280x896",
+            "896x1280",
+            "1344x768",
+            "768x1344"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_pro",
+      "name": "Recraft V4.1 Pro",
+      "media": "image",
+      "aliases": [
+        "recraft-v4.1-pro",
+        "recraft-4.1-pro"
+      ],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "2048x2048",
+            "3072x1536",
+            "1536x3072",
+            "2560x1664",
+            "1664x2560",
+            "2432x1792",
+            "1792x2432",
+            "2304x1792",
+            "1792x2304",
+            "1664x2688",
+            "2560x1792",
+            "1792x2560",
+            "2688x1536",
+            "1536x2688"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_utility_pro",
+      "name": "Recraft V4.1 Utility Pro",
+      "aliases":["recraft-v4.1-utility-pro", "recraft-4.1-utility-pro"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "2048x2048",
+            "3072x1536",
+            "1536x3072",
+            "2560x1664",
+            "1664x2560",
+            "2432x1792",
+            "1792x2432",
+            "2304x1792",
+            "1792x2304",
+            "1664x2688",
+            "2560x1792",
+            "1792x2560",
+            "2688x1536",
+            "1536x2688"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_pro",
+      "name": "Recraft V4 Pro",
+      "aliases": ["recraft-v4-pro", "recraft-4-pro"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "2048x2048",
+            "3072x1536",
+            "1536x3072",
+            "2560x1664",
+            "1664x2560",
+            "2432x1792",
+            "1792x2432",
+            "2304x1792",
+            "1792x2304",
+            "1664x2688",
+            "2560x1792",
+            "1792x2560",
+            "2688x1536",
+            "1536x2688"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv3",
+      "name": "Recraft V3",
+      "aliases": ["recraft-v3","recraft-3"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "2048x1024",
+            "1024x2048",
+            "1536x1024",
+            "1024x1536",
+            "1365x1024",
+            "1024x1365",
+            "1280x1024",
+            "1024x1280",
+            "1024x1707",
+            "1434x1024",
+            "1024x1434",
+            "1820x1024",
+            "1024x1820"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "negative_prompt",
+          "flagID": "negative-prompt"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv2",
+      "name": "Recraft V2",
+      "aliases": ["recraft-v2","recraft-2"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "2048x1024",
+            "1024x2048",
+            "1536x1024",
+            "1024x1536",
+            "1365x1024",
+            "1024x1365",
+            "1280x1024",
+            "1024x1280",
+            "1024x1707",
+            "1434x1024",
+            "1024x1434",
+            "1820x1024",
+            "1024x1820"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "negative_prompt",
+          "flagID": "negative-prompt"
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_vector",
+      "name": "Recraft V4.1 Vector",
+      "media": "image",
+      "aliases": [
+        "recraft-v4.1-vector",
+        "recraft-4.1-vector"
+      ],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_pro_vector",
+      "name": "Recraft V4.1 Pro Vector",
+      "media": "image",
+      "aliases": ["recraft-v4.1-pro-vector","recraft-4.1-pro-vector"],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_utility_vector",
+      "name": "Recraft V4.1 Utility Vector",
+      "media": "image",
+      "aliases": ["recraft-v4.1-utility-vector","recraft-4.1-utility-vector"],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_1_utility_pro_vector",
+      "name": "Recraft V4.1 Utility Pro Vector",
+      "media": "image",
+      "aliases": ["recraft-v4.1-utility-pro-vector","recraft-4.1-utility-pro-vector"],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_vector",
+      "name": "Recraft V4 Vector",
+      "media": "image",
+      "aliases": ["recraft-v4-vector","recraft-4-vector"],
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_pro_vector",
+      "name": "Recraft V4 Pro Vector",
+      "aliases": ["recraft-v4-pro-vector","recraft-4-pro-vector"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv3_vector",
+      "name": "Recraft V3 Vector",
+      "aliases":["recraft-v3-vector"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "negative_prompt",
+          "flagID": "negative-prompt"
+        },
+        {
+          "paramID": "strength",
+          "flagID": "strength",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "Image editing requires --strength."
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1
+        }
+      ]
+    },
+    {
+      "id": "recraftv2_vector",
+      "name": "Recraft V2 Vector",
+      "aliases": ["recraft-v2-vector"],
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "negative_prompt",
+          "flagID": "negative-prompt"
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_styles",
+      "name": "Recraft V4 Styles",
+      "description": "Generate images using an existing Recraft style ID.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1536x768",
+            "768x1536",
+            "1280x832",
+            "832x1280",
+            "1216x896",
+            "896x1216",
+            "1152x896",
+            "896x1152",
+            "832x1344",
+            "1280x896",
+            "896x1280",
+            "1344x768",
+            "768x1344"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "style_id",
+          "flagID": "style-id",
+          "required": true,
+          "modelInfoComment": "Use a Recraft style UUID compatible with this model, not a style name. See https://www.recraft.ai/docs/api-reference/styles."
+        },
+        {
+          "paramID": "style_match",
+          "flagID": "style-match",
+          "modelInfoComment": "precise follows the style closely; flexible permits more variation. See https://www.recraft.ai/docs/recraft-models/recraft-v4-styles."
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_styles_pro",
+      "name": "Recraft V4 Styles Pro",
+      "description": "Generate images using an existing Recraft style ID.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "2048x2048",
+            "3072x1536",
+            "1536x3072",
+            "2560x1664",
+            "1664x2560",
+            "2432x1792",
+            "1792x2432",
+            "2304x1792",
+            "1792x2304",
+            "1664x2688",
+            "2560x1792",
+            "1792x2560",
+            "2688x1536",
+            "1536x2688"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "style_id",
+          "flagID": "style-id",
+          "required": true,
+          "modelInfoComment": "Use a Recraft style UUID compatible with this model, not a style name. See https://www.recraft.ai/docs/api-reference/styles."
+        },
+        {
+          "paramID": "style_match",
+          "flagID": "style-match",
+          "modelInfoComment": "precise follows the style closely; flexible permits more variation. See https://www.recraft.ai/docs/recraft-models/recraft-v4-styles."
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_styles_vector",
+      "name": "Recraft V4 Styles Vector",
+      "description": "Generate images using an existing Recraft style ID.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "style_id",
+          "flagID": "style-id",
+          "required": true,
+          "modelInfoComment": "Use a Recraft style UUID compatible with this model, not a style name. See https://www.recraft.ai/docs/api-reference/styles."
+        },
+        {
+          "paramID": "style_match",
+          "flagID": "style-match",
+          "modelInfoComment": "precise follows the style closely; flexible permits more variation. See https://www.recraft.ai/docs/recraft-models/recraft-v4-styles."
+        }
+      ]
+    },
+    {
+      "id": "recraftv4_styles_pro_vector",
+      "name": "Recraft V4 Styles Pro Vector",
+      "description": "Generate images using an existing Recraft style ID.",
+      "media": "image",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "2:1",
+            "1:2",
+            "3:2",
+            "2:3",
+            "4:3",
+            "3:4",
+            "5:4",
+            "4:5",
+            "6:10",
+            "14:10",
+            "10:14",
+            "16:9",
+            "9:16"
+          ]
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "style_id",
+          "flagID": "style-id",
+          "required": true,
+          "modelInfoComment": "Use a Recraft style UUID compatible with this model, not a style name. See https://www.recraft.ai/docs/api-reference/styles."
+        },
+        {
+          "paramID": "style_match",
+          "flagID": "style-match",
+          "modelInfoComment": "precise follows the style closely; flexible permits more variation. See https://www.recraft.ai/docs/recraft-models/recraft-v4-styles."
+        }
+      ]
+    }
+  ],
+  "config": {
+    "imageAPI": {
+      "genURL": "https://external.api.recraft.ai/v1/images/generations",
+      "inputMediaURL": "https://external.api.recraft.ai/v1/images/imageToImage",
+      "inputMediaPayloadType": "json",
+      "inputMediaProvParam": "image_url",
+      "inputMediaStyle": "string",
+      "fallbackExt": ".png",
+      "respImageURL": true
+    }
+  }
+}

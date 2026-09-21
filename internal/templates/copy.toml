@@ -1,0 +1,553 @@
+# The copy catalog: every text the program renders or carries in its error
+# chains, one entry per constant. Each table names the package directory
+# whose generated constants file its entries fill; the entry key is the Go
+# constant name, and each entry's comment names the file and condition that
+# uses it. Page-scale copy stays in the .tmpl files beside this catalog.
+# After editing, regenerate:
+#   cd internal/templates && go generate
+
+# Package cmd/bild
+# The command surface's copy: the flag descriptions, command summaries,
+# and usage forms, plus the change-notice reasons the command layer creates.
+#   - ArgCountForm: usage.go - argCountError: the chain form carrying the command, the classification, and the count received
+#   - FlagDefaultSuffix: bild.go - renderFlagEntry: appended to a flag entry that shows a default
+#   - FlagsBeforeCommandForm: cli.go - the usage error for a flag placed before a command word
+#   - HelpFlagCombinedForm: usage.go - the usage error for a help or version flag beside a positional argument
+#   - HelpFlagHelp: cli.go - the help flag's description
+#   - HelpSummary: bild.go - the help row in the general help's commands section
+#   - HelpUsageForm: bild.go - the help command's usage line
+#   - InfoImageFilterHelp: cli.go - the info command's image filter
+#   - InfoSummary: bild.go - the info row in the general help's commands section
+#   - InfoUsageForm: bild.go - the info command's usage line
+#   - InfoVideoFilterHelp: cli.go - the info command's video filter
+#   - JSONFlagHelp: cli.go - the --json flag's description
+#   - ListImageFilterHelp: cli.go - the list command's image filter
+#   - ListModelsFlagHelp: cli.go - the --models filter's description
+#   - ListProvidersFlagHelp: cli.go - the --providers filter's description
+#   - ListSummary: bild.go - the list row in the general help's commands section
+#   - ListUsageForm: bild.go - the list command's usage line
+#   - ListVideoFilterHelp: cli.go - the list command's video filter
+#   - ModelFlagHelp: bild.go - the --model flag's description
+#   - NoDefaultModel: generate.go - the usage error when no configured provider carries a default model
+#   - OutputPathFlagHelp: bild.go - the --output-path flag's description
+#   - PrintFilenameFlagHelp: bild.go - the --print-filename flag's description
+#   - ReasonContentOwnFormat: outpath.go - a named extension replaced by the content's true format
+#   - ReasonSupersededByOutputPath: outpath.go - the output path outranks a conflicting directory or format
+#   - RootUsageForms: bild.go - the general help's usage block
+#   - SaveResultsFlagHelp: bild.go - the --save-results flag's description
+#   - SearchExcludeFlagHelp: cli.go - the search command's --exclude flag
+#   - SearchImageFilterHelp: cli.go - the search command's image filter
+#   - SearchModelsFlagHelp: cli.go - the search command's --models filter
+#   - SearchProvidersFlagHelp: cli.go - the search command's --providers filter
+#   - SearchRegexFlagHelp: cli.go - the search command's --regex switch
+#   - SearchSummary: bild.go - the search row in the general help's commands section
+#   - SearchTermEmpty: usage.go - the usage error for a search or exclusion term typed as the empty string
+#   - SearchTermMissing: usage.go - the usage error for a search given neither term
+#   - SearchUsageForm: bild.go - the search command's usage line
+#   - SearchVideoFilterHelp: cli.go - the search command's video filter
+#   - SupportedBySentence: bild.go - cliRenderFlagEntry: appended when not every provider supports the flag
+#   - VersionFlagHelp: cli.go - the version flag's description
+#   - VersionReport: bild.go - the standalone version output
+["cmd/bild"]
+AliasesFlagHelp              = "Include model aliases in text and JSON output"
+ArgCountForm                 = "%q, %w, %d received"
+FlagDefaultSuffix            = "(default: %s)"
+FlagsBeforeCommandForm       = "Can't place flags before the %s command."
+HelpFlagCombinedForm         = "Can't combine %s flag with other flags or positional arguments."
+HelpFlagHelp                 = "show help"
+HelpSummary                  = "Show help for bild or for one command"
+HelpUsageForm                = "bild help [command]"
+InfoImageFilterHelp          = "Image models only"
+InfoSummary                  = "Show details for a provider or model"
+InfoUsageForm                = "bild info [OPTIONS] <provider|model>"
+InfoVideoFilterHelp          = "Video models only"
+JSONFlagHelp                 = "Return results in JSON format"
+ListImageFilterHelp          = "List image models only"
+ListModelsFlagHelp           = "List models only, as provider/model keys"
+ListProvidersFlagHelp        = "List providers only"
+ListSummary                  = "List all supported providers and models"
+ListUsageForm                = "bild list [OPTIONS]"
+ListVideoFilterHelp          = "List video models only"
+ModelFlagHelp                = "A model alias, canonical model ID, or fully qualified provider/model specifier"
+NoDefaultModel               = "No default model is specified for your configured provider(s). Please use the `--model` flag to specify a model."
+OutputPathFlagHelp           = "Path for saving generated media. A trailing path separator always names a directory. A filename extension always names a file. Without either, an existing directory path names that directory; otherwise, the final path element names the file."
+PrintFilenameFlagHelp        = "Print only each saved file's path on standard output, one per line"
+ReasonContentOwnFormat       = "the generated content's own format"
+ReasonSupersededByOutputPath = "superseded by Output path %s"
+RootUsageForms               = "bild [OPTIONS] <prompt>\nbild <command> [OPTIONS] [arguments]"
+SaveResultsFlagHelp          = "Write the generation output to the given file instead of standard output"
+SearchExcludeFlagHelp        = "Exclude models matched by the search term"
+SearchImageFilterHelp        = "Search image models only"
+SearchModelsFlagHelp         = "List the matching models only, as provider/model keys"
+SearchProvidersFlagHelp      = "List the providers of the matching models only"
+SearchRegexFlagHelp          = "Search and exclusion terms are regular expression patterns (RE2 syntax) to match against any slash-delimited part of a fully-qualified provider/model key or a model alias"
+SearchSummary                = "Search the supported providers and models"
+SearchTermEmpty              = "Specify a search term, an --exclude term, or both."
+SearchTermMissing            = "Specify a search term, an --exclude term, or both."
+SearchUsageForm              = "bild search [OPTIONS] [term]"
+SearchVideoFilterHelp        = "Search video models only"
+SupportedBySentence          = "Supported by %s."
+VersionFlagHelp              = "print the version"
+VersionReport                = "%s version %s"
+
+# The rendered output: the change-notice forms, the failure messages, the
+# interactive prompts, the run output, and the list and info page fragments.
+#   - APIKeyNotSet: errs.go: the statement's floor when the chain names no variable
+#   - AliasMatchExample: info.go: the clause naming an alias a keyword example matches
+#   - AliasWordPlural: list.go aliasWord: the label before several aliases
+#   - AliasWordSingular: list.go aliasWord: the label before one alias
+#   - AllowedRange: constraints.go: a parameter with both bounds
+#   - AllowedValues: constraints.go: a parameter's declared value set
+#   - AmbiguityCandidate: errs.go PrintAmbiguity: one candidate key under the heading
+#   - AmbiguityHeading: errs.go PrintAmbiguity; the candidate keys list under it, one per line
+#   - CardPromptIgnored: info.go modelCardData: the model card's prompt line value for a model that ignores the prompt
+#   - CatalogCountForm: info.go catalogMediaCounts: a medium's model count above one
+#   - CatalogCountFormOne: info.go catalogMediaCounts: a medium's model count of one
+#   - CatalogSeparator: info.go catalogMediaCounts: between the per-medium counts
+#   - ConfigFileUnreadable: errs.go configWarningMessage: a user config file that cannot be read or decoded
+#   - ConfigLocationUnresolved: errs.go configWarningMessage: a failed home lookup, so no config file was read
+#   - ConfigUnknownProvider: errs.go configWarningMessage: a non-empty api-keys entry naming an unknown provider
+#   - ConfigUnknownSetting: errs.go configWarningMessage: a top-level key the config schema does not declare
+#   - CounterHoursForm: progress.go ElapsedText: the counter from one hour on
+#   - CounterMinutesForm: progress.go ElapsedText: the counter from one minute on
+#   - CounterSecondsForm: progress.go ElapsedText: the truncated-decimal seconds
+#   - CredentialMissing: errs.go ErrorMessage: a missing API key with no provider resolved yet
+#   - CredentialMissingProvider: errs.go ErrorMessage: a missing API key with the provider resolved
+#   - EdgeIncrements: constraints.go sizeBoundsNotice
+#   - EdgeRange: constraints.go sizeBoundsNotice
+#   - ErrorPrefix: errs.go errorPrefix: the word opening every error line
+#   - ExamplesSentence: bild.go paramFlagUsage and info.go entryDetails: a flag's example values
+#   - FileSizeBytesForm: progress.go FileSizeText: a size under a thousand bytes
+#   - FileSizeGBForm: progress.go FileSizeText: a size in gigabytes
+#   - FileSizeKBForm: progress.go FileSizeText: a size in kilobytes
+#   - FileSizeMBForm: progress.go FileSizeText: a size in megabytes
+#   - FlagAdjusted: param.go formatNotice: snapped, derived, and conformed changes
+#   - FlagAdjustedReason: param.go formatNotice: forced changes
+#   - FlagBelowLimit: param.go formatNotice: raised values
+#   - FlagChangedGuard: param.go formatNotice: repository-defect guard for an unrecognized classification
+#   - FlagExceedsLimit: param.go formatNotice: capped values
+#   - FlagIgnored: param.go formatNotice: ignored values
+#   - FlagNotAllowed: param.go formatNotice: rejected values
+#   - FlagNotSupported: param.go formatNotice: dropped values
+#   - FrameTimeInvalidGeneric: errs.go: the floor when the chain carries no frame detail
+#   - FrontMatterModelForm: sidecar.go RenderSidecar: the model line of the front matter
+#   - FrontMatterParamForm: sidecar.go RenderSidecar: a parameter line of the front matter
+#   - FrontMatterPromptForm: sidecar.go RenderSidecar: the prompt line of the front matter
+#   - FrontMatterTimestampForm: sidecar.go RenderSidecar: the timestamp line of the front matter
+#   - GenerationCanceled: errs.go ErrorMessage: a run interrupted through Ctrl-C; renders unprefixed
+#   - GenerationCompleted: progress.go: the terminal completion report
+#   - GenerationStatus: progress.go: the animated terminal status line, naming the medium of the run
+#   - GroupIntro: info.go groupLines: the line opening a group of models declaring a flag alike
+#   - GroupIntroRemainder: info.go groupLines: the line opening the largest group, named by exclusion
+#   - HelpTipsHeading: helptips.go HelpTips: the heading that opens the tips section of the general help page
+#   - InputMediaFormat: errs.go ErrorMessage: an input file or URL of an unsupported type
+#   - InputMediaInvalid: errs.go ErrorMessage: the same failure when the chain names no source
+#   - InputMediaNotFound: errs.go ErrorMessage: an input path that does not exist
+#   - InputMediaSourceInvalid: errs.go ErrorMessage: an unreadable, empty, or oversized input, naming its source
+#   - KeywordMatchExample: info.go: the sentence naming the model a keyword example matches
+#   - ListLastAnd: info.go joinNames: the last two items of a list of three or more joined with and
+#   - ListLastOr: info.go joinNames: the last two items of a list of three or more joined with or
+#   - ListPairAnd: info.go joinNames: a list of two items joined with and
+#   - ListPairOr: info.go joinNames: a list of two items joined with or
+#   - ListSeparator: info.go joinNames: the separator between the items of a list before the last
+#   - LongEdge: constraints.go sizeBoundsNotice
+#   - MaximumEdge: constraints.go sizeBoundsNotice
+#   - MaximumPixels: constraints.go sizeBoundsNotice
+#   - MaximumValue: constraints.go: a parameter with only an upper bound
+#   - MediaLabelImages: constraints.go: the image medium's word on the details pages
+#   - MediaLabelVideo: constraints.go: the video medium's word on the details pages
+#   - MinimumEdge: constraints.go sizeBoundsNotice
+#   - MinimumPixels: constraints.go sizeBoundsNotice
+#   - MinimumValue: constraints.go: a parameter with only a lower bound
+#   - ModelAliasListing: list.go: a model row in the nested listing
+#   - ModelAmbiguous: errs.go ErrorMessage: a specifier matching more than one model
+#   - ModelHeader: output.go PrintRunDetails: the run header's model name
+#   - ModelUnknown: errs.go ErrorMessage: a specifier matching no model
+#   - ModelUnknownGeneric: errs.go ErrorMessage: the same failure when the chain names no specifier
+#   - NoAdditionalLimits: info.go groupLines: a model group with no declared parameter limits
+#   - NotUsedBy: info.go scopeNote: the models of the medium not declaring a flag most declare
+#   - OnlyForModels: info.go scopeNote: the models declaring a flag most models do not
+#   - OutPathDisplayName: param.go: the output-path flag's name in a change notice
+#   - OutputCleanupFailed: errs.go - an owned temporary file could not be removed
+#   - OutputWriteFailed: errs.go ErrorMessage: a failed artifact or results write
+#   - PixelRange: constraints.go sizeBoundsNotice
+#   - ProviderConfigBroken: errs.go ErrorMessage: an embedded provider config failing validation
+#   - ProviderConfigBrokenDetail: errs.go ErrorMessage: the same failure carrying its specific fault
+#   - ProviderFallbackAsName: output.go providerName: the header's stand-in for an empty provider name
+#   - ProviderFallbackInSentence: output.go providerDisplay: the mid-sentence stand-in for an empty provider name
+#   - ProviderHeader: output.go PrintRunDetails: the run header's provider name, the label alone
+#   - ProviderSelectModels: list.go: a provider with partial support in a flag's support note
+#   - ProviderServerError: errs.go ErrorMessage: any error a provider's server returns, 4xx and 5xx alike
+#   - RatioBetween: constraints.go sizeBoundsNotice
+#   - RepeatMaximum: constraints.go: a repeatable parameter's count limit
+#   - Reprompt: errs.go PrintReprompt
+#   - RequiredLabel: info.go requirementSentence: the required classification opening an info entry; an optional parameter carries none
+#   - ResponseUnusable: errs.go ErrorMessage: a provider response with no extractable server message
+#   - RuleDescription: constraints.go: a parameter's configured rule description
+#   - SavedReport: disk.go: the plain saved-file report
+#   - SavedReportStyled: progress.go: the terminal saved-file report
+#   - SearchTooManyResults: errs.go ErrorMessage: a list search whose results exceed the display limit
+#   - SingleWordConfirmation: errs.go PrintSingleWordPromptConfirmation
+#   - SizeRequirements: constraints.go: the frame for a free-form size's constraint list
+#   - TransportTimeout: errs.go ErrorMessage: a poll that outlived its deadline
+#   - TransportUnreachable: errs.go ErrorMessage: a request that never reached the provider
+#   - WarningPrefix: errs.go PrintUserConfigWarning: the word opening every warning line
+#   - WorkingDirFailed: errs.go ErrorMessage: the working directory could not be determined
+["internal/output"]
+APIKeyNotSet               = "Your API key is not set"
+AliasMatchExample          = "and '%s' matches the alias %s"
+AliasWordPlural            = "aliases"
+AliasWordSingular          = "alias"
+AllowedRange               = "Allowed range: %s to %s"
+AllowedValues              = "Allowed values: %s"
+AmbiguityCandidate         = "%s%s/%s%s"
+AmbiguityHeading           = "%[1]sThe model specifier %[3]s%[2]s%[4]q%[3]s%[1]s matches more than one model:%[3]s"
+CardPromptIgnored          = "ignored (this model does not read a prompt)"
+CatalogCountForm           = "%d %s models"
+CatalogCountFormOne        = "%d %s model"
+CatalogSeparator           = "·"
+ConfigFileUnreadable       = "The config file %s could not be read and was ignored."
+ConfigLocationUnresolved   = "The config file location could not be resolved, and no config file was read."
+ConfigUnknownProvider      = "The config file %s names an unknown provider %q under api-keys, which was ignored."
+ConfigUnknownSetting       = "The config file %s names an unknown setting %q, which was ignored."
+CounterHoursForm           = "%dh %dm %s"
+CounterMinutesForm         = "%dm %s"
+CounterSecondsForm         = "%d.%ds"
+CredentialMissing          = "%s. Set your API key and try again."
+CredentialMissingProvider  = "%s. Set your %s API key and try again."
+EdgeIncrements             = "%d-px increments"
+EdgeRange                  = "edge: %d-%d"
+ErrorPrefix                = "Error"
+ExamplesSentence           = "Examples: %s."
+FileSizeBytesForm          = "%d B"
+FileSizeGBForm             = "%.1f GB"
+FileSizeKBForm             = "%.1f KB"
+FileSizeMBForm             = "%.1f MB"
+FlagAdjusted               = "%s adjusted or converted to %s."
+FlagAdjustedReason         = "%s adjusted to %s (%s)."
+FlagBelowLimit             = "Warning: %s '%s' is below %s; adjusted to %s."
+FlagChangedGuard           = "Warning: %s changed (%s: %s to %s)."
+FlagExceedsLimit           = "Warning: %s '%s' exceeds %s; adjusted to %s."
+FlagIgnored                = "Warning: %s ignored, %s."
+FlagNotAllowed             = "Warning: %s '%s' is not an allowed value and will be omitted."
+FlagNotSupported           = "Warning: %s '%s' is not supported and will be omitted."
+FrameTimeInvalidGeneric    = "The input media has invalid keyframe timing."
+FrontMatterModelForm       = "model: %q"
+FrontMatterParamForm       = "%s: %q"
+FrontMatterPromptForm      = "prompt: %q"
+FrontMatterTimestampForm   = "timestamp: %q"
+GenerationCanceled         = "Generation canceled."
+GenerationCompleted        = "✓ Completed (%s)"
+GenerationStatus           = "%s Generating %s %s%s%s"
+GroupIntro                 = "For %s"
+GroupIntroRemainder        = "For all models except those below"
+HelpTipsHeading            = "TIPS:"
+InputMediaFormat           = "The supplied input media %q is not in a supported format. Please use a PNG, JPEG, WebP, or MP4 source."
+InputMediaInvalid          = "The input media you provided is not valid. Please supply a readable PNG, JPEG, WebP, or MP4 file or an HTTP(S) URL."
+InputMediaNotFound         = "The input media was not found at %q. Check the path and try again."
+InputMediaSourceInvalid    = "The input media %q is not valid. Please supply a readable PNG, JPEG, WebP, or MP4 file or an HTTP(S) URL."
+KeywordMatchExample        = "For example, '%s' matches %s"
+ListLastAnd                = "%s, and %s"
+ListLastOr                 = "%s, or %s"
+ListPairAnd                = "%s and %s"
+ListPairOr                 = "%s or %s"
+ListSeparator              = ","
+LongEdge                   = "long edge of %d when the size is derived from an aspect ratio"
+MaximumEdge                = "maximum edge: %d"
+MaximumPixels              = "maximum total pixels (width x height): %d"
+MaximumValue               = "Maximum: %s"
+MediaLabelImages           = "Images"
+MediaLabelVideo            = "Video"
+MinimumEdge                = "minimum edge: %d"
+MinimumPixels              = "minimum total pixels (width x height): %d"
+MinimumValue               = "Minimum: %s"
+ModelAliasListing          = "%s (%s: %s)"
+ModelAmbiguous             = "The model you entered matches more than one model. Use a full provider/model specifier."
+ModelHeader                = "Model: %s"
+ModelUnknown               = "Model %q is not supported. See 'bild list' for the supported models."
+ModelUnknownGeneric        = "The model you specified is not supported. See 'bild list' for the supported models."
+NoAdditionalLimits         = "No additional limits."
+NotUsedBy                  = "Not used by %s."
+OnlyForModels              = "This option is available only for models %s."
+OutPathDisplayName         = "Output path"
+OutputCleanupFailed        = "We could not remove the temporary file %q."
+OutputWriteFailed          = "We could not write the output to %q. Check the directory's permissions and free space."
+PixelRange                 = "total pixels (width x height): %d-%d"
+ProviderConfigBroken       = "The %s provider configuration is malformed."
+ProviderConfigBrokenDetail = "The %s provider configuration is malformed. (%s)"
+ProviderFallbackAsName     = "unknown provider"
+ProviderFallbackInSentence = "the provider"
+ProviderHeader             = "Provider: %s"
+ProviderSelectModels       = "%s (select models)"
+ProviderServerError        = "%s, %s generation failed. Server error: %s"
+RatioBetween               = "aspect ratio between 1:%[1]s and %[1]s:1"
+RepeatMaximum              = "Repeat maximum: %s"
+Reprompt                   = "%[1]sEnter a full provider/model specifier, or leave blank to abort:%[2]s"
+RequiredLabel              = "Required"
+ResponseUnusable           = "The request to %[1]s failed. Ensure your prompt and other inputs are valid. You may also check the %[1]s status page for any known performance issues at present."
+RuleDescription            = "Rule: %s"
+SavedReport                = "Saved: %s (%d bytes)"
+SavedReportStyled          = "Saved: %[1]s%[2]s%[3]s %[4]s(%[5]s)%[3]s"
+SearchTooManyResults       = "Your search returned too many results to be displayed. Please narrow your search query and try again. You may also combine search terms with -p, -m, -i, and -v filters."
+SingleWordConfirmation     = "%[1]sYour command has %[3]s%[2]s%[4]q%[3]s%[1]s as a one-word prompt, which isn't advised and may have been a mistake. Submit anyway? (Y/n)%[3]s"
+SizeRequirements           = "<W>x<H> - Requirements: %s"
+TransportTimeout           = "The request to %[1]s timed out. Check the %[1]s status page for performance issues or try again later."
+PollIdentity               = "Model: %s; operation: %s."
+TransportUnreachable       = "We could not reach %s to process your request. Check your network connection and try again."
+WarningPrefix              = "Warning"
+WorkingDirFailed           = "We could not determine the working directory. Rerun bild from an accessible directory."
+
+# The descriptor-class provider layer's diagnostics.
+["internal/provider"]
+#   - APISectionMissing: provider.go - a config lacking the API section the resolved medium needs
+APISectionMissing = "%s.json: no %s for the resolved medium"
+#   - DownloadURLMissing: videoapi.go - a finished job whose response names no artifact URL
+DownloadURLMissing = "%s: %s: no download url in the completed poll"
+#   - FieldContextForm: payload.go - the failed multipart field's context
+FieldContextForm = "field %s"
+#   - FrameFieldUnavailable: payload.go - a frame request in a request body with no frame field
+FrameFieldUnavailable = "a frame prefix reached a request with no frame field"
+#   - FrameMediaUndescribed: videoapi.go - a frame request against a configuration without frame fields
+FrameMediaUndescribed = "provider has no frame-media request description"
+#   - FrameRoleDuplicate: videoapi.go - two inputs mapped onto one provider frame role
+FrameRoleDuplicate = "duplicate frame role %s"
+#   - FrameTimeUnresolved: videoapi.go - a numeric frame time that survived to request assembly
+FrameTimeUnresolved = "unresolved frame time on %s"
+#   - JSONMediaPartsUnsupported: payload.go - JSON submission received multipart-only media settings
+JSONMediaPartsUnsupported = "JSON requests cannot contain multipart file parts"
+#   - JobDecodeErrorForm: poll.go - a poll body that does not decode, naming the job
+JobDecodeErrorForm = "jobID %q: %w"
+#   - MissingResponseValue: poll.go - an absent status or diagnostic value
+MissingResponseValue = "missing"
+#   - RespEntryForm: payload.go - the failed response entry's context
+RespEntryForm = "%s: entry %d"
+#   - SingleMediaNoVideo: payload.go - a video source in a single-or-array media field
+SingleMediaNoVideo = "single-or-array request does not accept video"
+#   - StartContextForm: videoapi.go - a job-start failure's context
+StartContextForm = "%s start"
+#   - UnknownStatusForm: poll.go - an unrecognized status: the job, the observed value, and a body excerpt
+UnknownStatusForm = "%s (%s): %s"
+
+# The BFL adapter's diagnostics.
+#   - ImageGotTimed: submit.go: a timed source in an image request
+#   - ImageGotVideo: submit.go: a video source in an image request
+#   - KeyframePositionConflict: submit.go: a keyframe time that contradicts its position
+#   - KeyframeTimeForm: submit.go: a keyframe whose time falls outside its valid order or range
+#   - KeyframesNeedDuration: submit.go: timed keyframes without a duration to anchor them
+#   - PollURLMissing: submit.go: a submit response without its polling endpoint
+#   - SingleInputOnly: submit.go: several sources for a single-input field
+#   - VideoContinuationTimed: submit.go: a timed video-continuation source
+#   - VideoMediaMixed: submit.go: image and video sources in one video request
+#   - VideoOneContinuation: submit.go: more than one continuation video
+["internal/provider/bfl"]
+ImageGotTimed            = "BFL image request received timed input"
+ImageGotVideo            = "BFL image request received video input"
+KeyframePositionConflict = "keyframe %d time %g conflicts with position %g"
+KeyframeTimeForm         = "keyframe # %d, at %g seconds, is out of order or range"
+KeyframesNeedDuration    = "timed BFL keyframes require duration"
+PollURLMissing           = "%s: no polling_url in the submit response"
+SingleInputOnly          = "%s accepts one input"
+VideoContinuationTimed   = "BFL video continuation cannot be timed"
+VideoMediaMixed          = "BFL video request mixes image and video inputs"
+VideoOneContinuation     = "BFL video continuation accepts one video"
+
+# The Sourceful adapter's missing-response diagnostics.
+#   - JobIDMissing: generate.go: a creation response without its job identifier
+#   - JobStatusUnknownForm: generate.go classifyJobResponse: an unrecognized job status, naming the job
+#   - ResultURLMissing: generate.go: a completed response without its output URL
+["internal/provider/sourceful"]
+JobIDMissing         = "%s: no jobId in the creation response"
+JobStatusUnknownForm = "%s: status %q"
+ResultURLMissing     = "%s: no output url in the completed job"
+
+# The Kling adapter's missing-response and rejected-input diagnostics.
+#   - EnvelopeCodeForm: response.go: a nonzero envelope code carrying no message
+#   - ImageTaskResponseContext: imagepoll.go: names the image task response in a failed-decode context
+#   - TaskIDMissing: a creation response without its task identifier
+#   - ResultURLMissing: a completed task without its output URL
+#   - VideoInputRejected: a video input that no selected Kling route can carry
+#   - VideoTaskResponseContext: videopoll.go: names the video task response in a failed-decode context
+["internal/provider/kling"]
+EnvelopeCodeForm         = "%s: code %d"
+ImageTaskResponseContext = "image task response"
+TaskIDMissing            = "%s: no task id in the creation response"
+ResultURLMissing         = "%s: no result url in the completed task"
+VideoInputRejected       = "Kling models take no video input: %s"
+VideoTaskResponseContext = "video task response"
+
+# The Google adapter's diagnostics and notice reasons.
+#   - AdapterAPIMissing: google.go: the embedded config lacks its adapter settings
+#   - ErrorCodeForm: interactions.go, veo.go: a provider error with its code and message
+#   - InteractionMediaMissing: interactions.go: a completed interaction with no image or video block
+#   - ReasonReferenceImages: veo.go: the trigger that forces the Veo duration to 8
+#   - VeoClosingNeedsOpening: google.go: a closing frame image without an opening one
+#   - VeoMediaMixed: google.go: image and video sources in one Veo request
+#   - VeoOneVideo: google.go: more than one input video
+#   - VeoOperationNameMissing: veo.go: a start response without its operation name
+#   - VeoSampleBytesInvalid: veo.go: a sample whose base64 video data does not decode
+#   - VeoSampleEmpty: veo.go: a sample carrying neither video data nor a URI
+#   - VeoVideoMissing: veo.go: a completed operation with no video
+["internal/provider/google"]
+AdapterAPIMissing       = "google.json: no AdapterAPI section"
+ErrorCodeForm           = "%s: code %v: %s"
+InteractionMediaMissing = "%s: no %s in the interaction"
+ReasonReferenceImages   = "reference images"
+VeoClosingNeedsOpening  = "Veo requires an opening frame image with a closing frame image"
+VeoMediaMixed           = "Veo request mixes image and video inputs"
+VeoOneVideo             = "Veo accepts one input video"
+VeoOperationNameMissing = "%s: no operation name in the start response"
+VeoSampleBytesInvalid   = "%s: sample %d video bytes"
+VeoSampleEmpty          = "%s: sample %d carries no video data or uri"
+VeoVideoMissing         = "%s: no video in the completed operation"
+
+# The parameter flag record generator's diagnostics. The generator imports
+# nothing from this module, so its constants are generated into its own package.
+#   - FlagAliasDuplicate: flagsetup.go - one alias declared by two flags
+#   - FlagDataTypeInvalid: flagsetup.go - a data type outside the closed vocabulary
+#   - FlagIDDuplicate: flagsetup.go - one flag ID declared twice
+["tools/flagsetup"]
+FlagAliasDuplicate  = "flag %s: duplicate alias %q"
+FlagDataTypeInvalid = "flag %s: data type %q not one of string|number|integer|boolean"
+FlagIDDuplicate     = "duplicate flag ID %q"
+
+# Parameter adjustment notices.
+#   - BoundMaxForm: paramchange.go - a value capped at its declared maximum
+#   - BoundMinForm: paramchange.go - a value raised to its declared minimum
+#   - ReasonModelLimits: paramchange.go - dimensions adjusted to the model limits
+#   - ReasonSupersededBySize: paramchange.go - an explicit size supersedes ratio or resolution
+["internal/params"]
+
+#   - BoundsAndValuesConflict: provconfig.go - a parameter declaring size bounds and a value set
+BoundsAndValuesConflict = "size bounds and allowed values both declared"
+#   - NegativeMaxMultipleForm: param.go - a negative maxMultiple, naming the declared value
+NegativeMaxMultipleForm = "negative maxMultiple %d"
+#   - RangeBoundNegative: provconfig.go - a negative range bound
+RangeBoundNegative = "negative range bound"
+#   - RangeInverted: provconfig.go - a minimum above its maximum
+RangeInverted = "minValue %s exceeds maxValue %s"
+#   - ValuesAndRangeConflict: provconfig.go - a parameter declaring a value set and a range
+ValuesAndRangeConflict = "allowed values and a range both declared"
+
+BoundMaxForm                 = "max %s"
+BoundMinForm                 = "min %s"
+ReasonModelLimits            = "%s limits"
+ReasonSupersededBySize       = "superseded by Size %s"
+
+# Media input and image transformation diagnostics.
+#   - FrameTimeInvalid: input.go - a negative or non-finite frame prefix
+#   - ImageIndexForm: conform.go - the image position on a decoding failure
+#   - IndexForm: conform.go - the input position on an incompatible source
+["internal/media"]
+FrameTimeInvalid = "The input media %s has invalid keyframe timing."
+ImageIndexForm = "image %d"
+IndexForm = "media %d"
+
+# Provisional binary retention markers approved for persisted generation records.
+#   - BinarySaved: binary.go - encoded bytes saved or matched to a completed file
+#   - BinaryUnavailable: binary.go - decoding or saving encoded bytes failed
+["internal/metadata"]
+BinarySaved = "[Bildomat: base64 data redacted for length; saved locally to %s]"
+BinaryUnavailable = "[Bildomat: base64 data unavailable; see persistence-errors]"
+
+# Generated-media diagnostics.
+#   - ResponseEmptyInline: media.go - an inline artifact with zero bytes
+["internal/artifact"]
+ResponseEmptyInline = "empty inline result"
+
+# HTTP response and polling diagnostics.
+#   - ByteLimitForm: inputmedia.go - the oversized-read context naming the byte limit
+#   - StatusExcerptForm: download.go - the endpoint and response status with a body excerpt
+#   - TimeoutAfterForm: poll.go - the elapsed poll budget
+["internal/httpapi"]
+ByteLimitForm = "limit %d bytes"
+StatusExcerptForm = "%s: status %d: %s"
+TimeoutAfterForm = "after %s"
+
+# Credential and provider-response context.
+#   - APIKeyMissingForm: credential.go - the missing key's environment variable and configuration setting
+#   - StatusContextForm: provider decoders - the endpoint or label and response status
+["internal/errs"]
+APIKeyMissingForm = "%s %s (config key: api-keys.%s in ~/.bildomat/config.yml)"
+StatusContextForm = "%s: status %v"
+
+# internal/catalog owns these diagnostics and preparation notices.
+["internal/catalog"]
+#   - AliasContextForm: catalog.go - the duplicate-alias fault context: the provider-model pair and the alias
+AliasContextForm = "%s alias %s"
+#   - AllowedValueBelowCount: provconfig.go - a declared member of num-images under one
+AllowedValueBelowCount = "model %s, flag %s: allowed value %q below the minimum count of one"
+#   - AllowedValueFault: provconfig.go - a declared value that does not parse as the flag's type
+AllowedValueFault = "model %s, flag %s: allowed value %s"
+#   - ConfigMissing: provconfig.go - a provider document without its config section
+ConfigMissing = "no config section holding the request settings"
+#   - ConfigProviderSourceMismatch: catalog.go - a configuration naming a different provider than its source
+ConfigProviderSourceMismatch = "%s: declares provider %q under the %q source"
+#   - FrameMediaIncomplete: provconfig.go - a video API declaring only part of its frame fields
+FrameMediaIncomplete = "VideoAPI: incomplete frame-media description"
+#   - ImageAPIMissing: provconfig.go - image models declared without an image API
+ImageAPIMissing = "no ImageAPI for the declared image medium"
+#   - ImageFallbackExtMissing: provconfig.go - image models declared without a fallback extension
+ImageFallbackExtMissing = "AdapterAPI: no ImageFallbackExt for the declared image medium"
+#   - InputMediaEncodingConflict: provconfig.go - encoding and layout disagree
+InputMediaEncodingConflict = "%s: input media encoding %q cannot use style %q"
+#   - InputMediaParamMissing: provconfig.go - a declared layout lacks required field names
+InputMediaParamMissing = "%s: required input media field name is missing"
+#   - InputMediaPayloadTypeInvalid: provconfig.go - a request encoding outside the closed vocabulary
+InputMediaPayloadTypeInvalid = "%s: InputMediaPayloadType %q invalid (want json|form)"
+#   - InputMediaStyleInvalid: provconfig.go - a media layout outside the closed vocabulary
+InputMediaStyleInvalid = "%s: InputMediaStyle %q invalid (want parts|nested|single-or-array|string)"
+#   - ModelFlagDuplicate: provconfig.go - one flag configured twice on a model
+ModelFlagDuplicate = "model %s: duplicate params entry for flag %s"
+#   - ModelFlagFault: provconfig.go - frames one of the four constraint faults
+ModelFlagFault = "model %s, flag %s: %s"
+#   - ModelIDMissing: provconfig.go - a model has no selectable identifier
+ModelIDMissing = "model ID must not be empty"
+#   - ModelMediaInvalid: provconfig.go - a media value outside image|video
+ModelMediaInvalid = "model %s: invalid Media %q (want image|video)"
+#   - ModelNameMissing: provconfig.go - a model without a published name
+ModelNameMissing = "model %s: no name declared"
+#   - ParamGuidanceMissing: provconfig.go - a parameter declaring no values, range, or size bounds under a flag record with no text hint or example values
+ParamGuidanceMissing = "model %s, flag %s: no allowed values, range, or size bounds declared, and the flag record has no text hint or example values"
+#   - ParamsFlagUnknown: provconfig.go - a configured flag that no enumeration record declares
+ParamsFlagUnknown = "model %s: params entry flagID %q names no enumerated flag"
+#   - PollBudgetNotPositive: poll.go - a video API poll budget of zero or less
+PollBudgetNotPositive = "VideoAPI: PollTimeout %d not positive"
+#   - PollIntervalInvalid: poll.go - an adapter poll interval of zero or less
+PollIntervalInvalid = "%s: interval %d not positive"
+#   - PollIntervalNotPositive: poll.go - a video API poll interval of zero or less
+PollIntervalNotPositive = "VideoAPI: PollInterval %d not positive"
+#   - PollTimeoutInvalid: poll.go - an adapter poll budget of zero or less
+PollTimeoutInvalid = "%s: timeout %d not positive"
+#   - ProviderDefaultModelUnknown: provconfig.go - a defaultModel naming no model of its provider
+ProviderDefaultModelUnknown = "provider %s: defaultModel %q names no model of the provider"
+#   - RequestPathConflict: requestpath.go - separately configured fields overwrite one another
+RequestPathConflict = "model %s: request paths %q and %q conflict"
+#   - RequestPathInvalid: requestpath.go - a configurable field path contains an empty segment
+RequestPathInvalid = "model %s: request path %q contains an empty segment"
+#   - StringParamsUnknownFlag: provconfig.go - a StringParams entry naming no enumerated flag
+StringParamsUnknownFlag = "StringParams: unknown flagID %q"
+#   - VideoAPIMissing: provconfig.go - video models declared without a video API
+VideoAPIMissing = "no VideoAPI for the declared video medium"
+#   - VideoFallbackExtMissing: provconfig.go - video models declared without a fallback extension
+VideoFallbackExtMissing = "AdapterAPI: no VideoFallbackExt for the declared video medium"
+
+# internal/generation owns these diagnostics and preparation notices.
+["internal/generation"]
+#   - FrameAnchorConflict: frame.go - first: or last: claimed by two inputs
+FrameAnchorConflict = "%s and %s both request the %s frame."
+#   - FrameCountExceeded: frame.go - more timed inputs than free frames
+FrameCountExceeded = "%d timed inputs exceed the model's opening and closing frames."
+#   - FrameOnVideo: frame.go - a frame prefix on a video source
+FrameOnVideo = "A video input cannot take a frame prefix: %s."
+#   - FrameTimeShared: frame.go - two inputs sharing one time, so no order exists
+FrameTimeShared = "%s and %s share the frame time %g."
+#   - ReasonAdoptedFromReference: conform.go - a request size taken from the first local reference image
+ReasonAdoptedFromReference = "adopted from the reference image"
+#   - ReasonFrameTimeSnapped: frame.go - a numeric frame time moved to the first or last frame
+ReasonFrameTimeSnapped = "frame time %g snapped to the %s frame"
+#   - ReasonMatchedToRequest: conform.go - a reference image resized to the request frame
+ReasonMatchedToRequest = "matched to %s request"
+#   - ReasonNoFramePrefix: frame.go - a frame prefix dropped on a model without frame support
+ReasonNoFramePrefix = "the model does not accept a frame prefix"
+#   - ReasonNotConsumed: paramchange.go - a supplied flag the model does not accept
+ReasonNotConsumed = "not consumed by %s"
