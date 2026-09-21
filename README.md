@@ -9,7 +9,7 @@
 
 # Multiple providers. 150+ models. One `bild` command
 
-[Overview](overview) | [Quickstart](quickstart) | [Basic Usage](basic-usage) | [Agentic Use](agentic-use) | [Scripting](scripting) | [Providers and API Keys](providers-and-api-keys) | [Configuration](configuration)
+[Overview](#overview) | [Quickstart](#quickstart) | [Basic Usage](#basic-usage) | [Agentic Use](#agentic-use) | [Scripting](#scripting) | [Providers and API Keys](#providers-and-api-keys) | [Configuration](#configuration)
 
 ## Overview
 
@@ -28,14 +28,14 @@ Bildomat provides a single unified interface to multiple image and video generat
 - **Kling**: 10 models (4 image models · 6 video models)
 - **OpenRouter** (multi-provider aggregator): 80 models (51 image models · 29 video models)
 
-See [Providers and API Keys](providers-and-api-keys) for setting up API keys and configuring them in your environment.
+See [Providers and API Keys](#providers-and-api-keys) for setting up API keys and configuring them in your environment.
 
 **Script with `bild` for repeatable jobs.** A shell loop can turn a folder of product photos into studio shots, animate product stills, or generate daily hero images for websites.
 
 **Teach your agent to use `bild` for images and illustrations.** With `bild`, a design agent can generate, inspect, and refine images and videos for any design project. Generate images for web design, create uniform stylized illustrations for an app UI, or enhance a newsletter or report with suitable artwork.
 
 <p align="center">
-<picture width="800">
+<picture width="850">
   <source srcset="assets/agents/cmd.svg" type="image/svg+xml" />
   <img src="assets/agents/cmd.jpg" alt="bild commands for creating a papercut illustration of two little agents on a desk">
 </picture>
@@ -54,11 +54,11 @@ See [Providers and API Keys](providers-and-api-keys) for setting up API keys and
 A rainbow spinner becomes a wind turbine, then a papercut illustration, then a landscape full of companions. Finally, the blades begin to turn. The sequence uses Sourceful, OpenAI, and xAI through the same `bild` interface, with each result available as the next request's input.
 
 <p align="center">
-    <img src="assets/windspin/motion.gif" width="600" alt="The developed idea: an animated papercut landscape of colorful turbines spinning in unison.">
+    <img src="assets/windspin/motion.gif" width="450" alt="The developed idea: an animated papercut landscape of colorful turbines spinning in unison.">
 </p>
 
 <p align="center">
-<picture width="800">
+<picture width="850">
   <source srcset="assets/windspin/cmd.svg" type="image/svg+xml" />
   <img src="assets/windspin/cmd.jpg" alt="bild commands for creating a papercut landscape of colorful wind turbines.">
 </picture>
@@ -71,16 +71,13 @@ A rainbow spinner becomes a wind turbine, then a papercut illustration, then a l
   <img src="assets/windspin/field.jpg" width="350" alt="Identical colorful turbines placed in the background">
 
 <p align="center">
-  <video controls width="800">
-    <source src="assets/windspin/motion.mp4" type="video/mp4" alt="The developed idea: an animated papercut landscape of colorful turbines spinning in unison.">
     <img src="assets/windspin/motion.gif" width="800" alt="The developed idea: an animated papercut landscape of colorful turbines spinning in unison.">
-  </video>
 </p>
 
-  <p align="center">
-    <a href="assets/windspin/motion.mp4" download="windspin-motion.mp4">Download the video</a>
-  </p>
+<p align="center">
+  <a href="assets/windspin/motion.mp4" download="windspin-motion.mp4">Download the video</a>
 </p>
+
 
 ---
 
@@ -204,7 +201,7 @@ export PATH="$HOME/go/bin:$PATH"
 
 API keys may be set in the Bildomat configuration file or in shell environment variables.
 
-[Providers and API Keys](providers-and-api-keys) | [Configuration](configuration)
+[Providers and API Keys](#providers-and-api-keys) | [Configuration](#configuration)
 
 #### The Bildomat configuration file
 
