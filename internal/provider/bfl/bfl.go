@@ -43,9 +43,9 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 	return &Provider{adapterAPI: adapterSettings}, nil
 }
 
-// AdjustParams returns model-compatible generation parameters and records describing each adjustment.
-// Video models resolve the first and last frame anchors to keyframe times; image models drop
-// frame prefixes with a record.
+// AdjustParams returns model-compatible generation parameters and records describing each
+// adjustment. Video models resolve the first and last frame anchors to keyframe times; image models
+// drop frame prefixes with a record.
 func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error) {
 	preparedGeneration, adjustmentErr := generation.AdjustGeneration(model, inputs, mediaInputs)
 	if adjustmentErr != nil {

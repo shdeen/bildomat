@@ -5,8 +5,13 @@ import (
 	"fmt"
 )
 
-// ConfigError identifies a configuration source, its owner or setting, and
-// the specific problem. Cause preserves its classification and original error.
+// ConfigError identifies a configuration source, its owner or setting, and the specific problem.
+// Cause preserves its classification and original error.
+//   - Path: the configuration source path
+//   - Provider: the provider that owns the faulty configuration
+//   - Setting: the rejected user setting key
+//   - Problem: the specific configuration explanation
+//   - Cause: the classification and original error
 type ConfigError struct {
 	Path     string
 	Provider string

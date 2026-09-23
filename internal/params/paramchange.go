@@ -27,17 +27,15 @@ type Adjustment struct {
 // Values maps parameter names to values that are ready for a provider request.
 type Values map[FlagType]any
 
-// inputVal takes parameter values and a parameter name and returns the value with the
-// requested type. It reports false when the parameter is absent or has another type.
+// inputVal reads a typed parameter value, reporting false when absent or of another type.
 func inputVal[T any](paramVals map[FlagType]any, param FlagType) (T, bool) {
 	v, ok := paramVals[param].(T)
 
 	return v, ok
 }
 
-// Value takes parameter values and a parameter name and returns the stored value with
-// the requested type. An absent parameter reads as the zero value. A stored value of another
-// type is a repository defect and returns ErrParamValueTypeMismatch naming the parameter.
+// Value reads a typed parameter, returning its zero value when absent. A stored value of another
+// type returns ErrParamValueTypeMismatch naming the parameter.
 func Value[T any](paramVals map[FlagType]any, param FlagType) (T, error) {
 	var zero T
 
@@ -54,7 +52,13 @@ func Value[T any](paramVals map[FlagType]any, param FlagType) (T, error) {
 	return value, nil
 }
 
-// adjustmentState owns the supplied values, request values, and notices for one adjustment.
+// adjustmentState collects one model's request values and adjustment notices.
+//   - supplied: the caller's parsed inputs, read without mutation
+//   - adjusted: values prepared for the provider request
+//   - changes: ordered notices explaining adjustments
+//   - definitions: the model's parameter mappings and constraints
+//   - modelLabel: the model identifier used in notices and errors
+//   - failure: a conflicting-constraints error that stops adjustment
 type adjustmentState struct {
 	supplied    FlagInputs
 	adjusted    Values
@@ -64,8 +68,9 @@ type adjustmentState struct {
 	failure     error
 }
 
-// Adjust applies parameter definitions and returns request values and their notices.
-// modelLabel identifies the model in existing notices and conflicting-bound errors.
+// Adjust applies model parameter definitions and returns request values and adjustment notices. It
+// leaves supplied inputs unchanged and returns completed values and notices on failure; modelLabel
+// identifies the model in notices and conflicting-constraint errors.
 func Adjust(inputs FlagInputs, definitions Definitions, modelLabel string) (Values, []Adjustment, error) {
 	paramAdjustment := adjustmentState{supplied: inputs, adjusted: Values{}, definitions: definitions, modelLabel: modelLabel}
 	if !paramAdjustment.adjustSize() {
@@ -81,8 +86,8 @@ func Adjust(inputs FlagInputs, definitions Definitions, modelLabel string) (Valu
 	return paramAdjustment.adjusted, paramAdjustment.changes, nil
 }
 
-// adjustSize applies an explicit, declared size and records superseded sizing inputs.
-// It reports whether that size was consumed, including a conflicting-bound failure.
+// adjustSize applies an explicit, declared size and records superseded sizing inputs. It reports
+// whether that size was consumed, including a conflicting-bound failure.
 func (paramAdjustment *adjustmentState) adjustSize() bool {
 	sizeInput, ok := inputVal[string](paramAdjustment.supplied, FlagTypeSize)
 
@@ -138,7 +143,8 @@ func (paramAdjustment *adjustmentState) supersede(sizeInput string) {
 	}
 }
 
-// adjustMode selects free-form dimensions, fixed dimensions, or independent aspect and resolution adjustment.
+// adjustMode selects free-form dimensions, fixed dimensions, or independent aspect and resolution
+// adjustment.
 func (paramAdjustment *adjustmentState) adjustMode() {
 	sizeCfg, _ := paramAdjustment.definitions.Param(FlagTypeSize)
 
@@ -181,8 +187,8 @@ func (paramAdjustment *adjustmentState) splitAspect() {
 	}
 }
 
-// adjustResolution stores an exact declared label or its nearest numerical tier.
-// Inputs without an interpretable declared match receive a dropped notice.
+// adjustResolution stores an exact declared label or its nearest numerical tier. Inputs without an
+// interpretable declared match receive a dropped notice.
 func (paramAdjustment *adjustmentState) adjustResolution() {
 	resInput, ok := inputVal[string](paramAdjustment.supplied, FlagTypeResolution)
 
@@ -264,10 +270,9 @@ func (paramAdjustment *adjustmentState) adjustSuppliedParam(param *Definition, p
 			paramAdjustment.raiseCountFloor()
 		}
 	case float64:
-		// The flag parser accepts nan/inf spellings, but a non-finite number
-		// is not a usable value: JSON cannot even encode it, so it drops here
-		// like any other unintelligible input rather than surfacing later as
-		// a request-encoding failure.
+		// The flag parser accepts nan/inf spellings, but a non-finite number is not a
+		// usable value: JSON cannot even encode it, so it drops here like any other
+		// unintelligible input rather than surfacing later as a request-encoding failure.
 		if math.IsNaN(typedVal) || math.IsInf(typedVal, 0) {
 			paramAdjustment.changes = append(paramAdjustment.changes, Adjustment{
 				FlagID: param.FlagID, Type: ChangeDropped,
@@ -384,7 +389,8 @@ func allowedIntValues(allowedVals []string) []int {
 	return parsedInts
 }
 
-// applyNumericRange returns a number constrained to its declared bounds and an optional change record.
+// applyNumericRange returns a number constrained to its declared bounds and an optional change
+// record.
 func applyNumericRange[N int | float64](paramCfg *Definition, suppliedNum N) (N, *Adjustment) {
 	if maxNum, ok := paramCfg.MaxValue.ValIf(); ok && float64(suppliedNum) > maxNum {
 		return constrainToBound(paramCfg, suppliedNum, N(maxNum), ChangeCapped, BoundMaxForm)
@@ -436,7 +442,12 @@ func (paramAdjustment *adjustmentState) failBounds(bounds SizeBounds) {
 	paramAdjustment.failure = &errs.ConfigError{Problem: fmt.Sprintf("%s: %+v", paramAdjustment.modelLabel, bounds), Cause: errs.ErrProvConfigInvalid}
 }
 
-// sizeSources retains interpreted sizing values and their source flags for notices.
+// sizeSources retains interpreted sizing inputs for selection and adjustment notices.
+//   - parsedRatio: an aspect ratio parsed from aspect or resolution
+//   - ratioParamName: the flag that supplied the ratio
+//   - userInputRatio: the original ratio text
+//   - resolutionLevel: the representative resolution height
+//   - userInputResolution: the original resolution text
 type sizeSources struct {
 	parsedRatio         Nullable[float64]
 	ratioParamName      FlagType
@@ -461,8 +472,8 @@ func declaredSizingInputs(userInputs FlagInputs, definitions Definitions) FlagIn
 	return sizingInputs
 }
 
-// customSize derives free-form dimensions from the declared resolution or aspect input.
-// It records unusable inputs and conflicting bounds.
+// customSize derives free-form dimensions from the declared resolution or aspect input. It records
+// unusable inputs and conflicting bounds.
 func (paramAdjustment *adjustmentState) customSize(userInputs FlagInputs, bounds SizeBounds) {
 	aspectInput, haveAspect := inputVal[string](userInputs, FlagTypeAspect)
 	aspectParam := FlagTypeAspect
@@ -510,8 +521,8 @@ func (paramAdjustment *adjustmentState) customSize(userInputs FlagInputs, bounds
 	paramAdjustment.changes = append(paramAdjustment.changes, Adjustment{FlagID: aspectParam, Type: ChangeDerived, InputVal: aspectInput, WireVal: derivedSize})
 }
 
-// interpretSources parses the sizing inputs and records unusable values.
-// A ratio supplied as resolution takes precedence over the aspect input.
+// interpretSources parses the sizing inputs and records unusable values. A ratio supplied as
+// resolution takes precedence over the aspect input.
 func (paramAdjustment *adjustmentState) interpretSources(userInputs FlagInputs) sizeSources {
 	var sources sizeSources
 
@@ -544,8 +555,8 @@ func (paramAdjustment *adjustmentState) interpretSources(userInputs FlagInputs) 
 	return sources
 }
 
-// selectFixedSize stores declared dimensions and records each contributing sizing input.
-// Unchanged ratios receive derived notices; changed ratios receive snapped notices.
+// selectFixedSize stores declared dimensions and records each contributing sizing input. Unchanged
+// ratios receive derived notices; changed ratios receive snapped notices.
 func (paramAdjustment *adjustmentState) selectFixedSize(userInputs FlagInputs, allowedSizes []string) {
 	sources := paramAdjustment.interpretSources(userInputs)
 	ratio, hasRatio := sources.parsedRatio.ValIf()

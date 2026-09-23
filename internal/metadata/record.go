@@ -1,5 +1,5 @@
-// Package metadata stores experimental generation records. The format and reuse
-// mechanism are provisional and subject to change.
+// Package metadata stores experimental generation records. The format and reuse mechanism are
+// provisional and subject to change.
 package metadata
 
 import (
@@ -18,12 +18,15 @@ import (
 	"github.com/shdeen/bildomat/internal/media"
 )
 
-// SchemaVersion identifies the provisional record format; it is not a promise
-// of compatibility with the eventual permanent format.
-const SchemaVersion = 1
+// schemaVersion identifies the provisional record format; it is not a promise of compatibility with
+// the eventual permanent format.
+const schemaVersion = 1
 
-// Completion states describe execution independently of retained provider data.
-// Records use JSON; pending binary response bodies receive a file reference.
+// Record states, formats, and diagnostic paths.
+//   - statusCompleted, statusCanceled, statusFailed: the local operation outcomes
+//   - recordFormat: the saved document extension
+//   - pendingFileBody: the response value before a binary file has a saved path
+//   - requestPath, responsePath: the record locations used in persistence errors
 const (
 	statusCompleted = "completed"
 	statusCanceled  = "canceled"
@@ -35,13 +38,29 @@ const (
 )
 
 // Response types describe the request's role, independently of HTTP timing.
+//   - Synchronous: a submission or direct download response
+//   - Asynchronous: a response to polling an existing operation
 const (
 	Synchronous  = "synchronous"
 	Asynchronous = "asynchronous"
 )
 
-// Record contains the retained facts of one generation. Its unexported state
-// owns binary copies independently of provider artifact cleanup.
+// Record contains the retained facts of one generation. Its unexported state owns binary copies
+// independently of provider artifact cleanup.
+//   - Schema: the record format version
+//   - ID: the generated identifier for this run
+//   - Version: the Bildomat version that produced the record
+//   - Provider, Model: the selected catalog identifiers
+//   - Started, Finished: the UTC execution times
+//   - ElapsedMS: the elapsed execution time in milliseconds
+//   - Status: the final status, including local persistence failures
+//   - ProviderStatus: the provider operation status before local persistence
+//   - Request: the supplied options, prepared inputs, and submitted requests
+//   - Artifacts: the successfully saved generated files
+//   - Responses: the provider responses in capture order
+//   - Returns: the provider data retained for later requests
+//   - Errors: the generation failure messages
+//   - PersistenceErrors: the record capture and persistence failure messages
 //
 //nolint:tagliatelle // The provisional record uses the owner-approved hyphenated JSON keys.
 type Record struct {
@@ -61,14 +80,24 @@ type Record struct {
 	Returns           []ReturnValue `json:"return-values,omitempty"`
 	Errors            []string      `json:"errors,omitempty"`
 	PersistenceErrors []string      `json:"persistence-errors,omitempty"`
-	binaries          binaryStore
-	requestFields     []BinaryField
-	responseFields    []BinaryField
-	faults            []error
+	// binaries retains independent copies of captured media.
+	binaries binaryStore
+	// requestFields declares binary locations in submitted payloads.
+	requestFields []BinaryField
+	// responseFields declares binary locations in provider responses.
+	responseFields []BinaryField
+	// faults retains original capture and persistence causes.
+	faults []error
 }
 
-// Request distinguishes the supplied options, adjusted options, prepared inputs,
-// and exact submitted HTTP payloads of one generation.
+// Request distinguishes the supplied options, adjusted options, prepared inputs, and exact
+// submitted HTTP payloads of one generation.
+//   - Prompt: the submitted prompt
+//   - Supplied, Adjusted: the options before and after conformance
+//   - Adjustments: the recorded parameter changes
+//   - Sources: the supplied input paths or URLs
+//   - Inputs: the media prepared for submission
+//   - Calls: the provider requests in submission order
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type Request struct {
@@ -81,8 +110,12 @@ type Request struct {
 	Calls       []Call          `json:"provider-requests"`
 }
 
-// Input describes a prepared input; its data is retained through the submitted
-// payload, without embedding the bytes a second time.
+// Input describes a prepared input; its data is retained through the submitted payload, without
+// embedding the bytes a second time.
+//   - Source: the input path or URL
+//   - MIME: the prepared content type
+//   - Time: the optional frame time in seconds
+//   - Frame: the optional first or last frame selection
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type Input struct {
@@ -93,6 +126,11 @@ type Input struct {
 }
 
 // Call records an actual submitted request, excluding authentication headers.
+//   - Method, Endpoint: the HTTP method and request URL
+//   - ContentType: the submitted body type
+//   - Payload: the retained body, with binary content represented by references
+//   - Sent: the UTC request capture time
+//   - Error: the failure message when no response arrived
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type Call struct {
@@ -102,10 +140,21 @@ type Call struct {
 	Payload     json.RawMessage `json:"payload"`
 	Sent        time.Time       `json:"sent"`
 	Error       string          `json:"error,omitempty"`
-	references  []binaryReference
+	// references associates payload fields with retained binary content.
+	references []binaryReference
 }
 
 // Response retains one full provider body before its execution-specific decode.
+//   - Type: the synchronous or asynchronous request role
+//   - RequestIndex: the index of the request in Request.Calls
+//   - Endpoint: the associated request URL
+//   - Status: the HTTP response status
+//   - ContentType: the returned body type
+//   - Received: the UTC response capture time
+//   - Body: the full retained body, with binary content represented by references
+//   - Incomplete: whether capturing the response failed
+//   - CaptureError: the response read failure message
+//   - DecodeError: the JSON decode failure for a non-JSON response
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type Response struct {
@@ -119,10 +168,14 @@ type Response struct {
 	Incomplete   bool            `json:"incomplete,omitempty"`
 	CaptureError string          `json:"capture-error,omitempty"`
 	DecodeError  string          `json:"decode-error,omitempty"`
-	references   []binaryReference
+	// references associates response fields with retained binary content.
+	references []binaryReference
 }
 
 // File describes generated media successfully saved to its final path.
+//   - SavedFile: the final path and byte count
+//   - MIME: the retained content type
+//   - References: the provider download URLs whose content matches the file
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type File struct {
@@ -133,6 +186,8 @@ type File struct {
 }
 
 // ReturnValue keeps a provider's own retained shape separate from generic facts.
+//   - Provider, Model: the catalog identifiers associated with the retained data
+//   - Data: the provider-specific values available for reuse
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type ReturnValue struct {
@@ -144,14 +199,14 @@ type ReturnValue struct {
 // New creates the record for one generation.
 func New(provider, model, version, prompt string, started time.Time) *Record {
 	return &Record{
-		Schema: SchemaVersion, ID: rand.Text(), Version: version, Provider: provider,
+		Schema: schemaVersion, ID: rand.Text(), Version: version, Provider: provider,
 		Model: model, Started: started.UTC(), Request: Request{Prompt: prompt, Calls: []Call{}},
 		Responses: []Response{}, Artifacts: []File{},
 	}
 }
 
-// SetFields declares the provider's known encoded fields. Transport does not
-// interpret these declarations. Explicit data URIs are recognized independently.
+// SetFields assigns provider-declared binary fields to the record without copying the slices.
+// Explicit data URIs are recognized even without a declaration.
 func (record *Record) SetFields(requestFields, responseFields []BinaryField) {
 	if record == nil {
 		return
@@ -160,7 +215,7 @@ func (record *Record) SetFields(requestFields, responseFields []BinaryField) {
 	record.requestFields, record.responseFields = requestFields, responseFields
 }
 
-// Describe retains command facts independently of subsequent request preparation.
+// Describe assigns supplied options and input sources to the record without copying them.
 func (record *Record) Describe(supplied json.RawMessage, sources []string) {
 	if record == nil {
 		return
@@ -169,8 +224,8 @@ func (record *Record) Describe(supplied json.RawMessage, sources []string) {
 	record.Request.Supplied, record.Request.Sources = supplied, sources
 }
 
-// Prepared records the inputs actually passed to the request builder and makes
-// unchanged local files available for exact-content matching during persistence.
+// Prepared records the inputs actually passed to the request builder and makes unchanged local
+// files available for exact-content matching during persistence.
 func (record *Record) Prepared(inputs []media.Input) {
 	if record == nil {
 		return
@@ -184,18 +239,14 @@ func (record *Record) Prepared(inputs []media.Input) {
 	}
 }
 
-// Begin records the actual payload before a provider request is sent. A nil
-// receiver leaves persistence disabled and returns an unused request index.
-func (record *Record) Begin(method, endpoint, contentType string, body []byte, fields []BinaryField) int {
+// Begin records the actual payload before a provider request is sent. A nil receiver leaves
+// persistence disabled and returns an unused request index.
+func (record *Record) Begin(method, endpoint, contentType string, body []byte) int {
 	if record == nil {
 		return -1
 	}
 
-	if fields == nil {
-		fields = record.requestFields
-	}
-
-	payload, references, err := record.binaries.request(body, contentType, fields)
+	payload, references, err := record.binaries.request(body, contentType, record.requestFields)
 	record.addFault(err)
 	record.Request.Calls = append(record.Request.Calls, Call{
 		Method: method, Endpoint: endpoint,
@@ -206,13 +257,9 @@ func (record *Record) Begin(method, endpoint, contentType string, body []byte, f
 }
 
 // Receive records a response before execution narrows its JSON shape.
-func (record *Record) Receive(requestIndex int, responseType string, status int, contentType string, body []byte, fields []BinaryField, captureErr error) {
+func (record *Record) Receive(requestIndex int, responseType string, status int, contentType string, body []byte, captureErr error) {
 	if record == nil {
 		return
-	}
-
-	if fields == nil {
-		fields = record.responseFields
 	}
 
 	response := Response{Type: responseType, RequestIndex: requestIndex, Status: status, ContentType: contentType, Received: time.Now().UTC()}
@@ -235,15 +282,15 @@ func (record *Record) Receive(requestIndex int, responseType string, status int,
 	} else {
 		var err error
 
-		response.Body, response.references, err = record.binaries.normalize(body, fields)
+		response.Body, response.references, err = record.binaries.normalize(body, record.responseFields)
 		record.addFault(err)
 	}
 
 	record.Responses = append(record.Responses, response)
 }
 
-// ReceiveFile retains a downloaded body independently of the artifact's temporary
-// file. The saved response later references its actual final file.
+// ReceiveFile retains a downloaded body independently of the artifact's temporary file. The saved
+// response later references its actual final file.
 func (record *Record) ReceiveFile(requestIndex, status int, contentType, path string, captureErr error) {
 	if record == nil {
 		return
@@ -298,9 +345,8 @@ func (record *Record) ProviderFinished(generationErr error) {
 	record.ProviderStatus = completionStatus(generationErr)
 }
 
-// Save persists a record beside the completed artifacts under their final stem.
-// The caller must supply final names after every extension and collision change.
-// Later filename changes must update this association before saving the record.
+// Save finishes the record and writes it beside the supplied final artifact paths. It also saves
+// unmatched binary content and returns the record path with any persistence errors.
 func (record *Record) Save(dir, stem string, files []artifact.SavedFile, generationErr error) (string, error) {
 	if record == nil {
 		return "", nil
@@ -337,8 +383,8 @@ func (record *Record) Save(dir, stem string, files []artifact.SavedFile, generat
 	return saved.Path, errors.Join(writeErr, errors.Join(record.faults...))
 }
 
-// resolveBinaries supplies actual saved paths and associates each failed binary
-// save with its request or response field, preserving the filesystem cause.
+// resolveBinaries supplies actual saved paths and associates each failed binary save with its
+// request or response field, preserving the filesystem cause.
 func (record *Record) resolveBinaries(paths map[[sha256.Size]byte]string, failures map[[sha256.Size]byte]error) {
 	for index := range record.Request.Calls {
 		request := &record.Request.Calls[index]
@@ -371,8 +417,8 @@ func (record *Record) addFault(err error) {
 	record.PersistenceErrors = append(record.PersistenceErrors, err.Error())
 }
 
-// fileReferences associates a completed artifact with the provider locations
-// whose downloaded bytes match it. Response order and artifact order may differ.
+// fileReferences associates a completed artifact with the provider locations whose downloaded bytes
+// match it. Response order and artifact order may differ.
 func (record *Record) fileReferences(filePath string, paths map[[sha256.Size]byte]string) []string {
 	var references []string
 
@@ -388,7 +434,7 @@ func (record *Record) fileReferences(filePath string, paths map[[sha256.Size]byt
 	return references
 }
 
-// Read loads a provisional generation record from an absolute path.
+// Read loads a generation record and validates its schema and required fields.
 func Read(path string) (*Record, error) {
 	// #nosec G304 -- path is the explicit record selected by the user.
 	encoded, err := os.ReadFile(path)
@@ -401,7 +447,7 @@ func Read(path string) (*Record, error) {
 		return nil, fmt.Errorf("%q: %w, %w", path, errs.ErrRecordInvalid, err)
 	}
 
-	if record == nil || record.Schema != SchemaVersion || record.Provider == "" || record.Model == "" || record.Responses == nil || record.Request.Calls == nil {
+	if record == nil || record.Schema != schemaVersion || record.Provider == "" || record.Model == "" || record.Responses == nil || record.Request.Calls == nil {
 		return nil, fmt.Errorf("%q: %w", path, errs.ErrRecordInvalid)
 	}
 

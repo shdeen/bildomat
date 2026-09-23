@@ -5,33 +5,4 @@ A model's fully-qualified ID is in the form of <providerID>/<modelID>.
 {{range .Footer.KeysSentence}}{{.}}
 {{end}}
 
-For per-model detail, use the 'info' command with a model's fully-qualified ID.
-
-Examples:
-{{range .Footer.Examples.Keys}}        bild info {{.}}
-{{end}}
-To search for providers or models, use the 'search' command followed by a
-keyword, which matches against any slash-delimited token within a provider,
-model, or alias that begins with that term.
-
-{{range .Footer.MatchSentence}}{{.}}
-{{end}}
-Examples:
-        bild search {{.Footer.Examples.Keyword}}
-        bild search {{.ID}}
-
-For more advanced searches, you may use regular expressions (RE2 syntax):
-
-Example:
-        bild search -r '{{.Footer.Examples.Alternation}}'
-
-The -r option also allows searching for any part of a provider or model name,
-not just the beginning:
-
-Example:
-        bild search -r {{.Footer.AnyPartArgument}}
-
-It also allows searching across tokens:
-
-Example:
-        bild search -r '{{.Footer.Examples.AcrossTokens}}'
+{{template "model-search-examples" .}}

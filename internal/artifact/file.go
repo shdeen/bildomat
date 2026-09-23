@@ -10,14 +10,16 @@ import (
 	"github.com/shdeen/bildomat/internal/errs"
 )
 
-// SavedFile describes one successfully closed output file.
+// SavedFile describes a successfully closed output file.
+//   - Path: the saved destination path
+//   - Bytes: the number of bytes written
 type SavedFile struct {
 	Path  string `json:"path"`
 	Bytes int64  `json:"bytes"`
 }
 
-// claimFile exclusively creates the requested name or its first available numbered
-// variant. The suffix belongs to name; ext is appended without modification.
+// claimFile exclusively creates the requested filename or its first free numbered variant. It
+// returns the open file and its path; the extension remains unchanged.
 func claimFile(dir, name, ext string) (*os.File, string, error) {
 	for suffix := 1; ; suffix++ {
 		candidate := name
@@ -49,8 +51,8 @@ func openFile(path string) (*os.File, error) {
 	return file, nil
 }
 
-// commitFile writes bytes to an exclusively claimed file and returns a fact only
-// after it closes successfully. A failed attempt removes its own incomplete file.
+// commitFile writes and closes a claimed destination, returning its path and byte count. A write or
+// close failure removes the incomplete destination.
 func commitFile(file *os.File, path string, data []byte) (SavedFile, error) {
 	written, writeErr := file.Write(data)
 	if writeErr == nil && written != len(data) {
@@ -60,8 +62,8 @@ func commitFile(file *os.File, path string, data []byte) (SavedFile, error) {
 	return closeOutput(file, path, int64(written), writeErr)
 }
 
-// copyFile copies a source file into an exclusively claimed destination, preserving
-// the source. It returns a completed-file fact only after successful closure.
+// copyFile copies a source into a claimed destination and closes both files. It preserves the
+// source and removes an incomplete destination on failure.
 func copyFile(file *os.File, path, source string) (SavedFile, error) {
 	// #nosec G304 -- source is a generated temporary file or the user's selected input.
 	input, err := os.Open(source)
@@ -90,8 +92,8 @@ func Write(dir, name, ext string, data []byte) (SavedFile, error) {
 	return commitFile(file, path, data)
 }
 
-// closeOutput closes the destination and removes only this attempt's incomplete
-// file on failure. Both operation and cleanup errors remain discoverable.
+// closeOutput closes the destination and removes only this attempt's incomplete file on failure.
+// Both operation and cleanup errors remain discoverable.
 func closeOutput(file *os.File, path string, written int64, writeErr error) (SavedFile, error) {
 	closeErr := file.Close()
 	if writeErr == nil && closeErr == nil {
@@ -114,8 +116,8 @@ func closeOutput(file *os.File, path string, written int64, writeErr error) (Sav
 	return SavedFile{}, errors.Join(operationErr, removeFile(path, cleanupClass))
 }
 
-// removeFile removes an owned file, retaining the operation's classification
-// and the original removal cause. An already absent file needs no more cleanup.
+// removeFile removes an owned file, retaining the operation's classification and the original
+// removal cause. An already absent file needs no more cleanup.
 func removeFile(path string, classification error) error {
 	err := os.Remove(path)
 	if err == nil || errors.Is(err, os.ErrNotExist) {

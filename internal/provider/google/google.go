@@ -31,7 +31,8 @@ type Provider struct {
 	adapterAPI *catalog.AdapterAPI
 }
 
-// NewProvider returns a generator with owned adapter settings, or a missing-description error.
+// NewProvider returns a generator with independent adapter settings. It rejects missing settings
+// and configured paths that overwrite required Interactions fields.
 func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error) {
 	adapterSettings, err := provider.AdapterSettings(providerDescription, ProviderID)
 	if err != nil {
@@ -56,8 +57,8 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 	return &Provider{adapterAPI: adapterSettings}, nil
 }
 
-// AdjustParams returns model-compatible generation parameters and records describing each adjustment.
-// It applies Veo duration constraints when model belongs to the Veo family.
+// AdjustParams returns model-compatible parameters, media, and change records. It validates reuse
+// selections and Veo frame constraints, and removes frame prefixes from Interactions inputs.
 func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, reuse *metadata.Reuse) (generation.Preparation, error) {
 	preparedGeneration, adjustmentErr := generation.AdjustGeneration(model, inputs, mediaInputs)
 	if adjustmentErr != nil {
@@ -106,9 +107,8 @@ func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, me
 	return preparedGeneration, nil
 }
 
-// validateVeoInputMedia rejects media combinations the Veo request shape cannot
-// represent. Frame prefixes are already resolved to anchors, so only the anchor
-// combination and the media kinds need checking here.
+// validateVeoInputMedia rejects mixed images and videos, multiple videos, and a closing frame
+// without an opening frame. The caller must resolve frame prefixes to anchors first.
 func validateVeoInputMedia(mediaInputs []media.Input) error {
 	imageInputs, videoInputs := media.SplitInputs(mediaInputs)
 	if len(imageInputs) > 0 && len(videoInputs) > 0 {
@@ -137,7 +137,8 @@ func validateVeoInputMedia(mediaInputs []media.Input) error {
 	return nil
 }
 
-// Generate returns the selected API family's outputs and all completed preparation facts.
+// Generate submits to the model's API family and returns artifacts and thought summaries. It
+// preserves the caller's request and returns completed preparation even on failure.
 func (prov *Provider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error) {
 	request := *run
 
@@ -160,7 +161,9 @@ func (prov *Provider) Generate(ctx context.Context, run *generation.Generation) 
 	return result, err
 }
 
-// Google model family and credential header.
+// Google API selection and authentication values.
+//   - familyVeo: the model family served by the Veo API
+//   - googleKeyHeader: the request header carrying the API key
 const (
 	familyVeo       = "veo"
 	googleKeyHeader = "x-goog-api-key"

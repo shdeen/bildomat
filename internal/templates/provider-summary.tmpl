@@ -1,12 +1,4 @@
-Provider: {{.Name}}
-{{pad "Type" .LabelWidth}}gateway · aggregator
-{{pad "ID" .LabelWidth}}{{.ID}}
-{{if .DocsURL}}Docs: {{.DocsURL}}
-{{end}}
-{{template "api-key" .Credentials}}
-
-Catalog: {{.ModelCount}} {{if eq .ModelCount 1}}model{{else}}models{{end}} ({{.CatalogMedia}})
-
+{{template "provider-header" .}}
 WHAT THIS PAGE IS
 Provider summary for an aggregator catalog. Per-model limits
 live on `bild info <model>`. The roster is `bild list`.
@@ -46,33 +38,4 @@ Examples:
         bild info {{.ID}} --image
         bild info {{.ID}} -v
 
-For per-model detail, use the 'info' command with a model's fully-qualified ID.
-
-Examples:
-{{range .Footer.Examples.Keys}}        bild info {{.}}
-{{end}}
-To search for providers or models, use the 'search' command followed by a
-keyword, which matches against any slash-delimited token within a provider,
-model, or alias that begins with that term.
-
-{{range .Footer.MatchSentence}}{{.}}
-{{end}}
-Examples:
-        bild search {{.Footer.Examples.Keyword}}
-        bild search {{.ID}}
-
-For more advanced searches, you may use regular expressions (RE2 syntax):
-
-Example:
-        bild search -r '{{.Footer.Examples.Alternation}}'
-
-The -r option also allows searching for any part of a provider or model name,
-not just the beginning:
-
-Example:
-        bild search -r {{.Footer.AnyPartArgument}}
-
-It also allows searching across tokens:
-
-Example:
-        bild search -r '{{.Footer.Examples.AcrossTokens}}'
+{{template "model-search-examples" .}}

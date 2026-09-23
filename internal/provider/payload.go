@@ -22,7 +22,15 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// The shared configurable request and response fields.
+// Shared request and response fields identify model, prompt, and media values.
+//   - fieldMIMEType: the media MIME type
+//   - fieldModel: the requested model ID
+//   - fieldPrompt: the generation prompt
+//   - fieldType: the media reference kind
+//   - fieldURL: the media location
+//   - fieldData: the response artifact list
+//   - fieldImageURL: an image reference
+//   - fieldVideoURL: a video reference
 const (
 	fieldMIMEType = "mime_type"
 	fieldModel    = "model"
@@ -34,7 +42,9 @@ const (
 	fieldVideoURL = "video_url"
 )
 
-// Multipart part headers describe each submitted media source.
+// Multipart headers describe the submitted file and its MIME type.
+//   - headerContentDisposition: the form field name and filename
+//   - headerContentType: the file MIME type
 const (
 	headerContentDisposition = "Content-Disposition"
 	headerContentType        = "Content-Type"
@@ -48,12 +58,12 @@ const (
 	fieldMediaType = "media_type"
 )
 
-// partFilenameForm is the multipart file part's content-disposition value,
-// completed by the field name, the part's index, and its extension.
+// partFilenameForm is the multipart file part's content-disposition value, completed by the field
+// name, the part's index, and its extension.
 const partFilenameForm = `form-data; name=%q; filename="image-%d%s"`
 
-// jsonBody returns the JSON fields for an image generation request; an empty
-// prompt sends no prompt field.
+// jsonBody returns the JSON fields for an image generation request; an empty prompt sends no prompt
+// field.
 func jsonBody(api *catalog.ImageAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, stringParams ...params.FlagType) (map[string]any, error) {
 	body := map[string]any{fieldModel: model.ID}
 	if prompt != "" {
@@ -73,11 +83,9 @@ func jsonBody(api *catalog.ImageAPI, model *catalog.Model, prompt string, parame
 	return body, nil
 }
 
-// WireParamValues returns generation parameters keyed by their model-specific request names.
-// Parameters without request names are omitted. Parameters named in stringParams are formatted as text.
-// A request name that is a dotted path, such as response_format.aspect_ratio, places its
-// value that many objects deep, creating the intermediate objects as needed and sharing
-// them between parameters under one parent.
+// WireParamValues returns supplied parameters under their configured request paths. It omits
+// parameters without paths and formats the selected parameters as strings. Dotted paths create
+// nested objects shared by parameters with the same parent.
 func WireParamValues(model *catalog.Model, gp params.Values, stringParams ...params.FlagType) map[string]any {
 	vals := map[string]any{}
 
@@ -97,9 +105,8 @@ func WireParamValues(model *catalog.Model, gp params.Values, stringParams ...par
 	return vals
 }
 
-// placeWireValue takes the request fields, a request name that may be a dotted path, and
-// the value, and writes the value at the path, creating each missing intermediate object.
-// An intermediate name already holding a value of another shape is replaced by an object.
+// placeWireValue writes a value into the supplied map at a dotted request path. It creates
+// intermediate objects, replacing any non-object values along the path.
 func placeWireValue(fields map[string]any, path string, value any) {
 	segments := strings.Split(path, ".")
 	holder := fields
@@ -117,7 +124,8 @@ func placeWireValue(fields map[string]any, path string, value any) {
 	holder[segments[len(segments)-1]] = value
 }
 
-// addInputMedia adds ordinary media references to body according to style.
+// addInputMedia writes media references into the supplied request body in the configured format. It
+// rejects frame prefixes, unsupported video references, and multipart-only styles.
 func addInputMedia(body map[string]any, style catalog.InputMediaStyle, inputMediaProvParam, inputMediaListProvParam string, mediaInputs []media.Input) error {
 	if len(mediaInputs) == 0 {
 		return nil
@@ -164,7 +172,7 @@ func addInputMedia(body map[string]any, style catalog.InputMediaStyle, inputMedi
 	return nil
 }
 
-// addStringInputMedia writes bare media strings under the configured request field.
+// addStringInputMedia writes one media string or an ordered list into the supplied body.
 func addStringInputMedia(body map[string]any, inputMediaProvParam string, mediaInputs []media.Input) {
 	if len(mediaInputs) == 1 {
 		body[inputMediaProvParam] = mediaInputs[0].DataURI()
@@ -199,8 +207,8 @@ func inputMediaURLNested(mediaInput *media.Input) map[string]string {
 	return map[string]string{fieldURL: mediaInput.DataURI()}
 }
 
-// formBody returns the content type and multipart body for an image generation
-// request; an empty prompt sends no prompt part.
+// formBody returns the content type and multipart body for an image generation request; an empty
+// prompt sends no prompt part.
 func formBody(api *catalog.ImageAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, stringParams ...params.FlagType) (contentType string, body []byte, err error) {
 	fields := map[string]string{fieldModel: model.ID}
 	if prompt != "" {
@@ -278,7 +286,8 @@ type imageDataItem struct {
 	base64, url, mime params.Nullable[string]
 }
 
-// parseRespImages returns the normalized image response items decoded from body.
+// parseRespImages decodes image response data while preserving absent and empty fields. It rejects
+// null image records and prefers mime_type over media_type when both are strings.
 func parseRespImages(body []byte) ([]imageDataItem, error) {
 	var response struct {
 		Data []*struct {
@@ -319,8 +328,8 @@ func parseRespImages(body []byte) ([]imageDataItem, error) {
 	return respImages, nil
 }
 
-// createImageArtifacts returns the artifacts represented by an image response.
-// It removes any temporary artifact files when a response item fails.
+// createImageArtifacts decodes or downloads the images in a successful response. If an item fails,
+// it cleans up earlier downloads and returns any cleanup error with the failure.
 func createImageArtifacts(ctx context.Context, provModelLabel string, api *catalog.ImageAPI, status int, body []byte, record *metadata.Record) ([]artifact.Media, error) {
 	if status/100 != 2 {
 		return nil, APIErr(provModelLabel, status, body)
@@ -353,8 +362,8 @@ func createImageArtifacts(ctx context.Context, provModelLabel string, api *catal
 	return artifacts, nil
 }
 
-// createRespArtifact returns the artifact represented by imageData.
-// It may download a URL-backed image into a temporary file.
+// createRespArtifact returns the artifact represented by imageData. It may download a URL-backed
+// image into a temporary file.
 func createRespArtifact(ctx context.Context, api *catalog.ImageAPI, imageData imageDataItem, record *metadata.Record) (artifact.Media, error) {
 	if b, ok := imageData.base64.ValIf(); ok {
 		data, err := base64.StdEncoding.DecodeString(b)

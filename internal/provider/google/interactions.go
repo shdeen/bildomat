@@ -14,7 +14,14 @@ import (
 	"github.com/shdeen/bildomat/internal/provider"
 )
 
-// The Interactions content fields, text content type, and error status.
+// Interactions content fields and discriminators identify request and response values.
+//   - interactionFieldMIMEType: the block MIME type
+//   - interactionFieldData: inline base64 media
+//   - interactionFieldType: the block kind
+//   - interactionFieldText: text content
+//   - interactionFieldModel: the model ID
+//   - interactionTextType: the text block kind
+//   - interactionStatusError: a failed output step
 const (
 	interactionFieldMIMEType = "mime_type"
 	interactionFieldData     = "data"
@@ -69,8 +76,7 @@ type interactionBlock struct {
 	URI string `json:"uri"`
 }
 
-// The Interactions API's tokens; the type, MIME type, data, text, model,
-// and error fields and values are the shared words.
+// The Interactions API's endpoint, request field, and response field tokens.
 //   - interactionsPathSuffix: the request path under the API base
 //   - wireKeyURI: the block field carrying a file resource URI
 //   - wireKeyInput: the request field carrying the input blocks
@@ -106,8 +112,8 @@ const (
 	thinkingSummariesAuto = "auto"
 )
 
-// The labels appended to the model, after a colon and a space, in the interaction
-// diagnostics' contexts.
+// The labels appended to the model, after a colon and a space, in the interaction diagnostics'
+// contexts.
 //   - interactionResponseContext: a response that does not decode
 //   - interactionErrorContext: a failed step reporting no error record
 //   - blockDataContext: a media block whose inline data does not decode, after the block type
@@ -141,11 +147,8 @@ func interactionInput(modelID, prompt string, mediaInputs []media.Input) map[str
 	return map[string]any{interactionFieldModel: modelID, wireKeyInput: input}
 }
 
-// interactionImageBody returns the request fields for an image interaction: the input blocks,
-// the fixed response-format type, every declared parameter at its declared path, and the
-// thought-summary selection. It returns the parameter error when a stored thoughts value has
-// another type, and the unplaced-parameter error when a supplied parameter has no declared
-// path.
+// interactionImageBody returns an image request with input blocks and declared parameters. It
+// rejects an invalid thoughts value or a supplied parameter without a request path.
 func interactionImageBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input) (map[string]any, error) {
 	body := interactionInput(model.ID, prompt, mediaInputs)
 	body[wireKeyResponseFormat] = map[string]any{interactionFieldType: string(media.Image)}
@@ -157,10 +160,9 @@ func interactionImageBody(model *catalog.Model, prompt string, parameterValues p
 	return body, nil
 }
 
-// interactionVideoBody returns the request fields for a video interaction: the input blocks,
-// the fixed response-format type and delivery, the task the input images select, every
-// declared parameter at its declared path, and the thought-summary selection. A video input
-// selects no task. It returns the errors interactionImageBody returns.
+// interactionVideoBody returns a video request with URI delivery and declared parameters. The
+// number of image references selects the task. Invalid thoughts values and parameters without
+// request paths return errors.
 func interactionVideoBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input) (map[string]any, error) {
 	body := interactionInput(model.ID, prompt, mediaInputs)
 	body[wireKeyResponseFormat] = map[string]any{interactionFieldType: string(media.Video), wireKeyDelivery: wireKeyURI}
@@ -177,8 +179,8 @@ func interactionVideoBody(model *catalog.Model, prompt string, parameterValues p
 	return body, nil
 }
 
-// placeDeclaredParams merges validated parameter paths and adds the explicitly
-// requested thought summary. Input blocks consume input media separately.
+// placeDeclaredParams merges configured parameters and requested thought summaries into body. It
+// rejects invalid thoughts values and parameters without paths, except input media.
 func placeDeclaredParams(body map[string]any, model *catalog.Model, parameterValues params.Values) error {
 	mergeFields(body, provider.WireParamValues(model, parameterValues))
 
@@ -205,9 +207,8 @@ func placeDeclaredParams(body map[string]any, model *catalog.Model, parameterVal
 	return nil
 }
 
-// mergeFields takes destination and source request fields and writes each source field
-// into the destination: a field whose value is an object on both sides merges one level
-// down, and any other field replaces the destination's.
+// mergeFields recursively merges source objects into the supplied destination map. A source value
+// replaces the destination value unless both are objects.
 func mergeFields(dst, src map[string]any) {
 	for key, value := range src {
 		nestedSrc, srcIsObject := value.(map[string]any)
@@ -235,7 +236,8 @@ func interactionVideoTask(refs int) string {
 	return taskReferenceToVideo
 }
 
-// findMediaBlock returns the first usable block of the requested media type and the first text block encountered.
+// findMediaBlock returns the first usable block of the requested media type and the first text
+// block encountered.
 func findMediaBlock(blocks []interactionBlock, mediaBlockType string, mediaBlock *interactionBlock, firstTextBlock string) (selectedMediaBlock *interactionBlock, textBlock string) {
 	for i := range blocks {
 		block := &blocks[i]
@@ -251,7 +253,8 @@ func findMediaBlock(blocks []interactionBlock, mediaBlockType string, mediaBlock
 	return mediaBlock, firstTextBlock
 }
 
-// newInteractionStepError returns a generation error containing the interaction step's diagnostic values.
+// newInteractionStepError returns a generation error containing the interaction step's diagnostic
+// values.
 func newInteractionStepError(model string, e *interactionStepError) error {
 	msg := model + ": " + interactionErrorContext
 	if e != nil {

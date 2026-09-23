@@ -39,7 +39,8 @@ const (
 	audioNative = "native"
 )
 
-// generator generates images and videos through the Kling API.
+// generator holds the Kling request settings.
+//   - adapterAPI: endpoints, polling limits, and artifact defaults
 type generator struct {
 	adapterAPI *catalog.AdapterAPI
 }
@@ -54,7 +55,9 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 	return &generator{adapterAPI: adapterSettings}, nil
 }
 
-// AdjustParams returns the Kling generation parameters and adjustment records.
+// AdjustParams returns adjusted parameters and media with change records. It rejects video inputs,
+// resolves video frame anchors, removes image frame prefixes, and converts the audio switch to the
+// provider's request value.
 func (*generator) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error) {
 	preparedGeneration, adjustmentErr := generation.AdjustGeneration(model, inputs, mediaInputs)
 	if adjustmentErr != nil {
@@ -155,8 +158,8 @@ func (prov *generator) generateMedia(ctx context.Context, generationRequest *gen
 	return completed, err
 }
 
-// completeImageTask polls one image task until it completes and downloads its
-// result images in provider index order, returning them as the result.
+// completeImageTask polls one image task until it completes and downloads its result images in
+// provider index order, returning them as the result.
 func (prov *generator) completeImageTask(ctx context.Context, imagePoll *imageJobPoll) (generation.Result, error) {
 	if err := httpapi.Poll(ctx, prov.adapterAPI.PollInterval.Duration(), prov.adapterAPI.PollTimeout.Duration(), imagePoll); err != nil {
 		return generation.Result{}, &errs.PollError{Model: imagePoll.providerModelName, Resource: imagePoll.taskID, Cause: err}
@@ -172,8 +175,8 @@ func (prov *generator) completeImageTask(ctx context.Context, imagePoll *imageJo
 	return generation.Result{Artifacts: artifacts}, nil
 }
 
-// completeVideoTask polls one video task until it completes and fetches its
-// result video, returning it as the result.
+// completeVideoTask polls one video task until it completes and fetches its result video, returning
+// it as the result.
 func (prov *generator) completeVideoTask(ctx context.Context, videoPoll *videoJobPoll) (generation.Result, error) {
 	if err := httpapi.Poll(ctx, prov.adapterAPI.PollInterval.Duration(), prov.adapterAPI.PollTimeout.Duration(), videoPoll); err != nil {
 		return generation.Result{}, &errs.PollError{Model: videoPoll.providerModelName, Resource: videoPoll.taskID, Cause: err}

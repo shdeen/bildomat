@@ -10,32 +10,29 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// File: internal/output/list.go
-// The three text listings the list and search commands render over a reduced
-// catalog, the template functions those listings call, and the flag-support
-// note the help page renders. The listings' JSON form is the reduced catalog
-// itself (catalog.go).
+// File: internal/output/list.go The three text listings, their template functions, and the
+// flag-support note used by help. Text and JSON listings use the same selected presentation records
+// from catalog.go.
 
-// modelListingLines returns fully qualified model keys with any included
-// aliases in the supplied order; the flat directory template calls it.
-func modelListingLines(providers []catalog.Provider) []string {
+// modelListingLines returns fully qualified model keys with any included aliases in the supplied
+// order; the flat directory template calls it.
+func modelListingLines(providers []providerRecord) []string {
 	var modelLines []string
 
 	for i := range providers {
 		for j := range providers[i].Models {
 			model := &providers[i].Models[j]
 			modelKey := providers[i].ID + catalog.KeySeparator + model.ID
-			modelLines = append(modelLines, modelNotice(modelKey, model.Aliases))
+			modelLines = append(modelLines, modelRowText(modelKey, model.Aliases))
 		}
 	}
 
 	return modelLines
 }
 
-// FlagSupportNote takes a parameter name and provider-model pairs and returns the providers
-// that support the parameter for each media type that uses it. It returns an empty string
-// when every provider with models of those media types fully supports the parameter and
-// marks partial provider support as "select models".
+// FlagSupportNote names providers that support the flag, marking partial support as "select
+// models". It considers only media kinds for which some model declares the flag. If every model in
+// those media kinds supports it, the note is empty.
 func FlagSupportNote(param params.FlagType, provModelPairs []catalog.ProvModelPair) string {
 	scopeMedia := map[media.Kind]bool{}
 
@@ -71,7 +68,8 @@ func FlagSupportNote(param params.FlagType, provModelPairs []catalog.ProvModelPa
 
 		switch {
 		case inScope == 0:
-			// No models of the flag's media: neither supports nor withholds.
+			// Providers with no models in these media kinds do not affect the support
+			// note.
 		case supporting == 0:
 			universal = false
 		case supporting == inScope:
@@ -90,7 +88,8 @@ func FlagSupportNote(param params.FlagType, provModelPairs []catalog.ProvModelPa
 	return strings.Join(supporters, ", ")
 }
 
-// listedProviders takes provider-model pairs and returns each provider once in first-occurrence order.
+// listedProviders takes provider-model pairs and returns each provider once in first-occurrence
+// order.
 func listedProviders(provModelPairs []catalog.ProvModelPair) []catalog.Provider {
 	var providers []catalog.Provider
 
@@ -109,8 +108,7 @@ func listedProviders(provModelPairs []catalog.ProvModelPair) []catalog.Provider 
 	return providers
 }
 
-// modelsOfMedia takes models and media and returns the matching models in
-// input order; the nested listing template calls it per medium.
+// modelsOfMedia returns models of the requested medium in input order.
 func modelsOfMedia(models []catalog.Model, mediaKind media.Kind) []catalog.Model {
 	var kept []catalog.Model
 
@@ -123,10 +121,9 @@ func modelsOfMedia(models []catalog.Model, mediaKind media.Kind) []catalog.Model
 	return kept
 }
 
-// modelNotice takes the identifier a listing shows for a model and the
-// model's aliases, and returns the listing entry: the identifier with any
-// aliases in the alias clause.
-func modelNotice(identifier string, aliases []string) string {
+// modelRowText formats a model identifier with its aliases, or returns the identifier alone when
+// there are no aliases.
+func modelRowText(identifier string, aliases []string) string {
 	if len(aliases) == 0 {
 		return identifier
 	}
@@ -143,9 +140,9 @@ func aliasWord(aliases []string) string {
 	return AliasWordSingular
 }
 
-// PrintListing writes the selected provider/model listing as text or JSON.
-// It returns template, encoding, and delivery failures to the command.
-func PrintListing(destination io.Writer, page catalog.Catalog, providersSelected, modelsSelected, jsonOutput bool) error {
+// PrintListing writes the selected provider/model listing as text or JSON. It returns template,
+// encoding, and delivery failures to the command.
+func PrintListing(destination io.Writer, page CatalogPage, providersSelected, modelsSelected, jsonOutput bool) error {
 	if jsonOutput {
 		return PrintJSON(destination, page)
 	}

@@ -2,8 +2,10 @@ package errs
 
 import "fmt"
 
-// UsageError retains an actionable command-line explanation and its cause.
-// Text is product copy supplied by the command that rejected the input.
+// UsageError retains an actionable command-line explanation and its cause. Text is product copy
+// supplied by the command that rejected the input.
+//   - Text: the command explanation to display
+//   - Cause: the usage classification and original error
 type UsageError struct {
 	Text  string
 	Cause error

@@ -1,6 +1,6 @@
 package generation
 
-// numericSeconds returns a numeric parameter as float64.
+// numericSeconds converts int, int64, or float64 seconds, reporting false for other types.
 func numericSeconds(paramValue any) (float64, bool) {
 	switch value := paramValue.(type) {
 	case int:

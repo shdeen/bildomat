@@ -6,15 +6,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// File: internal/output/param.go
-// Parameter change notices use each classification's copy-catalog form, keyed
-// to the parameter's user-facing FlagName. The command selects their destination.
-
-// formatNotice takes the parameter-flag definitions and a parameter change and
-// returns the change's notice: its classification's catalog form carrying the
-// flag's user-facing name, with a string-typed used value in single quotes and
-// a non-string one bare. The capped and raised limits render from the record's
-// constrained value, which is the bound itself.
+// formatNotice renders an adjustment notice using the user-facing flag name. Adjusted numeric
+// values remain unquoted; string values are quoted where the message permits.
 func formatNotice(paramFlags []params.Flag, paramChange *params.Adjustment, flagNames map[params.FlagType]string) string {
 	flagName, usedValue := noticeFlagValues(paramFlags, paramChange, flagNames)
 
@@ -34,17 +27,12 @@ func formatNotice(paramFlags []params.Flag, paramChange *params.Adjustment, flag
 	case params.ChangeIgnored:
 		return fmt.Sprintf(FlagIgnored, flagName, paramChange.Comment)
 	}
-	// An unknown classification is a foreseeable repository defect: render it
-	// visibly through the guard form rather than dropping the record.
+	// Include the unknown adjustment type and values in a warning.
 	return fmt.Sprintf(FlagChangedGuard, flagName, string(paramChange.Type), paramChange.InputVal, paramChange.WireVal)
 }
 
-// noticeFlagValues takes the parameter-flag definitions and a parameter change
-// and returns the change's user-facing flag name and its display-ready used
-// value: single-quoted for a string-typed parameter and bare otherwise. A
-// record outside the definitions — a run-surface flag — takes its display name
-// from the run-surface table, or its raw flag ID as the visible floor, and its
-// values render as strings.
+// noticeFlagValues returns a flag's display name and formatted used value. Flags absent from
+// paramFlags use the supplied name map or their identifier, with quoted values.
 func noticeFlagValues(paramFlags []params.Flag, paramChange *params.Adjustment, flagNames map[params.FlagType]string) (flagName, usedValue string) {
 	usedValue = singleQuote + paramChange.WireVal + singleQuote
 

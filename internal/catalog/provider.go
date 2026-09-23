@@ -1,53 +1,43 @@
 package catalog
 
 import (
-	"maps"
 	"slices"
 
 	"github.com/shdeen/bildomat/internal/media"
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// Provider is one provider as its configuration document declares it: its
-// identity, its models, and its request settings. The request settings never
-// reach a user-facing document; a reduced copy leaves them zero, which the
-// encoding omits.
+// Provider contains the identity, models, and request settings declared by one provider
+// configuration.
 //   - ID: the provider's catalog identifier
 //   - DisplayName: the provider name shown to users
-//   - APIKeyEnvVar: the environment variable that contains the provider's API key
-//   - APIKeyConfigKey: the dotted user-config key path, included in public identity copies
-//   - Aggregator: whether the provider is a gateway to many vendors' models, which
-//     the details page summarizes instead of listing
-//   - DefaultModel: the ID of the provider's model used when --model is omitted and the
-//     provider is the first configured one in listing order; empty when the provider names none
-//   - DocsURL: the address of the provider's own documentation, shown on its pages
-//   - Models: the models the provider offers, in configuration order
-//   - Config: the provider's request settings; a configuration document must
-//     declare them, and a reduced copy carries none
+//   - APIKeyEnvVar: the environment variable that supplies the provider's API key
+//   - Aggregator: whether the provider offers models from multiple vendors
+//   - DefaultModel: the model ID used for default selection, or empty when undeclared
+//   - DocsURL: the provider's documentation address
+//   - Models: the models in configuration order
+//   - Config: the provider's request settings, absent in identity-only copies
 type Provider struct {
-	ID              string          `json:"id"`
-	DisplayName     string          `json:"displayName"`
-	APIKeyEnvVar    string          `json:"apiKeyEnvVar"`
-	APIKeyConfigKey string          `json:"apiKeyConfigKey,omitempty"`
-	Aggregator      bool            `json:"aggregator,omitempty"`
-	DefaultModel    string          `json:"defaultModel,omitempty"`
-	DocsURL         string          `json:"docsURL,omitempty"`
-	Models          []Model         `json:"models,omitempty"`
-	Config          *ProviderConfig `json:"config,omitempty"`
+	ID           string          `json:"id"`
+	DisplayName  string          `json:"displayName"`
+	APIKeyEnvVar string          `json:"apiKeyEnvVar"`
+	Aggregator   bool            `json:"aggregator,omitempty"`
+	DefaultModel string          `json:"defaultModel,omitempty"`
+	DocsURL      string          `json:"docsURL,omitempty"`
+	Models       []Model         `json:"models,omitempty"`
+	Config       *ProviderConfig `json:"config,omitempty"`
 }
 
-// Identity returns the provider's identity alone: no models, no request
-// settings or resolved credentials.
+// Identity returns the provider's identity without its models or request settings.
 func (p *Provider) Identity() Provider {
 	return Provider{
 		ID: p.ID, DisplayName: p.DisplayName, APIKeyEnvVar: p.APIKeyEnvVar,
-		APIKeyConfigKey: "api-keys." + p.ID,
-		Aggregator:      p.Aggregator, DefaultModel: p.DefaultModel, DocsURL: p.DocsURL,
+		Aggregator: p.Aggregator, DefaultModel: p.DefaultModel, DocsURL: p.DocsURL,
 	}
 }
 
-// clone returns a deep copy of the provider: its models and the slices and maps
-// of its request settings.
+// clone returns a deep copy of the provider: its models and the slices and maps of its request
+// settings.
 func (p *Provider) clone() Provider {
 	cloned := *p
 
@@ -67,17 +57,16 @@ func (p *Provider) clone() Provider {
 	return cloned
 }
 
-// Model contains a model's identity, media kind, family, aliases, and accepted params.
+// Model contains a model's identity, media kind, family, aliases, and accepted parameters.
 //   - ID: the provider's model identifier
-//   - Name: the name the provider publishes for the model
-//   - Description: the description the provider publishes, or empty where it publishes none
-//   - Media: the kind of output that the model produces
-//   - Family: the provider's model family, for a provider whose endpoints or
-//     request shapes differ by family; empty where the provider has one family
+//   - Name: the model's configured display name
+//   - Description: the optional model description
+//   - Media: the kind of output the model produces
+//   - Family: the model family used when a provider varies its request format by family
 //   - Aliases: alternate model specifiers
-//   - PromptIgnored: whether the model ignores a prompt, so a run needs none
-//   - DocsURL: the address of the model's own documentation, shown on its card
-//   - Params: the parameter configurations accepted by the model
+//   - PromptIgnored: whether the model ignores the prompt and therefore requires none
+//   - DocsURL: the model's documentation address
+//   - Params: the parameter definitions accepted by the model
 type Model struct {
 	ID            string             `json:"id"`
 	Name          string             `json:"name"`
@@ -90,12 +79,6 @@ type Model struct {
 	Params        params.Definitions `json:"params,omitempty"`
 }
 
-// MediaSelected takes the media selections and reports whether the model's
-// medium is among the selected media.
-func (model *Model) MediaSelected(imageSelected, videoSelected bool) bool {
-	return (model.Media == media.Image && imageSelected) || (model.Media == media.Video && videoSelected)
-}
-
 // SupportsParam takes a parameter name and reports whether the model accepts it.
 func (model *Model) SupportsParam(flagName params.FlagType) bool {
 	_, ok := model.Param(flagName)
@@ -106,6 +89,12 @@ func (model *Model) SupportsParam(flagName params.FlagType) bool {
 // Param takes a flag name and returns its configuration and whether it is declared.
 func (model *Model) Param(flagName params.FlagType) (params.Definition, bool) {
 	return model.Params.Param(flagName)
+}
+
+// mediaSelected takes the media selections and reports whether the model's medium is among the
+// selected media.
+func (model *Model) mediaSelected(imageSelected, videoSelected bool) bool {
+	return (model.Media == media.Image && imageSelected) || (model.Media == media.Video && videoSelected)
 }
 
 // clone returns a deep copy of the model, including parameter slices and size constraints.
@@ -129,31 +118,25 @@ func (model *Model) clone() Model {
 	return clonedModel
 }
 
-// Clone returns independent copies of the request settings and their nested collections.
-func (config *ProviderConfig) Clone() ProviderConfig {
-	settings := *config
-	settings.StringParams = slices.Clone(config.StringParams)
-
-	if config.ImageAPI != nil {
-		imageAPI := *config.ImageAPI
-		imageAPI.FixedProvFields = maps.Clone(imageAPI.FixedProvFields)
-		settings.ImageAPI = &imageAPI
+// findModel returns the provider identity and a copy of the model with the requested ID, if
+// present.
+func (p *Provider) findModel(modelID string) (ProvModelPair, bool) {
+	for i := range p.Models {
+		if p.Models[i].ID == modelID {
+			return ProvModelPair{Provider: p.Identity(), Model: p.Models[i].clone()}, true
+		}
 	}
 
-	if config.VideoAPI != nil {
-		videoAPI := *config.VideoAPI
-		videoAPI.ProgressStatusText = slices.Clone(videoAPI.ProgressStatusText)
-		videoAPI.FailedStatusText = slices.Clone(videoAPI.FailedStatusText)
-		videoAPI.URLPathSeq = slices.Clone(videoAPI.URLPathSeq)
-		settings.VideoAPI = &videoAPI
+	return ProvModelPair{}, false
+}
+
+// findAlias returns the provider identity and a copy of the model declaring the alias, if present.
+func (p *Provider) findAlias(modelAlias string) (ProvModelPair, bool) {
+	for i := range p.Models {
+		if slices.Contains(p.Models[i].Aliases, modelAlias) {
+			return ProvModelPair{Provider: p.Identity(), Model: p.Models[i].clone()}, true
+		}
 	}
 
-	if config.AdapterAPI != nil {
-		adapterAPI := *config.AdapterAPI
-		adapterAPI.PendingStatusText = slices.Clone(adapterAPI.PendingStatusText)
-		adapterAPI.FailedStatusText = slices.Clone(adapterAPI.FailedStatusText)
-		settings.AdapterAPI = &adapterAPI
-	}
-
-	return settings
+	return ProvModelPair{}, false
 }

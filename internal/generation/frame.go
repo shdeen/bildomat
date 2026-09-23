@@ -8,9 +8,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// DropFramePrefixes removes the frame prefix from every media input, for a
-// model that accepts none, and returns one conformed-change record per
-// dropped prefix. The media itself stays in the request.
+// DropFramePrefixes clears frame markers in the supplied media slice and records each removal. The
+// underlying media and bare sources remain unchanged.
 func DropFramePrefixes(mediaInputs []media.Input) []params.Adjustment {
 	var records []params.Adjustment
 
@@ -34,20 +33,9 @@ func DropFramePrefixes(mediaInputs []media.Input) []params.Adjustment {
 	return records
 }
 
-// ResolveFrameAnchors reconciles frame prefixes for a model that accepts only
-// the opening and closing frames, mutating the media inputs in place so every
-// frame request ends as an anchor keyword with no numeric time.
-//
-// Anchor keywords take their frames directly. Numeric times fill the frames
-// the keywords left free: two times take the opening and closing frames in
-// numeric order; one time takes the only free frame, or, with both free,
-// snaps at or below half the duration to the opening frame and past it to the
-// closing frame (with no duration set, zero opens and any later time closes).
-// Each true snap returns one snapped-change record.
-//
-// A frame prefix on a video input, the same anchor on two inputs, equal
-// times, and more timed inputs than free frames all fail, naming the
-// offending sources.
+// ResolveFrameAnchors replaces numeric frame times in the supplied media with first/last anchors
+// and records actual snaps. It rejects frame markers on video, conflicting anchors or times, and
+// requests exceeding the two available frames.
 func ResolveFrameAnchors(mediaInputs []media.Input, parameterValues params.Values) ([]params.Adjustment, error) {
 	if len(mediaInputs) == 0 {
 		return nil, nil
@@ -68,11 +56,8 @@ func ResolveFrameAnchors(mediaInputs []media.Input, parameterValues params.Value
 	return fillFreeFrames(mediaInputs, numericIndexes, firstFree, lastFree, durationSeconds, durationSet)
 }
 
-// classifyFrameRequests takes the media inputs and returns the source that
-// claims each anchor keyword, keyed by the keyword, and the indexes of the
-// inputs carrying a numeric frame time, in input order. It fails on a frame
-// prefix on a video input and on an anchor keyword claimed by two inputs,
-// naming the offending sources.
+// classifyFrameRequests returns the sources claiming each anchor and the indexes of numeric times.
+// It rejects frame markers on video and duplicate anchor claims.
 func classifyFrameRequests(mediaInputs []media.Input) (anchorOwners map[string]string, numericIndexes []int, err error) {
 	anchorOwners = map[string]string{}
 
@@ -102,9 +87,7 @@ func classifyFrameRequests(mediaInputs []media.Input) (anchorOwners map[string]s
 	return anchorOwners, numericIndexes, nil
 }
 
-// freeFrames takes the sources claiming each anchor keyword and reports
-// whether the opening frame and the closing frame are free of a keyword, and
-// how many of the two are.
+// freeFrames reports which first/last anchors remain unclaimed and how many are available.
 func freeFrames(anchorOwners map[string]string) (firstFree, lastFree bool, freeCount int) {
 	firstFree = anchorOwners[media.FrameFirst] == ""
 	lastFree = anchorOwners[media.FrameLast] == ""
@@ -120,10 +103,9 @@ func freeFrames(anchorOwners map[string]string) (firstFree, lastFree bool, freeC
 	return firstFree, lastFree, freeCount
 }
 
-// fillFreeFrames moves the numeric-timed media inputs onto the frames the
-// anchor keywords left free: two times take the opening and closing frames in
-// numeric order, one time takes the only free frame or snaps by the half
-// rule, and equal times fail naming both sources.
+// fillFreeFrames assigns numeric times to unclaimed anchors in the supplied media slice. Two times
+// sort chronologically; one takes the sole free anchor or snaps around half the duration. Equal
+// times fail with both sources identified.
 func fillFreeFrames(mediaInputs []media.Input, numericIndexes []int, firstFree, lastFree bool, durationSeconds float64, durationSet bool) ([]params.Adjustment, error) {
 	switch len(numericIndexes) {
 	case 0:
@@ -165,8 +147,8 @@ func fillFreeFrames(mediaInputs []media.Input, numericIndexes []int, firstFree, 
 	return append(records, anchorNumericInput(closingInput, closingSeconds, media.FrameLast, durationSeconds, durationSet)...), nil
 }
 
-// pastHalfDuration reports whether a frame time falls past half the duration.
-// With no duration set, any time later than zero counts as past.
+// pastHalfDuration reports whether a frame time falls past half the duration. With no duration set,
+// any time later than zero counts as past.
 func pastHalfDuration(seconds, durationSeconds float64, durationSet bool) bool {
 	if !durationSet {
 		return seconds > 0
@@ -175,10 +157,8 @@ func pastHalfDuration(seconds, durationSeconds float64, durationSet bool) bool {
 	return seconds > durationSeconds/2
 }
 
-// anchorNumericInput moves one numeric-timed media input onto an anchor frame
-// and returns one snapped-change record, or none when the time already names
-// that frame exactly (zero for the opening frame, the duration for the
-// closing one).
+// anchorNumericInput replaces one numeric frame time with its selected anchor. It returns a snap
+// record unless the time exactly denotes the opening or known closing time.
 func anchorNumericInput(mediaInput *media.Input, seconds float64, anchor string, durationSeconds float64, durationSet bool) []params.Adjustment {
 	requestedSource := mediaInput.Source()
 	mediaInput.Time = nil

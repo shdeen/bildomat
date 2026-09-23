@@ -63,8 +63,8 @@ const (
 //   - TextHint: the value placeholder shown in help output
 //   - AllowMultiple: whether the parameter accepts multiple values
 //
-// The encoding carries only what a record declares: an empty alias list,
-// example list, comment, or hint is absent.
+// The encoding carries only what a record declares: an empty alias list, example list, comment, or
+// hint is absent.
 type Flag struct {
 	FlagID        FlagType `json:"flagID"`
 	FlagName      string   `json:"flagName"`
@@ -77,7 +77,8 @@ type Flag struct {
 	AllowMultiple bool     `json:"allowMultiple,omitempty"`
 }
 
-// ParseValue parses parameter text according to the requested data type and returns its typed value.
+// ParseValue parses parameter text according to the requested data type and returns its typed
+// value.
 func ParseValue(dataType DataType, rawValue string) (any, error) {
 	switch dataType {
 	case DataString:
@@ -108,10 +109,8 @@ func ParseValue(dataType DataType, rawValue string) (any, error) {
 	return nil, fmt.Errorf("%q: %w", dataType, errs.ErrParamValueDataType)
 }
 
-// CheckFlagInputTypes takes the supplied flag inputs and the parameter flag records and
-// returns ErrParamValueTypeMismatch naming the first flag whose stored value does not have
-// the type its record declares: a string slice for a repeatable flag, otherwise the string,
-// number, integer, or boolean of its data type. A flag without a record is not checked.
+// CheckFlagInputTypes rejects the first stored input that differs from its declared Go type.
+// Repeatable flags require a string slice; inputs without a flag definition are not checked.
 func CheckFlagInputTypes(inputs FlagInputs, paramFlags []Flag) error {
 	for i := range paramFlags {
 		paramFlag := &paramFlags[i]
@@ -129,9 +128,7 @@ func CheckFlagInputTypes(inputs FlagInputs, paramFlags []Flag) error {
 	return nil
 }
 
-// holdsDeclaredType reports whether a stored flag value has the Go type its flag record
-// declares. The cases mirror the values ParseValue returns for each data type, and
-// the string slice the parser stores for a repeatable flag.
+// holdsDeclaredType checks a parsed value against its flag's scalar or repeatable type.
 func holdsDeclaredType(stored any, paramFlag *Flag) bool {
 	if paramFlag.AllowMultiple {
 		_, ok := stored.([]string)

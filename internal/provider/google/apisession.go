@@ -18,15 +18,18 @@ import (
 	"github.com/shdeen/bildomat/internal/provider"
 )
 
-// apiSession owns one generation's resolved Google credential, provider
-// settings, and model identity. Contexts belong to individual operations.
+// apiSession holds one generation's Google settings and identity.
+//   - settings: endpoints, polling limits, and artifact defaults
+//   - credential: authentication for provider requests
+//   - model: the provider/model label used in errors
 type apiSession struct {
 	settings   *catalog.AdapterAPI
 	credential httpapi.AuthCredential
 	model      string
 }
 
-// generateInteraction sends an Interactions request and returns its media artifact and thought summaries.
+// generateInteraction sends an Interactions request and returns its media artifact and thought
+// summaries.
 func (session *apiSession) generateInteraction(ctx context.Context, run *generation.Generation) (generation.Result, error) {
 	prompt := run.Prompt
 
@@ -77,8 +80,9 @@ func (session *apiSession) generateInteraction(ctx context.Context, run *generat
 	}, nil
 }
 
-// generateVeo submits a Veo operation, retains its references, waits for completion,
-// and returns its downloaded artifacts.
+// generateVeo submits a Veo operation and returns its downloaded artifacts. It replaces the
+// request's remote inputs with downloaded media and retains operation references and responses in
+// the generation record.
 func (session *apiSession) generateVeo(ctx context.Context, run *generation.Generation) (generation.Result, error) {
 	downloadedInputs, err := httpapi.DownloadInputMedia(ctx, run.InputMedia)
 
@@ -169,8 +173,8 @@ func (session *apiSession) pollOperation(ctx context.Context, name string, recor
 	return probe.completed, nil
 }
 
-// createArtifacts returns the video artifacts in a completed operation.
-// It removes any temporary artifact files when a sample fails.
+// createArtifacts returns the video artifacts in a completed operation. It removes any temporary
+// artifact files when a sample fails.
 func (session *apiSession) createArtifacts(ctx context.Context, completedOperation operation, fallbackExt string, record *metadata.Record) ([]artifact.Media, error) {
 	samples, err := completedSamples(completedOperation, session.model)
 	if err != nil {
@@ -195,8 +199,8 @@ func (session *apiSession) createArtifacts(ctx context.Context, completedOperati
 	return artifacts, nil
 }
 
-// createArtifact returns the artifact represented by a video response.
-// It may download the video URI into a temporary file.
+// createArtifact returns the artifact represented by a video response. It may download the video
+// URI into a temporary file.
 func (session *apiSession) createArtifact(ctx context.Context, i int, sampleVideo video, fallbackExt string, record *metadata.Record) (artifact.Media, error) {
 	switch {
 	case sampleVideo.EncodedVideo != "":
@@ -217,8 +221,8 @@ func (session *apiSession) createArtifact(ctx context.Context, i int, sampleVide
 	return artifact.Media{}, fmt.Errorf("%q, %w", msg, errs.ErrResponseNoData)
 }
 
-// extractInteractionMedia returns the first requested media artifact and each thought summary in a response body.
-// It may download URI-backed media into a temporary file.
+// extractInteractionMedia returns the first requested media artifact and each thought summary in a
+// response body. It may download URI-backed media into a temporary file.
 func (session *apiSession) extractInteractionMedia(ctx context.Context, body []byte, mediaBlockType, fallback string, record *metadata.Record) (artifact.Media, []string, error) {
 	var response interactionResponse
 	if err := json.Unmarshal(body, &response); err != nil {
@@ -267,8 +271,8 @@ func (session *apiSession) extractInteractionMedia(ctx context.Context, body []b
 	return generatedMedia, thoughts, nil
 }
 
-// createBlockArtifact returns the artifact represented by a media block.
-// It may wait for and download a file-backed media resource.
+// createBlockArtifact returns the artifact represented by a media block. It may wait for and
+// download a file-backed media resource.
 func (session *apiSession) createBlockArtifact(ctx context.Context, block *interactionBlock, fallback string, record *metadata.Record) (artifact.Media, error) {
 	if block.Data != "" {
 		data, err := base64.StdEncoding.DecodeString(block.Data)
@@ -293,8 +297,8 @@ func (session *apiSession) createBlockArtifact(ctx context.Context, block *inter
 	return session.downloadArtifact(ctx, session.settings.APIBase+"/"+fileResource+downloadQuerySuffix, media.ExtForMimeOr(block.MimeType, fallback), record)
 }
 
-// downloadArtifact downloads a URL and returns a file-backed artifact.
-// It sends the credential only when the URL and API base have the same origin.
+// downloadArtifact downloads a URL and returns a file-backed artifact. It sends the credential only
+// when the URL and API base have the same origin.
 func (session *apiSession) downloadArtifact(ctx context.Context, endpoint, fallback string, record *metadata.Record) (artifact.Media, error) {
 	return httpapi.Fetch(ctx, endpoint, httpapi.CredentialForURL(endpoint, session.settings.APIBase, session.credential), fallback, record)
 }

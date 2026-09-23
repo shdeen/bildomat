@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"slices"
 	"strings"
 
@@ -15,21 +16,21 @@ import (
 )
 
 // The request encodings a configuration may declare for input media.
-//   - InputMediaPayloadJSON: input media travels inside the JSON body
+//   - inputMediaPayloadJSON: input media travels inside the JSON body
 //   - InputMediaPayloadForm: input media travels as multipart form parts
 const (
-	InputMediaPayloadJSON = "json"
+	inputMediaPayloadJSON = "json"
 	InputMediaPayloadForm = "form"
 )
 
-// The configuration section names the validation faults cite.
-//   - SectionImageAPI: the image API section, which provider packages also cite
-//   - sectionVideoAPI: the video API section
+// Configuration section names used in validation errors.
+//   - SectionImageAPI: the shared image API settings
+//   - SectionVideoAPI: the shared video API settings
 //   - sectionAdapterPoll: the adapter's generation polling settings
 //   - sectionAdapterFilePoll: the adapter's file polling settings
 const (
 	SectionImageAPI        = "ImageAPI"
-	sectionVideoAPI        = "VideoAPI"
+	SectionVideoAPI        = "VideoAPI"
 	sectionAdapterPoll     = "AdapterAPI poll"
 	sectionAdapterFilePoll = "AdapterAPI file poll"
 )
@@ -40,18 +41,15 @@ const (
 //
 //nolint:gochecknoglobals // read-only value sets, written only at package load.
 var (
-	inputMediaPayloads = []string{InputMediaPayloadJSON, InputMediaPayloadForm}
+	inputMediaPayloads = []string{inputMediaPayloadJSON, InputMediaPayloadForm}
 
 	inputMediaStyles = []InputMediaStyle{InputMediaParts, InputMediaNested, InputMediaSingle, InputMediaString}
 )
 
-// ProviderConfig is a provider's request settings: the part of its
-// configuration document the generators read and no user-facing document
-// carries. The registered, undecoded form of the whole document is
-// Source.
-//   - StringParams: the parameters sent as strings whatever their data type
-//   - ImageAPI: the optional image generation API description
-//   - VideoAPI: the optional video generation API description
+// ProviderConfig contains the request settings consumed by generators.
+//   - StringParams: the parameters sent as strings regardless of their data type
+//   - ImageAPI: the optional shared image API settings
+//   - VideoAPI: the optional shared video API settings
 //   - AdapterAPI: the optional settings for a provider-specific adapter
 type ProviderConfig struct {
 	StringParams []params.FlagType `json:"stringParams,omitempty"`
@@ -60,13 +58,14 @@ type ProviderConfig struct {
 	AdapterAPI   *AdapterAPI       `json:"adapterAPI,omitempty"`
 }
 
-// AdapterAPI contains endpoints, polling settings, status values, and fallback extensions for an adapter.
+// AdapterAPI contains endpoints, polling settings, status values, and fallback extensions for an
+// adapter.
 //   - APIBase: the base API endpoint
-//   - PollInterval: the number of seconds between generation status requests
-//   - PollTimeout: the maximum number of seconds allowed for generation polling
-//   - FilePollInterval: the number of seconds between file status requests
-//   - FilePollTimeout: the maximum number of seconds allowed for file polling
-//   - PendingStatusText: the status that indicates pending work
+//   - PollInterval: seconds between generation status requests
+//   - PollTimeout: the generation polling budget in seconds
+//   - FilePollInterval: seconds between file status requests
+//   - FilePollTimeout: the file polling budget in seconds
+//   - PendingStatusText: the statuses that indicate pending work
 //   - ReadyStatusText: the status that indicates completed work
 //   - FailedStatusText: the statuses that indicate failed work
 //   - ImageFallbackExt: the fallback extension for downloaded images
@@ -84,8 +83,8 @@ type AdapterAPI struct {
 	VideoFallbackExt  string      `json:"videoFallbackExt"`
 }
 
-// loadProviderConfig decodes a provider configuration document into the
-// provider it declares and validates it against the parameter flag definitions.
+// loadProviderConfig decodes a provider configuration document into the provider it declares and
+// validates it against the parameter flag definitions.
 func loadProviderConfig(flags []params.Flag, cfgName string, provConfigBytes []byte) (Provider, error) {
 	prov, err := decodeProvConfig(cfgName, provConfigBytes)
 	if err != nil {
@@ -99,7 +98,8 @@ func loadProviderConfig(flags []params.Flag, cfgName string, provConfigBytes []b
 	return prov, nil
 }
 
-// decodeProvConfig decodes one provider configuration document from encoded data.
+// decodeProvConfig decodes exactly one provider document, rejecting unknown fields and trailing
+// data.
 func decodeProvConfig(cfgName string, b []byte) (Provider, error) {
 	decoder := json.NewDecoder(bytes.NewReader(b))
 	decoder.DisallowUnknownFields()
@@ -119,7 +119,7 @@ func decodeProvConfig(cfgName string, b []byte) (Provider, error) {
 	return prov, nil
 }
 
-// checkModelConfig returns an error when model has an invalid media value or parameter configuration.
+// checkModelConfig validates model identity, media kind, and nonduplicated parameter definitions.
 func checkModelConfig(cfgName string, model *Model, flagsByID map[params.FlagType]params.Flag) error {
 	if model.ID == "" {
 		return createInvalidCfgError(cfgName, ModelIDMissing)
@@ -129,8 +129,8 @@ func checkModelConfig(cfgName string, model *Model, flagsByID map[params.FlagTyp
 		return createInvalidCfgError(cfgName, fmt.Sprintf(ModelMediaInvalid, model.ID, string(model.Media)))
 	}
 
-	// A description is optional, since not every provider publishes one, but a
-	// name is not: the model has no other human-readable identity to render.
+	// A description is optional, since not every provider publishes one, but a name is not: the
+	// model has no other human-readable identity to render.
 	if model.Name == "" {
 		return createInvalidCfgError(cfgName, fmt.Sprintf(ModelNameMissing, model.ID))
 	}
@@ -152,14 +152,14 @@ func checkModelConfig(cfgName string, model *Model, flagsByID map[params.FlagTyp
 	return nil
 }
 
-// createInvalidCfgError returns a configuration validation error containing the configuration label and fault.
+// createInvalidCfgError returns a configuration validation error containing the configuration label
+// and fault.
 func createInvalidCfgError(cfgName, fault string) error {
 	return &errs.ConfigError{Path: cfgName, Provider: strings.TrimSuffix(cfgName, ".json"), Problem: fault, Cause: errs.ErrProvConfigInvalid}
 }
 
-// checkProvConfig returns an error when a provider declares no request
-// settings, when its models conflict with the parameter flags, or when its
-// request settings are invalid.
+// checkProvConfig returns an error when a provider declares no request settings, when its models
+// conflict with the parameter flags, or when its request settings are invalid.
 func checkProvConfig(cfgName string, prov *Provider, flags []params.Flag) error {
 	if prov.Config == nil {
 		return createInvalidCfgError(cfgName, ConfigMissing)
@@ -220,7 +220,7 @@ func checkModelInputMedia(cfgName string, model *Model, settings *ProviderConfig
 	}
 
 	if model.Media == media.Video && settings.VideoAPI != nil && settings.VideoAPI.InputMediaPayloadType == "" {
-		return createInvalidCfgError(cfgName, fmt.Sprintf(InputMediaPayloadTypeInvalid, sectionVideoAPI, ""))
+		return createInvalidCfgError(cfgName, fmt.Sprintf(InputMediaPayloadTypeInvalid, SectionVideoAPI, ""))
 	}
 
 	return nil
@@ -251,7 +251,8 @@ func checkAPIs(cfgName string, provCfg *ProviderConfig, hasImageModels, hasVideo
 	return nil
 }
 
-// checkAdapterAPI returns an error when adapter settings lack required fallback extensions or polling values.
+// checkAdapterAPI returns an error when adapter settings lack required fallback extensions or
+// polling values.
 func checkAdapterAPI(cfgName string, adapterAPI *AdapterAPI, hasImageModels, hasVideoModels bool) error {
 	if hasImageModels && adapterAPI.ImageFallbackExt == "" {
 		return createInvalidCfgError(cfgName, ImageFallbackExtMissing)
@@ -294,9 +295,10 @@ func checkInputMedia(cfgName, api, payload string, style InputMediaStyle, singul
 	return nil
 }
 
-// checkVideoAPI returns an error when video API settings contain unsupported image settings or invalid polling values.
+// checkVideoAPI validates input-media encoding, complete frame fields, and required polling
+// settings.
 func checkVideoAPI(cfgName string, videoAPI *VideoAPI, vidDeclared bool) error {
-	if err := checkInputMedia(cfgName, sectionVideoAPI, videoAPI.InputMediaPayloadType, videoAPI.InputMediaStyle, videoAPI.InputMediaProvParam, videoAPI.InputMediaListProvParam); err != nil {
+	if err := checkInputMedia(cfgName, SectionVideoAPI, videoAPI.InputMediaPayloadType, videoAPI.InputMediaStyle, videoAPI.InputMediaProvParam, videoAPI.InputMediaListProvParam); err != nil {
 		return err
 	}
 
@@ -309,5 +311,63 @@ func checkVideoAPI(cfgName string, videoAPI *VideoAPI, vidDeclared bool) error {
 		return createInvalidCfgError(cfgName, FrameMediaIncomplete)
 	}
 
-	return checkPolling(cfgName, sectionVideoAPI, videoAPI.PollInterval, videoAPI.PollTimeout, true)
+	return checkPolling(cfgName, SectionVideoAPI, videoAPI.PollInterval, videoAPI.PollTimeout, true)
+}
+
+// Clone returns independent copies of the request settings and their nested collections.
+func (config *ProviderConfig) Clone() ProviderConfig {
+	settings := *config
+	settings.StringParams = slices.Clone(config.StringParams)
+
+	if config.ImageAPI != nil {
+		imageAPI := *config.ImageAPI
+		imageAPI.FixedProvFields = maps.Clone(imageAPI.FixedProvFields)
+		settings.ImageAPI = &imageAPI
+	}
+
+	if config.VideoAPI != nil {
+		videoAPI := *config.VideoAPI
+		videoAPI.ProgressStatusText = slices.Clone(videoAPI.ProgressStatusText)
+		videoAPI.FailedStatusText = slices.Clone(videoAPI.FailedStatusText)
+		videoAPI.URLPathSeq = slices.Clone(videoAPI.URLPathSeq)
+		settings.VideoAPI = &videoAPI
+	}
+
+	if config.AdapterAPI != nil {
+		adapterAPI := *config.AdapterAPI
+		adapterAPI.PendingStatusText = slices.Clone(adapterAPI.PendingStatusText)
+		adapterAPI.FailedStatusText = slices.Clone(adapterAPI.FailedStatusText)
+		settings.AdapterAPI = &adapterAPI
+	}
+
+	return settings
+}
+
+// requestPaths lists the configurable assignments used by one model.
+func (config *ProviderConfig) requestPaths(model *Model) []string {
+	requestPaths := make([]string, 0, len(model.Params))
+	for parameterIndex := range model.Params {
+		definition := &model.Params[parameterIndex]
+		if definition.ParamID != "" {
+			requestPaths = append(requestPaths, definition.ParamID)
+		}
+	}
+
+	if config.AdapterAPI == nil {
+		if model.Media == media.Image && config.ImageAPI != nil {
+			api := config.ImageAPI
+
+			requestPaths = append(requestPaths, api.InputMediaProvParam, api.InputMediaListProvParam)
+			for fieldPath := range api.FixedProvFields {
+				requestPaths = append(requestPaths, fieldPath)
+			}
+		}
+
+		if model.Media == media.Video && config.VideoAPI != nil {
+			api := config.VideoAPI
+			requestPaths = append(requestPaths, api.InputMediaProvParam, api.InputMediaListProvParam, api.FrameMediaProvParam)
+		}
+	}
+
+	return requestPaths
 }

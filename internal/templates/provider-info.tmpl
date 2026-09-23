@@ -1,11 +1,4 @@
-Provider: {{.Name}}
-{{pad "ID" .LabelWidth}}{{.ID}}
-{{if .DocsURL}}Docs: {{.DocsURL}}
-{{end}}
-{{template "api-key" .Credentials}}
-
-Catalog: {{.ModelCount}} {{if eq .ModelCount 1}}model{{else}}models{{end}} ({{.CatalogMedia}})
-{{range .Sections}}{{$heading := "IMAGE MODELS"}}{{if eq .Media "video"}}{{$heading = "VIDEO MODELS"}}{{end}}
+{{template "provider-header" .}}{{range .Sections}}{{$heading := "IMAGE MODELS"}}{{if eq .Media "video"}}{{$heading = "VIDEO MODELS"}}{{end}}
 {{if .HasAliases}}{{pad $heading $.IDWidth}}aliases{{else}}{{$heading}}{{end}}
 {{$.Dim}}────────────────────────────────────────────────────────────────────────────────{{$.Reset}}
 {{range .Roster}}{{.}}

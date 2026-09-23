@@ -15,9 +15,9 @@ import (
 // dimensionsForm renders a width and height as a dimension value.
 const dimensionsForm = "%dx%d"
 
-// ConformInputMedia applies the model's image dimensions to owned parameter and media records.
-// It returns only actual changes, including completed changes before a later failure.
-// An unresolved first image defers size adoption until its bytes become available.
+// ConformInputMedia updates the supplied parameters and media slice to satisfy image dimensions. It
+// records actual changes, retaining completed changes if a later image fails. An unresolved first
+// image defers size adoption until its bytes become available.
 //
 //nolint:funlen // Keep sequential size adoption and completed-change preservation visible in one loop.
 func ConformInputMedia(model *catalog.Model, parameterValues params.Values, mediaInputs []media.Input) ([]params.Adjustment, error) {
@@ -79,7 +79,8 @@ func ConformInputMedia(model *catalog.Model, parameterValues params.Values, medi
 	return changes, nil
 }
 
-// conformImage resizes an owned image record only when its decoded dimensions differ.
+// conformImage replaces an image's bytes and MIME type when its dimensions need adjustment. It
+// reports whether the image changed.
 func conformImage(imageInput *media.Input, dimensions image.Config, requestedSize string) (bool, error) {
 	width, height, valid := params.ParseDimensions(requestedSize)
 	if !valid {

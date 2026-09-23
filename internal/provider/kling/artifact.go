@@ -11,8 +11,8 @@ import (
 	"github.com/shdeen/bildomat/internal/metadata"
 )
 
-// downloadImages downloads every completed image in provider index order.
-// A failed download removes the temporary files from prior successful downloads.
+// downloadImages downloads every completed image in provider index order. A failed download removes
+// the temporary files from prior successful downloads.
 func downloadImages(ctx context.Context, providerModelName string, resultURLs []string, fallbackExtension string, record *metadata.Record) ([]artifact.Media, error) {
 	artifacts := make([]artifact.Media, 0, len(resultURLs))
 	for _, resultURL := range resultURLs {

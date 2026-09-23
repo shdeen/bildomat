@@ -1,0 +1,9 @@
+{{define "provider-header"}}Provider: {{.Name}}
+{{if .Aggregator}}{{pad "Type" .LabelWidth}}gateway · aggregator
+{{end}}{{pad "ID" .LabelWidth}}{{.ID}}
+{{if .DocsURL}}Docs: {{.DocsURL}}
+{{end}}
+{{template "api-key" .Credentials}}
+
+Catalog: {{.ModelCount}} {{if eq .ModelCount 1}}model{{else}}models{{end}} ({{.CatalogMedia}})
+{{end}}

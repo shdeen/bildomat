@@ -25,8 +25,14 @@ const (
 	imageStatusSucceeded = "succeed"
 )
 
-// imageJobPoll checks one image-generation task and retains its completed
-// result URLs in provider index order.
+// imageJobPoll tracks one Kling image task.
+//   - apiBase: the provider API base URL
+//   - credential: authentication for status requests
+//   - taskID: the provider task identifier
+//   - providerModelName: the provider/model label used in errors
+//   - queryPath: the task status path
+//   - resultURLs: completed image URLs in provider index order
+//   - record: optional request and response retention
 type imageJobPoll struct {
 	apiBase           string
 	credential        httpapi.AuthCredential
@@ -51,24 +57,32 @@ func (imagePoll *imageJobPoll) Poll(ctx context.Context) (taskComplete bool, pol
 
 // imageTask carries the image API's distinct status and result fields.
 type imageTask struct {
-	Status  any             `json:"task_status"`
-	Message any             `json:"task_status_msg"`
-	Result  json.RawMessage `json:"task_result"`
+	// Status preserves the reported task state and its JSON type.
+	Status any `json:"task_status"`
+	// Message preserves the optional task failure message.
+	Message any `json:"task_status_msg"`
+	// Result contains the encoded image results.
+	Result json.RawMessage `json:"task_result"`
 }
 
 // imageResponse preserves the declared index until its exact value is validated.
 type imageResponse struct {
+	// Index identifies the image's position in the provider result.
 	Index json.RawMessage `json:"index"`
-	URL   any             `json:"url"`
+	// URL contains the image download location.
+	URL any `json:"url"`
 }
 
 // imageResult contains the validated facts needed to order and download an image.
 type imageResult struct {
+	// Index identifies the image's position in the provider result.
 	Index int
-	URL   string
+	// URL contains the image download location.
+	URL string
 }
 
-// classifyResponse validates only the fields required by the observed state.
+// classifyResponse reports task completion and stores ordered output URLs in the poller. It
+// validates the fields required by the reported task state.
 func (imagePoll *imageJobPoll) classifyResponse(responseBody []byte) (bool, error) {
 	response, err := decodeEnvelope(responseBody, imagePoll.providerModelName+": "+ImageTaskResponseContext)
 	if err != nil {
@@ -107,8 +121,8 @@ func (imagePoll *imageJobPoll) classifyResponse(responseBody []byte) (bool, erro
 	}
 }
 
-// retainResultURLs validates every record before sorting, so duplicate indexes
-// cannot erase an image or leave a partially completed result available.
+// retainResultURLs validates image URLs and unique indexes, then stores URLs in index order in the
+// poller. Invalid results leave its retained URLs unchanged.
 func (imagePoll *imageJobPoll) retainResultURLs(encodedResult json.RawMessage) error {
 	var result struct {
 		Images []json.RawMessage `json:"images"`
@@ -156,7 +170,7 @@ func (imagePoll *imageJobPoll) retainResultURLs(encodedResult json.RawMessage) e
 	return nil
 }
 
-// compareImageIndexes is the ordering callback required by slices.SortFunc.
+// compareImageIndexes compares images by their provider-assigned index.
 func compareImageIndexes(firstImage, secondImage imageResult) int {
 	return cmp.Compare(firstImage.Index, secondImage.Index)
 }

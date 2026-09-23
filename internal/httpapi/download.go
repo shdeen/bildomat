@@ -14,8 +14,8 @@ import (
 	"github.com/shdeen/bildomat/internal/metadata"
 )
 
-// Fetch streams generated media into an owned temporary file. A failed download
-// retains captured bytes independently, cleans its source, and returns no media.
+// Fetch streams generated media into a temporary file that the caller owns. On failure it removes
+// that file and returns no media. A nonnil record retains received bytes.
 func Fetch(ctx context.Context, endpoint string, credential AuthCredential, fallbackExt string, record *metadata.Record) (artifact.Media, error) {
 	response, requestIndex, err := request(ctx, http.MethodGet, endpoint, credential, nil, nil, record)
 	if err != nil {
@@ -25,7 +25,7 @@ func Fetch(ctx context.Context, endpoint string, credential AuthCredential, fall
 
 	if response.StatusCode/100 != 2 {
 		snippet, readErr := readFirstBytes(response.Body, maxRespBytes)
-		record.Receive(requestIndex, metadata.Synchronous, response.StatusCode, response.Header.Get(headerContentType), snippet, nil, readErr)
+		record.Receive(requestIndex, metadata.Synchronous, response.StatusCode, response.Header.Get(headerContentType), snippet, readErr)
 		statusContext := fmt.Sprintf(StatusExcerptForm, endpoint, response.StatusCode, errs.Excerpt(snippet))
 		statusErr := fmt.Errorf("%q: %w", statusContext, errs.ErrTransportStatus)
 
@@ -35,8 +35,8 @@ func Fetch(ctx context.Context, endpoint string, credential AuthCredential, fall
 	return stream(ctx, response, endpoint, fallbackExt, record, requestIndex)
 }
 
-// stream saves a complete nonempty response, counting its signature and remainder.
-// Response retention precedes artifact cleanup on every unsuccessful download.
+// stream writes a complete nonempty response to a temporary artifact file. A nonnil record retains
+// the response before a failed download's temporary file is removed.
 func stream(ctx context.Context, response *http.Response, endpoint, fallbackExt string, record *metadata.Record, requestIndex int) (artifact.Media, error) {
 	temporaryFile, err := os.CreateTemp("", tempDownloadPattern)
 	if err != nil {
@@ -63,8 +63,8 @@ func stream(ctx context.Context, response *http.Response, endpoint, fallbackExt 
 	return artifact.Media{TmpPath: temporaryFile.Name(), FileExt: media.ExtForData(contentType, signature, fallbackExt)}, nil
 }
 
-// copyDownload retains the signature while streaming all remaining bytes. It
-// preserves a partial initial read and does not continue after a read or write failure.
+// copyDownload streams the body into file, returning its leading signature and written byte count.
+// It retains a partial initial read and stops on any read or write failure.
 func copyDownload(file *os.File, body io.Reader) (signature []byte, written int64, copyErr error) {
 	signature, readErr := io.ReadAll(io.LimitReader(body, mediaTypeDetectBytes))
 

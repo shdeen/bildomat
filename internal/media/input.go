@@ -16,14 +16,19 @@ import (
 	"github.com/shdeen/bildomat/internal/errs"
 )
 
-// Source schemes accepted for remote media.
+// Remote media source syntax.
+//   - schemeHTTP: unencrypted HTTP
+//   - schemeHTTPS: encrypted HTTP
+//   - schemeSeparator: the delimiter between scheme and address
 const (
 	schemeHTTP      = "http"
 	schemeHTTPS     = "https"
 	schemeSeparator = "://"
 )
 
-// FrameFirst and FrameLast identify the opening and closing frames.
+// Frame anchors identify the requested position in a generated video.
+//   - FrameFirst: the opening frame
+//   - FrameLast: the closing frame
 const (
 	FrameFirst = "first"
 	FrameLast  = "last"
@@ -32,10 +37,14 @@ const (
 // inputLimit is the maximum accepted local input size, in bytes.
 const inputLimit = 64 << 20
 
-// Input contains local bytes or a remote URL and an optional frame request.
-// A nil Time means no numeric time; a pointer to zero requests the opening time.
-// Copies share immutable bytes and time values. Transformations replace those
-// values rather than modifying their backing storage.
+// Input contains local bytes or a remote URL and an optional frame request. Copies share immutable
+// bytes and time values; transformations replace them.
+//   - Bytes: local or downloaded media content
+//   - MIME: the identified media type, or empty while unresolved
+//   - Filepath: the local path or source URL retained after download
+//   - URL: the remote source while it remains a URL reference
+//   - Time: numeric frame seconds; nil means absent and zero requests the opening time
+//   - FrameAnchor: first or last; takes precedence over Time when formatting a source
 type Input struct {
 	Bytes       []byte
 	MIME        string
@@ -96,8 +105,8 @@ func (mediaInput Input) Source() string {
 	return mediaInput.SourceName()
 }
 
-// DataURI returns a remote URL unchanged or local bytes encoded with their MIME type.
-// Without a MIME type, a local input has no data URI.
+// DataURI returns a remote URL unchanged or local bytes encoded with their MIME type. Without a
+// MIME type, a local input has no data URI.
 //
 //nolint:gocritic // Input is an immutable value; the receiver does not copy its backing bytes.
 func (mediaInput Input) DataURI() string {
@@ -123,7 +132,8 @@ func (mediaInput Input) URLOrBase64() string {
 	return base64.StdEncoding.EncodeToString(mediaInput.Bytes)
 }
 
-// ReadInputs validates sources and retains their supplied order.
+// ReadInputs reads local media and retains validated HTTP(S) sources in supplied order. Remote
+// sources remain unresolved; any invalid source fails the entire read.
 func ReadInputs(sources []string) ([]Input, error) {
 	mediaInputs := make([]Input, 0, len(sources))
 	for _, source := range sources {
@@ -206,8 +216,7 @@ func readLocal(path string) (Input, error) {
 	return Input{Bytes: data, MIME: mimeType, Filepath: path}, nil
 }
 
-// IsURLSource recognizes a remote source even when its frame prefix is invalid.
-// Keeping the complete flag value lets readSource report that prefix's error.
+// IsURLSource recognizes an HTTP(S) source even when its optional frame prefix is invalid.
 func IsURLSource(source string) bool {
 	bareSource, _, _, _ := splitFramePrefix(source) //nolint:dogsled,errcheck // Recognition needs only the source; readSource reports errors after the CLI preserves the complete value.
 
@@ -221,9 +230,9 @@ func isURL(source string) bool {
 	return strings.HasPrefix(lowerSource, schemeHTTP+schemeSeparator) || strings.HasPrefix(lowerSource, schemeHTTPS+schemeSeparator)
 }
 
-// splitFramePrefix separates a source from its numeric time or first/last anchor.
-// Invalid numeric times retain their source and classified error. Ordinary
-// filenames, including colons, pass through when no frame prefix is present.
+// splitFramePrefix separates a source from its numeric time or first/last anchor. Invalid numeric
+// times retain their source and classified error. Ordinary filenames, including colons, pass
+// through when no frame prefix is present.
 func splitFramePrefix(source string) (bareSource string, frameTime *float64, anchor string, err error) {
 	prefix, remainder, separated := strings.Cut(source, ":")
 	if !separated || remainder == "" {
@@ -254,8 +263,8 @@ func splitFramePrefix(source string) (bareSource string, frameTime *float64, anc
 	return remainder, &seconds, "", nil
 }
 
-// SplitInputs groups video references separately, retaining the relative order
-// of each group. Unresolved media keeps the image treatment used by adapters.
+// SplitInputs groups video references separately, retaining the relative order of each group.
+// Unresolved media keeps the image treatment used by adapters.
 func SplitInputs(inputs []Input) (imageInputs, videoInputs []Input) {
 	for _, input := range inputs {
 		if input.Kind() == Video {

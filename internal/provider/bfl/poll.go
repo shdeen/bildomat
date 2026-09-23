@@ -48,7 +48,7 @@ type pollProbe struct {
 	completed  pollResp
 }
 
-// Poll retains the validated completed response and reports completion.
+// Poll retrieves the job status and stores a validated completed response in the probe.
 func (probe *pollProbe) Poll(ctx context.Context) (complete bool, err error) {
 	status, body, err := httpapi.GetAuth(ctx, probe.pollURL, probe.cred, metadata.Asynchronous, probe.record)
 	if err := provider.PollResponseError(probe.id, status, body, err); err != nil {
@@ -98,7 +98,8 @@ func classifyPollStatus(adapterAPI *catalog.AdapterAPI, jobID string, response p
 	}
 }
 
-// errorDetails returns encoded failure details as text, or an empty string for absent and null values.
+// errorDetails returns encoded failure details as text, or an empty string for absent and null
+// values.
 func errorDetails(detailsJSON json.RawMessage) string {
 	if len(detailsJSON) == 0 || string(detailsJSON) == "null" { //nolint:goconst // JSON null is protocol syntax, not a domain default or shared field.
 		return ""

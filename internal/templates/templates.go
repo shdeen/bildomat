@@ -1,7 +1,6 @@
-// Package templates holds the copy catalog source (copy.toml, generated
-// into per-package constants by tools/copygen) and the embedded page-scale
-// copy in the .tmpl files, so every wording is edited without touching
-// rendering code.
+// Package templates holds the copy catalog source (copy.toml, generated into per-package constants
+// by tools/copygen) and the embedded page-scale copy in the .tmpl files, so every wording is edited
+// without touching rendering code.
 package templates
 
 //go:generate go run ../../tools/copygen
@@ -13,14 +12,13 @@ import _ "embed"
 //go:embed usage.tmpl
 var CompactUsageText string
 
-// HelpMainText is the general help page: the usage forms, the commands, the
-// flags, and the tips.
+// HelpMainText is the general help page: the usage forms, the commands, the flags, and the tips.
 //
 //go:embed help-main.tmpl
 var HelpMainText string
 
-// HelpTipsText is the tips section of the general help page: the fully
-// qualified model form and the info and search examples.
+// HelpTipsText is the tips section of the general help page: the fully qualified model form and the
+// info and search examples.
 //
 //go:embed help-tips.tmpl
 var HelpTipsText string
@@ -30,20 +28,20 @@ var HelpTipsText string
 //go:embed help-command.tmpl
 var HelpCommandText string
 
-// ProviderInfoText is the standard provider page: the provider's identity and
-// catalog counts, then per medium its model roster and options.
+// ProviderInfoText is the standard provider page: the provider's identity and catalog counts, then
+// per medium its model roster and options.
 //
 //go:embed provider-info.tmpl
 var ProviderInfoText string
 
-// ProviderSummaryText is the aggregator summary: the provider's identity and
-// catalog counts, its vendors and shared flags per medium, and the next commands.
+// ProviderSummaryText is the aggregator summary: the provider's identity and catalog counts, its
+// vendors and shared flags per medium, and the next commands.
 //
 //go:embed provider-summary.tmpl
 var ProviderSummaryText string
 
-// ModelInfoText is the model card: the model's identity block and one option
-// per declared parameter.
+// ModelInfoText is the model card: the model's identity block and one option per declared
+// parameter.
 //
 //go:embed model-info.tmpl
 var ModelInfoText string
@@ -67,3 +65,13 @@ var ListProvidersText string
 //
 //go:embed list-models.tmpl
 var ListModelsText string
+
+// ProviderHeaderText defines the identity and catalog totals shared by provider pages.
+//
+//go:embed provider-header.tmpl
+var ProviderHeaderText string
+
+// ExamplesText defines the model and search examples shared by help and provider summaries.
+//
+//go:embed examples.tmpl
+var ExamplesText string

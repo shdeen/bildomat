@@ -18,15 +18,9 @@ type Source struct {
 	ConfigBytes []byte
 }
 
-// Catalog holds the providers the program serves. Loaded, it carries every
-// provider whose configuration decoded and validated, in load order, the flag
-// records those configurations were validated against, the load error of each
-// provider that failed. Reduced, it is the
-// JSON document of the list, search, and info commands: the providers and the
-// flag records the command selects, and nothing of the loading state.
-//   - Providers: the loaded providers in load order, or a document's selection
-//   - Flags: the flag records the catalog was loaded against, or the records a
-//     document's params reference
+// Catalog contains validated providers, their flag definitions, and individual loading failures.
+//   - Providers: the loaded providers in source order
+//   - Flags: the parameter flag definitions used for validation
 type Catalog struct {
 	Providers []Provider    `json:"providers"`
 	Flags     []params.Flag `json:"flags,omitempty"`
@@ -34,11 +28,9 @@ type Catalog struct {
 	configErrors map[string]error
 }
 
-// LoadCatalog decodes the registered sources, in order, and returns a validated
-// catalog. A source that fails to decode or validate stores its error under its
-// provider ID and withholds only that provider; a defect across sources (a
-// document declaring another provider's ID, a duplicate alias, a duplicate
-// provider-model pair) fails the whole load.
+// LoadCatalog loads provider descriptions in source order and validates them against flags.
+// Individual configuration failures are retained in the catalog and exclude that provider; a source
+// identity mismatch or a conflicting provider/model identifier or alias fails the load.
 func LoadCatalog(flags []params.Flag, sources ...Source) (*Catalog, error) {
 	catalog := &Catalog{
 		Flags:        slices.Clone(flags),
@@ -75,13 +67,12 @@ func LoadCatalog(flags []params.Flag, sources ...Source) (*Catalog, error) {
 	return catalog, nil
 }
 
-// ConfigError returns the stored failure for a provider, or nil for a healthy description.
+// ConfigError returns a provider's stored loading failure, or nil when none was recorded.
 func (catalog *Catalog) ConfigError(providerID string) error {
 	return catalog.configErrors[providerID]
 }
 
-// Provider takes a provider identifier and returns a deep copy of the loaded
-// provider and whether the catalog holds it.
+// Provider returns a deep copy of the named provider and whether it was loaded.
 func (catalog *Catalog) Provider(providerID string) (Provider, bool) {
 	prov, ok := catalog.loadedProvider(providerID)
 	if !ok {
@@ -91,8 +82,8 @@ func (catalog *Catalog) Provider(providerID string) (Provider, bool) {
 	return prov.clone(), true
 }
 
-// ResolveModelInput returns the provider and model pairs named by a model specifier.
-// It checks explicit provider/model pairs, aliases, then unqualified model identifiers.
+// ResolveModelInput returns the provider and model pairs named by a model specifier. It checks
+// explicit provider/model pairs, aliases, then unqualified model identifiers.
 func (catalog *Catalog) ResolveModelInput(modelSpecifier string) ([]ProvModelPair, error) {
 	if providerID, modelID, ok := strings.Cut(modelSpecifier, "/"); ok {
 		pair, found, configErr := catalog.resolveQualified(providerID, modelID)
@@ -112,9 +103,8 @@ func (catalog *Catalog) ResolveModelInput(modelSpecifier string) ([]ProvModelPai
 	return catalog.resolveBareModelID(modelSpecifier)
 }
 
-// CompareProviders takes two providers and orders them as every listing does:
-// first-party providers before aggregators, and within each, by display name
-// without regard to case.
+// CompareProviders sorts first-party providers before aggregators, then by display name without
+// regard to case.
 //
 //nolint:gocritic // slices.SortFunc requires value params.
 func CompareProviders(firstProvider, secondProvider Provider) int {
@@ -129,10 +119,8 @@ func CompareProviders(firstProvider, secondProvider Provider) int {
 	return strings.Compare(strings.ToLower(firstProvider.DisplayName), strings.ToLower(secondProvider.DisplayName))
 }
 
-// DefaultModelKey returns the fully qualified key of the default model the
-// run uses when --model is omitted and the user config names none: the
-// declared default of the first provider, in listing order, whose credential is available
-// and which declares a default. It reports false when no provider qualifies.
+// DefaultModelKey returns the declared default of the first available provider in listing order. It
+// reports false when no available provider declares a default.
 func (catalog *Catalog) DefaultModelKey(availableProviders map[string]bool) (string, bool) {
 	ordered := slices.Clone(catalog.Providers)
 	slices.SortFunc(ordered, CompareProviders)
@@ -153,9 +141,8 @@ func (catalog *Catalog) DefaultModelKey(availableProviders map[string]bool) (str
 	return "", false
 }
 
-// ModelDirectory returns the provider and model pairs of every loaded provider
-// in load order, each carrying the provider's identity and a deep copy of the
-// model.
+// ModelDirectory returns the provider and model pairs of every loaded provider in load order, each
+// carrying the provider's identity and a deep copy of the model.
 func (catalog *Catalog) ModelDirectory() []ProvModelPair {
 	var providerModelPairs []ProvModelPair
 
@@ -169,8 +156,7 @@ func (catalog *Catalog) ModelDirectory() []ProvModelPair {
 	return providerModelPairs
 }
 
-// loadedProvider takes a provider identifier and returns the catalog's own
-// provider value and whether the catalog holds it.
+// loadedProvider returns the catalog's stored provider, without copying nested collections.
 func (catalog *Catalog) loadedProvider(providerID string) (*Provider, bool) {
 	for i := range catalog.Providers {
 		if catalog.Providers[i].ID == providerID {
@@ -192,11 +178,8 @@ func (catalog *Catalog) resolveAlias(modelSpecifier string) (ProvModelPair, bool
 	return ProvModelPair{}, false
 }
 
-// resolveQualified takes the provider ID and the model ID of a qualified
-// specifier and returns the pair the provider declares under that model ID or
-// alias and whether it declares one, or the provider's stored configuration
-// error when its config failed to load. A provider the catalog does not hold
-// declares nothing.
+// resolveQualified finds a model ID or alias within the named provider. It returns that provider's
+// stored configuration failure, or reports no match if absent.
 func (catalog *Catalog) resolveQualified(providerID, modelID string) (ProvModelPair, bool, error) {
 	if configErr, hasError := catalog.configErrors[providerID]; hasError {
 		return ProvModelPair{}, false, configErr
@@ -218,31 +201,8 @@ func (catalog *Catalog) resolveQualified(providerID, modelID string) (ProvModelP
 	return ProvModelPair{}, false, nil
 }
 
-// findModel returns the pair of the provider and the model carrying the model
-// identifier, and whether the provider declares it.
-func (prov *Provider) findModel(modelID string) (ProvModelPair, bool) {
-	for i := range prov.Models {
-		if prov.Models[i].ID == modelID {
-			return ProvModelPair{Provider: prov.Identity(), Model: prov.Models[i].clone()}, true
-		}
-	}
-
-	return ProvModelPair{}, false
-}
-
-// findAlias returns the pair of the provider and the model declaring the
-// alias, and whether the provider declares it.
-func (prov *Provider) findAlias(modelAlias string) (ProvModelPair, bool) {
-	for i := range prov.Models {
-		if slices.Contains(prov.Models[i].Aliases, modelAlias) {
-			return ProvModelPair{Provider: prov.Identity(), Model: prov.Models[i].clone()}, true
-		}
-	}
-
-	return ProvModelPair{}, false
-}
-
-// resolveBareModelID returns each provider and model pair whose model identifier matches an unqualified specifier.
+// resolveBareModelID returns each provider and model pair whose model identifier matches an
+// unqualified specifier.
 func (catalog *Catalog) resolveBareModelID(modelSpecifier string) ([]ProvModelPair, error) {
 	var modelMatches []ProvModelPair
 

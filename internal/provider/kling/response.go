@@ -11,9 +11,12 @@ import (
 
 // taskEnvelope preserves absent code separately from explicit JSON null.
 type taskEnvelope struct {
-	Code    json.RawMessage `json:"code"`
-	Message any             `json:"message"`
-	Data    json.RawMessage `json:"data"`
+	// Code distinguishes an absent code from null or another encoded value.
+	Code json.RawMessage `json:"code"`
+	// Message preserves the optional provider message and its JSON type.
+	Message any `json:"message"`
+	// Data contains the task payload.
+	Data json.RawMessage `json:"data"`
 }
 
 // decodeEnvelope accepts additional remote fields and rejects a non-object envelope.
@@ -30,7 +33,8 @@ func decodeEnvelope(responseBody []byte, diagnosticContext string) (*taskEnvelop
 	return response, nil
 }
 
-// envelopeFailure validates the exact numerical code before interpreting data.
+// envelopeFailure returns nil for code zero and classifies missing, invalid, or nonzero response
+// codes.
 func envelopeFailure(response *taskEnvelope, diagnosticContext string) error {
 	if len(response.Code) == 0 {
 		return fmt.Errorf("%q, %w", diagnosticContext, errs.ErrResponseCodeMissing)
@@ -53,9 +57,8 @@ func envelopeFailure(response *taskEnvelope, diagnosticContext string) error {
 	return &errs.ProviderError{Message: message, Cause: errs.ErrResponseGen}
 }
 
-// exactInteger parses an already decoded JSON number without floating-point
-// rounding. Decimal and exponent forms are accepted only when their exact
-// value is integral and fits int. Exponents never allocate expanded numbers.
+// exactInteger converts a valid encoded JSON number to int without rounding. Decimal and exponent
+// forms must be integral and fit int; oversized exponents do not allocate expanded numbers.
 func exactInteger(encoded json.RawMessage) (int, bool) {
 	text := string(encoded)
 	if text == "" || (text[0] != '-' && (text[0] < '0' || text[0] > '9')) {
@@ -86,11 +89,11 @@ func exactInteger(encoded json.RawMessage) (int, bool) {
 	return integerFromDecimal(digits, len(fractionPart), exponent, negative)
 }
 
-// integerFromDecimal bounds the exponent before expanding or truncating digits.
-// It rejects fractional remainders and int overflow without lossy conversion.
+// integerFromDecimal bounds the exponent before expanding or truncating digits. It rejects
+// fractional remainders and int overflow without lossy conversion.
 func integerFromDecimal(digits string, decimalPlaces, exponent int, negative bool) (int, bool) {
-	// An int has at most 19 decimal digits on supported 64-bit platforms.
-	// Bound the exponent before subtraction, so extreme exponents cannot overflow.
+	// An int has at most 19 decimal digits on supported 64-bit platforms. Bound the exponent
+	// before subtraction, so extreme exponents cannot overflow.
 	maxDigits := len(strconv.FormatInt(int64(^uint(0)>>1), 10))
 	if exponent > decimalPlaces+maxDigits || exponent < decimalPlaces-len(digits) {
 		return 0, false
@@ -121,8 +124,8 @@ func integerFromDecimal(digits string, decimalPlaces, exponent int, negative boo
 	return int(value), err == nil
 }
 
-// taskFailure returns a provider generation failure containing the task,
-// terminal status, and provider message when one is present.
+// taskFailure returns a provider generation failure containing the task, terminal status, and
+// provider message when one is present.
 func taskFailure(taskID, taskStatus, failureMessage string) error {
 	failureContext := fmt.Sprintf("%s (%s)", taskID, taskStatus)
 	if failureMessage != "" {
@@ -132,8 +135,7 @@ func taskFailure(taskID, taskStatus, failureMessage string) error {
 	return &errs.ProviderError{Message: failureContext, Cause: errs.ErrResponseGen}
 }
 
-// unknownStatus returns an unexpected-status failure containing the task
-// and observed value.
+// unknownStatus returns an unexpected-status failure containing the task and observed value.
 func unknownStatus(taskID string, observedStatus any) error {
 	return fmt.Errorf("%q, %w", fmt.Sprintf(errs.StatusContextForm, taskID, observedStatus), errs.ErrResponseUnknown)
 }

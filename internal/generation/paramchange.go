@@ -10,8 +10,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// limitMedia takes input media and a limit and returns the entries within the limit with
-// an optional cap record. A non-positive limit retains every image.
+// limitMedia copies the retained prefix of input media and records any reduction. A nonpositive
+// limit retains every input.
 func limitMedia(mediaInputs []media.Input, limit int) ([]media.Input, *params.Adjustment) {
 	if limit <= 0 || len(mediaInputs) <= limit {
 		return slices.Clone(mediaInputs), nil
@@ -66,9 +66,9 @@ func AdjustGeneration(model *catalog.Model, inputs params.FlagInputs, mediaInput
 	return preparedGeneration, err
 }
 
-// ignoredParamRecords takes supplied parameter values and a model and returns one ignored
-// record for each meaningful parameter that the model does not accept. Records are ordered
-// by parameter name.
+// ignoredParamRecords takes supplied parameter values and a model and returns one ignored record
+// for each meaningful parameter that the model does not accept. Records are ordered by parameter
+// name.
 func ignoredParamRecords(inputs params.FlagInputs, model *catalog.Model) []params.Adjustment {
 	suppliedParams := make([]params.FlagType, 0, len(inputs))
 	for param := range inputs {
@@ -90,8 +90,8 @@ func ignoredParamRecords(inputs params.FlagInputs, model *catalog.Model) []param
 	return changeRecords
 }
 
-// capInputMedia takes input media and a model and returns the entries accepted by the
-// model with any cap record. It returns no entries when the model does not accept them.
+// capInputMedia copies the media accepted by the model and records any count limit. It returns no
+// media when the model does not accept inputs.
 func capInputMedia(mediaInputs []media.Input, model *catalog.Model) ([]media.Input, []params.Adjustment) {
 	inputMediaConfig, ok := model.Param(params.FlagTypeInputMedia)
 	if !ok {

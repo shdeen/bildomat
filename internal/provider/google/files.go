@@ -16,7 +16,8 @@ import (
 )
 
 // The Google adapter's tokens.
-//   - filesPathSegment: the path segment naming the Files resource, which also opens a resource name
+//   - filesPathSegment: the path segment naming the Files resource, which also opens a resource
+//     name
 //   - fileIDStopChars: the characters a bare file ID never contains
 //   - downloadQuerySuffix: the file-download query
 //   - stateResponseContext: names the file state response in a failed-decode context

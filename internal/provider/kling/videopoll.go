@@ -12,8 +12,8 @@ import (
 	"github.com/shdeen/bildomat/internal/provider"
 )
 
-// The video completion state and query route. Pending and failed states are
-// shared with image jobs, but the two APIs spell completion differently.
+// The video completion state and query route. Pending and failed states are shared with image jobs,
+// but the two APIs spell completion differently.
 //   - videoStatusSucceeded: the video task completed
 //   - tasksQueryPath: the task query path, before the query string
 //   - fieldTaskIDs: the query parameter naming the tasks to report
@@ -23,8 +23,13 @@ const (
 	fieldTaskIDs         = "task_ids"
 )
 
-// videoJobPoll checks one video-generation task and retains its completed
-// result URL.
+// videoJobPoll tracks one Kling video task.
+//   - apiBase: the provider API base URL
+//   - credential: authentication for status requests
+//   - taskID: the provider task identifier
+//   - providerModelName: the provider/model label used in errors
+//   - resultURL: the completed video download URL
+//   - record: optional request and response retention
 type videoJobPoll struct {
 	apiBase           string
 	credential        httpapi.AuthCredential
@@ -49,12 +54,16 @@ func (videoPoll *videoJobPoll) Poll(ctx context.Context) (taskComplete bool, pol
 
 // videoTask carries the video API's distinct status and output list.
 type videoTask struct {
-	Status  any             `json:"status"`
-	Message any             `json:"message"`
+	// Status preserves the reported task state and its JSON type.
+	Status any `json:"status"`
+	// Message preserves the optional task failure message.
+	Message any `json:"message"`
+	// Outputs contains the encoded video result list.
 	Outputs json.RawMessage `json:"outputs"`
 }
 
-// classifyResponse preserves the video API's first-task selection and statuses.
+// classifyResponse reports the first returned task's completion and stores its first output URL in
+// the poller. Invalid or failed states return classified errors.
 func (videoPoll *videoJobPoll) classifyResponse(responseBody []byte) (bool, error) {
 	response, err := decodeEnvelope(responseBody, videoPoll.providerModelName+": "+VideoTaskResponseContext)
 	if err != nil {
@@ -98,7 +107,7 @@ func (videoPoll *videoJobPoll) classifyResponse(responseBody []byte) (bool, erro
 	}
 }
 
-// retainResultURL validates the video API's first output before retaining it.
+// retainResultURL validates the first output and stores its URL in the poller.
 func (videoPoll *videoJobPoll) retainResultURL(encodedOutputs json.RawMessage) error {
 	var outputs []json.RawMessage
 	if err := json.Unmarshal(encodedOutputs, &outputs); err != nil || len(outputs) == 0 {

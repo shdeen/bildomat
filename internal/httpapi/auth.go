@@ -28,7 +28,8 @@ func (c AuthCredential) set(h http.Header) {
 	}
 }
 
-// CredentialForURL returns a credential when a candidate URL and API base have the same origin.
+// CredentialForURL returns the credential only when the candidate and API base have the same
+// origin. An invalid or nonabsolute candidate, or an origin mismatch, receives no credential.
 func CredentialForURL(candidateURL, apiBase string, credential AuthCredential) AuthCredential {
 	parsedURL, err := url.Parse(candidateURL)
 	if err != nil || !parsedURL.IsAbs() || parsedURL.Host == "" {

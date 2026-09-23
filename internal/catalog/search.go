@@ -9,32 +9,28 @@ import (
 	"github.com/shdeen/bildomat/internal/errs"
 )
 
-// SearchResultLimit is the most matching models a search renders; a larger
-// match set is reported as too many to display.
-const SearchResultLimit = 100
+// searchResultLimit is the most matching models a search renders; a larger match set is reported as
+// too many to display.
+const searchResultLimit = 100
 
-// KeySeparator joins a provider ID and a model ID into the fully qualified
-// provider/model key, and splits that key into the tokens a prefix term may
-// open.
+// KeySeparator joins provider and model IDs and separates their searchable tokens.
 const KeySeparator = "/"
 
 // ProvModelPair contains a provider and one of its models.
-//   - Provider: the provider's identity; its models and request settings are
-//     read from the catalog
+//   - Provider: the provider's identity; its models and request settings are read from the catalog
 //   - Model: the selected model configuration
 type ProvModelPair struct {
 	Provider Provider
 	Model    Model
 }
 
-// Label returns the pair as diagnostics name it: the provider ID with the
-// model ID in parentheses.
+// Label formats the provider and model identifiers for diagnostics.
 func (pair *ProvModelPair) Label() string {
 	return fmt.Sprintf("%s (%s)", pair.Provider.ID, pair.Model.ID)
 }
 
-// searchMatcher holds one compiled search term: the regular expression under
-// --regex, or otherwise the lowercased prefix term.
+// searchMatcher holds one compiled search term: the regular expression under --regex, or otherwise
+// the lowercased prefix term.
 //   - pattern: the compiled expression, nil for a prefix search
 //   - prefix: the lowercased term of a prefix search
 type searchMatcher struct {
@@ -42,13 +38,13 @@ type searchMatcher struct {
 	prefix  string
 }
 
-// SelectMedia takes provider-model pairs and the media selections, and returns
-// the pairs whose model generates a selected medium, in input order.
+// SelectMedia takes provider-model pairs and the media selections, and returns the pairs whose
+// model generates a selected medium, in input order.
 func SelectMedia(pairs []ProvModelPair, imageSelected, videoSelected bool) []ProvModelPair {
 	var selected []ProvModelPair
 
 	for i := range pairs {
-		if pairs[i].Model.MediaSelected(imageSelected, videoSelected) {
+		if pairs[i].Model.mediaSelected(imageSelected, videoSelected) {
 			selected = append(selected, pairs[i])
 		}
 	}
@@ -56,20 +52,10 @@ func SelectMedia(pairs []ProvModelPair, imageSelected, videoSelected bool) []Pro
 	return selected
 }
 
-// SearchDirectory takes provider-model pairs, a search term, an exclusion
-// term, and whether the terms are regular expressions, and returns the pairs
-// the search term matches and the exclusion term does not, in input order.
-// An empty string means that term is absent: an absent search term makes
-// every pair a candidate, and an absent exclusion term excludes nothing.
-// Without a regular expression, a term matches a model when any
-// slash-delimited token of its fully qualified key or any alias begins with
-// the term, case-insensitively; with one, when the expression matches the
-// key, a token, or an alias. It returns the CLI search-pattern error naming
-// the term that does not compile, before any pair is matched, so a broken
-// exclusion pattern is reported whatever the search term matches. It returns
-// the too-many-results error when a search term is given and the result,
-// after the exclusion, exceeds SearchResultLimit; an exclusion term alone has
-// no limit.
+// SearchDirectory selects matching pairs, applies exclusions, and preserves directory order. Prefix
+// terms match key tokens or aliases without regard to case; regular expressions also match complete
+// keys and return an error if invalid. Empty terms impose no filter, and searchResultLimit applies
+// only when a nonempty search term is supplied.
 func SearchDirectory(pairs []ProvModelPair, searchTerm, excludeTerm string, useRegexp bool) ([]ProvModelPair, error) {
 	termMatcher, err := newSearchMatcher(searchTerm, useRegexp)
 	if err != nil {
@@ -95,16 +81,15 @@ func SearchDirectory(pairs []ProvModelPair, searchTerm, excludeTerm string, useR
 		selected = append(selected, pairs[i])
 	}
 
-	if searchTerm != "" && len(selected) > SearchResultLimit {
+	if searchTerm != "" && len(selected) > searchResultLimit {
 		return nil, fmt.Errorf("%q, %w", searchTerm, errs.ErrSearchTooManyResults)
 	}
 
 	return selected, nil
 }
 
-// newSearchMatcher takes a search term and whether it is a regular expression,
-// and returns the matcher for it, or the CLI search-pattern error when the
-// expression does not compile.
+// newSearchMatcher prepares a prefix or regular expression, classifying invalid expressions as
+// search errors.
 func newSearchMatcher(term string, useRegexp bool) (searchMatcher, error) {
 	if !useRegexp {
 		return searchMatcher{prefix: strings.ToLower(term)}, nil
@@ -118,10 +103,7 @@ func newSearchMatcher(term string, useRegexp bool) (searchMatcher, error) {
 	return searchMatcher{pattern: pattern}, nil
 }
 
-// matchesPair reports
-// whether the pair matches: a regular expression against the fully qualified
-// key, each of its tokens, and each alias; a prefix term against each token
-// and each alias.
+// matchesPair checks key tokens and aliases; regular expressions also match the complete key.
 func (matcher *searchMatcher) matchesPair(pair *ProvModelPair) bool {
 	key := pair.Provider.ID + KeySeparator + pair.Model.ID
 	if matcher.pattern != nil && matcher.pattern.MatchString(key) {
@@ -133,8 +115,7 @@ func (matcher *searchMatcher) matchesPair(pair *ProvModelPair) bool {
 	return slices.ContainsFunc(identifiers, matcher.matchesIdentifier)
 }
 
-// matchesIdentifier reports whether an identifier matches: wherever the regular expression matches, or, for a
-// prefix term, when the lowercased item begins with it.
+// matchesIdentifier applies the regular expression or case-insensitive prefix to an identifier.
 func (matcher *searchMatcher) matchesIdentifier(identifier string) bool {
 	if matcher.pattern != nil {
 		return matcher.pattern.MatchString(identifier)

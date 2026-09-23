@@ -3,6 +3,8 @@ package errs
 import "fmt"
 
 // ModelError retains the model specifier that could not be resolved.
+//   - Specifier: the unresolved model input
+//   - Cause: the resolution failure classification
 type ModelError struct {
 	Specifier string
 	Cause     error

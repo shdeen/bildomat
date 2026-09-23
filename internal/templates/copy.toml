@@ -111,16 +111,16 @@ VersionReport                = "%s version %s"
 #   - CounterHoursForm: progress.go ElapsedText: the counter from one hour on
 #   - CounterMinutesForm: progress.go ElapsedText: the counter from one minute on
 #   - CounterSecondsForm: progress.go ElapsedText: the truncated-decimal seconds
-#   - CredentialMissing: errs.go ErrorMessage: a missing API key with no provider resolved yet
-#   - CredentialMissingProvider: errs.go ErrorMessage: a missing API key with the provider resolved
+#   - CredentialMissing: errs.go errorMessage: a missing API key with no provider resolved yet
+#   - CredentialMissingProvider: errs.go errorMessage: a missing API key with the provider resolved
 #   - EdgeIncrements: constraints.go sizeBoundsNotice
 #   - EdgeRange: constraints.go sizeBoundsNotice
 #   - ErrorPrefix: errs.go errorPrefix: the word opening every error line
 #   - ExamplesSentence: bild.go paramFlagUsage and info.go entryDetails: a flag's example values
-#   - FileSizeBytesForm: progress.go FileSizeText: a size under a thousand bytes
-#   - FileSizeGBForm: progress.go FileSizeText: a size in gigabytes
-#   - FileSizeKBForm: progress.go FileSizeText: a size in kilobytes
-#   - FileSizeMBForm: progress.go FileSizeText: a size in megabytes
+#   - FileSizeBytesForm: progress.go fileSizeText: a size under a thousand bytes
+#   - FileSizeGBForm: progress.go fileSizeText: a size in gigabytes
+#   - FileSizeKBForm: progress.go fileSizeText: a size in kilobytes
+#   - FileSizeMBForm: progress.go fileSizeText: a size in megabytes
 #   - FlagAdjusted: param.go formatNotice: snapped, derived, and conformed changes
 #   - FlagAdjustedReason: param.go formatNotice: forced changes
 #   - FlagBelowLimit: param.go formatNotice: raised values
@@ -134,16 +134,16 @@ VersionReport                = "%s version %s"
 #   - FrontMatterParamForm: sidecar.go RenderSidecar: a parameter line of the front matter
 #   - FrontMatterPromptForm: sidecar.go RenderSidecar: the prompt line of the front matter
 #   - FrontMatterTimestampForm: sidecar.go RenderSidecar: the timestamp line of the front matter
-#   - GenerationCanceled: errs.go ErrorMessage: a run interrupted through Ctrl-C; renders unprefixed
+#   - GenerationCanceled: errs.go errorMessage: a run interrupted through Ctrl-C; renders unprefixed
 #   - GenerationCompleted: progress.go: the terminal completion report
 #   - GenerationStatus: progress.go: the animated terminal status line, naming the medium of the run
 #   - GroupIntro: info.go groupLines: the line opening a group of models declaring a flag alike
 #   - GroupIntroRemainder: info.go groupLines: the line opening the largest group, named by exclusion
 #   - HelpTipsHeading: helptips.go HelpTips: the heading that opens the tips section of the general help page
-#   - InputMediaFormat: errs.go ErrorMessage: an input file or URL of an unsupported type
-#   - InputMediaInvalid: errs.go ErrorMessage: the same failure when the chain names no source
-#   - InputMediaNotFound: errs.go ErrorMessage: an input path that does not exist
-#   - InputMediaSourceInvalid: errs.go ErrorMessage: an unreadable, empty, or oversized input, naming its source
+#   - InputMediaFormat: errs.go errorMessage: an input file or URL of an unsupported type
+#   - InputMediaInvalid: errs.go errorMessage: the same failure when the chain names no source
+#   - InputMediaNotFound: errs.go errorMessage: an input path that does not exist
+#   - InputMediaSourceInvalid: errs.go errorMessage: an unreadable, empty, or oversized input, naming its source
 #   - KeywordMatchExample: info.go: the sentence naming the model a keyword example matches
 #   - ListLastAnd: info.go joinNames: the last two items of a list of three or more joined with and
 #   - ListLastOr: info.go joinNames: the last two items of a list of three or more joined with or
@@ -160,39 +160,40 @@ VersionReport                = "%s version %s"
 #   - MinimumPixels: constraints.go sizeBoundsNotice
 #   - MinimumValue: constraints.go: a parameter with only a lower bound
 #   - ModelAliasListing: list.go: a model row in the nested listing
-#   - ModelAmbiguous: errs.go ErrorMessage: a specifier matching more than one model
+#   - ModelAmbiguous: errs.go errorMessage: a specifier matching more than one model
 #   - ModelHeader: output.go PrintRunDetails: the run header's model name
-#   - ModelUnknown: errs.go ErrorMessage: a specifier matching no model
-#   - ModelUnknownGeneric: errs.go ErrorMessage: the same failure when the chain names no specifier
+#   - ModelUnknown: errs.go errorMessage: a specifier matching no model
+#   - ModelUnknownGeneric: errs.go errorMessage: the same failure when the chain names no specifier
 #   - NoAdditionalLimits: info.go groupLines: a model group with no declared parameter limits
 #   - NotUsedBy: info.go scopeNote: the models of the medium not declaring a flag most declare
 #   - OnlyForModels: info.go scopeNote: the models declaring a flag most models do not
 #   - OutPathDisplayName: param.go: the output-path flag's name in a change notice
 #   - OutputCleanupFailed: errs.go - an owned temporary file could not be removed
-#   - OutputWriteFailed: errs.go ErrorMessage: a failed artifact or results write
+#   - OutputReadFailed: errs.go - downloaded or saved media could not be read
+#   - OutputWriteFailed: errs.go errorMessage: a failed artifact or results write
 #   - PixelRange: constraints.go sizeBoundsNotice
-#   - ProviderConfigBroken: errs.go ErrorMessage: an embedded provider config failing validation
-#   - ProviderConfigBrokenDetail: errs.go ErrorMessage: the same failure carrying its specific fault
-#   - ProviderFallbackAsName: output.go providerName: the header's stand-in for an empty provider name
-#   - ProviderFallbackInSentence: output.go providerDisplay: the mid-sentence stand-in for an empty provider name
+#   - ProviderConfigBroken: errs.go errorMessage: an embedded provider config failing validation
+#   - ProviderConfigBrokenDetail: errs.go errorMessage: the same failure carrying its specific fault
+#   - ProviderFallbackAsName: output.go PrintRunDetails: the header's stand-in for an empty provider name
+#   - ProviderFallbackInSentence: errs.go providerFailureNotice: the mid-sentence stand-in for an empty provider name
 #   - ProviderHeader: output.go PrintRunDetails: the run header's provider name, the label alone
 #   - ProviderSelectModels: list.go: a provider with partial support in a flag's support note
-#   - ProviderServerError: errs.go ErrorMessage: any error a provider's server returns, 4xx and 5xx alike
+#   - ProviderServerError: errs.go errorMessage: any error a provider's server returns, 4xx and 5xx alike
 #   - RatioBetween: constraints.go sizeBoundsNotice
 #   - RepeatMaximum: constraints.go: a repeatable parameter's count limit
-#   - Reprompt: errs.go PrintReprompt
+#   - Reprompt: output/prompt.go PrintReprompt
 #   - RequiredLabel: info.go requirementSentence: the required classification opening an info entry; an optional parameter carries none
-#   - ResponseUnusable: errs.go ErrorMessage: a provider response with no extractable server message
+#   - ResponseUnusable: errs.go errorMessage: a provider response with no extractable server message
 #   - RuleDescription: constraints.go: a parameter's configured rule description
 #   - SavedReport: disk.go: the plain saved-file report
 #   - SavedReportStyled: progress.go: the terminal saved-file report
-#   - SearchTooManyResults: errs.go ErrorMessage: a list search whose results exceed the display limit
-#   - SingleWordConfirmation: errs.go PrintSingleWordPromptConfirmation
+#   - SearchTooManyResults: errs.go errorMessage: a list search whose results exceed the display limit
+#   - SingleWordConfirmation: output/prompt.go PrintSingleWordPromptConfirmation
 #   - SizeRequirements: constraints.go: the frame for a free-form size's constraint list
-#   - TransportTimeout: errs.go ErrorMessage: a poll that outlived its deadline
-#   - TransportUnreachable: errs.go ErrorMessage: a request that never reached the provider
+#   - TransportTimeout: errs.go errorMessage: a poll that outlived its deadline
+#   - TransportUnreachable: errs.go errorMessage: a request that never reached the provider
 #   - WarningPrefix: errs.go PrintUserConfigWarning: the word opening every warning line
-#   - WorkingDirFailed: errs.go ErrorMessage: the working directory could not be determined
+#   - WorkingDirFailed: errs.go errorMessage: the working directory could not be determined
 ["internal/output"]
 APIKeyNotSet               = "Your API key is not set"
 AliasMatchExample          = "and '%s' matches the alias %s"
@@ -271,6 +272,7 @@ NotUsedBy                  = "Not used by %s."
 OnlyForModels              = "This option is available only for models %s."
 OutPathDisplayName         = "Output path"
 OutputCleanupFailed        = "We could not remove the temporary file %q."
+OutputReadFailed           = "We could not read the generated media file %q."
 OutputWriteFailed          = "We could not write the output to %q. Check the directory's permissions and free space."
 PixelRange                 = "total pixels (width x height): %d-%d"
 ProviderConfigBroken       = "The %s provider configuration is malformed."

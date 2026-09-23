@@ -2,8 +2,11 @@ package errs
 
 import "fmt"
 
-// MediaError identifies an input source or a specific media problem without
-// requiring the renderer to recover either from a formatted diagnostic.
+// MediaError identifies an input source or a specific media problem without requiring the renderer
+// to recover either from a formatted diagnostic.
+//   - Source: the failed input path or URL
+//   - Problem: the media-specific explanation
+//   - Cause: the classification and original error
 type MediaError struct {
 	Source  string
 	Problem string

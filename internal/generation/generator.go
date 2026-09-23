@@ -13,14 +13,15 @@ import (
 )
 
 // Generator prepares a model's retained inputs and generates its artifacts.
-// Preparation returns completed changes even when a later operation fails.
+//   - AdjustParams: prepare inputs, retaining completed changes even when preparation fails
+//   - Generate: submit prepared inputs and collect the provider's result
 type Generator interface {
 	AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, reuse *metadata.Reuse) (Preparation, error)
 	Generate(ctx context.Context, run *Generation) (Result, error)
 }
 
-// Preparation owns the values and media records to be submitted to a provider.
-// Bytes and timestamps referenced by InputMedia remain immutable; transformations replace them.
+// Preparation owns the values and media records to be submitted to a provider. Bytes and timestamps
+// referenced by InputMedia remain immutable; transformations replace them.
 //   - Params: the adjusted model parameters
 //   - InputMedia: the retained inputs, in submission order
 //   - Changes: the ordered reasons that supplied values changed
@@ -32,8 +33,8 @@ type Preparation struct {
 	ReuseURI   string
 }
 
-// Clone returns independently mutable parameter, media-record, and adjustment collections.
-// Referenced bytes and timestamps retain their immutable ownership contract.
+// Clone copies parameter values, media records, and adjustment records for independent mutation.
+// Media bytes and timestamps remain shared and must stay immutable.
 func (preparedGeneration *Preparation) Clone() Preparation {
 	clonedPreparation := *preparedGeneration
 
@@ -55,8 +56,11 @@ func (preparedGeneration *Preparation) Clone() Preparation {
 }
 
 // Generation contains the selected model and prepared inputs for one provider request.
-// Prompt and APIKey are resolved by the command. Record retains the optional transaction
-// history independently of artifact ownership; the command persists it.
+//   - ProvModelPair: the selected provider and model
+//   - Preparation: the adjusted parameters and retained media
+//   - Prompt: the resolved generation prompt
+//   - APIKey: the resolved provider credential
+//   - Record: optional transaction history retained for the command to persist
 type Generation struct {
 	catalog.ProvModelPair
 	Preparation

@@ -9,10 +9,6 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// File: internal/output/constraints.go
-// The sentences the info pages render for a parameter's declared
-// constraints, and the display words of the media.
-
 // mediaLabels maps each medium to the word the details pages show for it.
 //
 //nolint:gochecknoglobals // a read-only table, written only at package load; a map cannot be a constant.
@@ -21,10 +17,7 @@ var mediaLabels = map[media.Kind]string{
 	media.Video: MediaLabelVideo,
 }
 
-// constraintPhrases takes a parameter definition, its configuration, and
-// the page style, and returns one phrase per declared constraint in the
-// catalog's forms, each value in the style's value accent (none for the
-// plain style).
+// constraintPhrases formats each declared parameter constraint using the selected value styling.
 func constraintPhrases(paramFlag *params.Flag, paramCfg *params.Definition, style pageStyle) []string {
 	var phrases []string
 
@@ -54,7 +47,7 @@ func constraintPhrases(paramFlag *params.Flag, paramCfg *params.Definition, styl
 	return phrases
 }
 
-// rangeBound takes a data type and numeric bound and returns the bound in the data type's display form.
+// rangeBound formats a numeric limit using the parameter's declared data type.
 func rangeBound(dataType params.DataType, bound float64) string {
 	if dataType == params.DataInteger {
 		return strconv.Itoa(int(bound))
@@ -63,9 +56,8 @@ func rangeBound(dataType params.DataType, bound float64) string {
 	return params.FormatValue(bound)
 }
 
-// boundPhrase takes the forms for a two-bound range, a lone maximum, and a
-// lone minimum, the two bounds, and whether each is declared, and returns the
-// phrase stating the declared bounds, or an empty string when neither is.
+// boundPhrase formats the declared minimum, maximum, or range. It returns empty text when neither
+// bound is declared.
 func boundPhrase(rangeForm, maximumForm, minimumForm string, minVal, maxVal any, hasMin, hasMax bool) string {
 	switch {
 	case hasMin && hasMax:

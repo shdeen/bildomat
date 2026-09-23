@@ -95,8 +95,8 @@ func startJob(ctx context.Context, base string, cred httpapi.AuthCredential, pro
 	return id, submitResp.PollURL, nil
 }
 
-// requestBody returns the request fields for an image or video job; an empty prompt,
-// which a model that ignores the prompt allows, sends no prompt field.
+// requestBody returns the request fields for an image or video job. It omits the prompt field when
+// the supplied prompt is empty.
 func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, inputs []media.Input) (map[string]any, error) {
 	body := map[string]any{}
 	if prompt != "" {
@@ -138,8 +138,8 @@ func requestBody(model *catalog.Model, prompt string, parameterValues params.Val
 	return body, nil
 }
 
-// requestBinaryFields describes the encoded media locations used by BFL's
-// image and video request shapes. URL values at these locations remain URLs.
+// requestBinaryFields describes the encoded media locations used by BFL's image and video request
+// shapes. URL values at these locations remain URLs.
 func requestBinaryFields(model *catalog.Model, inputs []media.Input) []metadata.BinaryField {
 	fields := make([]metadata.BinaryField, 0, len(inputs))
 	inputConfig, _ := model.Param(params.FlagTypeInputMedia)
@@ -171,11 +171,8 @@ func requestBinaryFields(model *catalog.Model, inputs []media.Input) []metadata.
 	return fields
 }
 
-// addVideoInputs takes the request body, the inputs, and the parameters, and
-// writes a video request's inputs: one video as the continuation to extend,
-// under the continuation mode, or the images as keyframes under the
-// image-to-video mode. It fails on mixed image and video inputs, on more than
-// one video, and on a timed continuation video.
+// addVideoInputs writes continuation media or image keyframes and their mode into the body. It
+// rejects mixed media, multiple videos, and timed continuation videos.
 func addVideoInputs(body map[string]any, inputs []media.Input, parameterValues params.Values) error {
 	imageInputs, videoInputs := media.SplitInputs(inputs)
 
@@ -206,10 +203,8 @@ func addVideoInputs(body map[string]any, inputs []media.Input, parameterValues p
 	return nil
 }
 
-// addImageInputs takes the request body, the model, and the inputs, and writes
-// an image request's inputs: under the model's declared input field when it
-// declares one, which takes exactly one input, and otherwise under the indexed
-// input-image fields. It fails on a video input and on a timed input.
+// addImageInputs writes images into the model's single declared field or indexed fields. It rejects
+// videos, timed inputs, and multiple inputs for a single field.
 func addImageInputs(body map[string]any, model *catalog.Model, inputs []media.Input) error {
 	for _, mediaInput := range inputs {
 		if mediaInput.Kind() == media.Video {

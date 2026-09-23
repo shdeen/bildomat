@@ -2,9 +2,8 @@
 
 package params
 
-// Flags returns the parameter flag records, one per generation parameter,
-// in the order the parameter flag document declares them. Every call builds a
-// new slice, so no caller's change reaches another caller.
+// Flags returns generation parameter records in declaration order. Each call creates independent
+// records that callers may modify.
 func Flags() []Flag {
 	return []Flag{
 		{

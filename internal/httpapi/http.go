@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"math"
 	"net/http"
 	"net/url"
 	"time"
@@ -17,8 +19,7 @@ import (
 // HTTP request limits.
 //   - httpTimeout: the maximum duration of an HTTP request
 //   - maxRespBytes: the maximum number of bytes read from an API response
-//   - mediaTypeDetectBytes: the leading bytes of a download read ahead of the
-//     stream for media-type detection, which considers at most that many
+//   - mediaTypeDetectBytes: the maximum prefix length used to identify downloaded media
 const (
 	httpTimeout          = 8 * time.Minute
 	maxRespBytes         = 64 << 20
@@ -40,8 +41,8 @@ const (
 	tempDownloadPattern = "bild-dl-*"
 )
 
-// PostJSON sends body as JSON and returns the response status and body. When
-// record is nonnil, it captures the actual request and full bounded response.
+// PostJSON sends body as JSON and returns the response status and body. When record is nonnil, it
+// captures the actual request and full bounded response.
 func PostJSON(ctx context.Context, endpoint string, credential AuthCredential, body any, record *metadata.Record) (status int, respBody []byte, err error) {
 	b, err := json.Marshal(body)
 	if err != nil {
@@ -51,18 +52,21 @@ func PostJSON(ctx context.Context, endpoint string, credential AuthCredential, b
 	return send(ctx, http.MethodPost, endpoint, credential, contentTypeJSON, b, metadata.Synchronous, record)
 }
 
-// SendBody sends a prepared request body with its content type and returns the response status and body.
+// SendBody posts a prepared body and returns the response status and bounded body. A nonnil record
+// captures the request, response, and any transfer failure.
 func SendBody(ctx context.Context, endpoint string, credential AuthCredential, contentType string, body []byte, record *metadata.Record) (status int, respBody []byte, err error) {
 	return send(ctx, http.MethodPost, endpoint, credential, contentType, body, metadata.Synchronous, record)
 }
 
-// GetAuth retrieves endpoint with credential and returns the response status and
-// body. responseType distinguishes a poll from a direct data retrieval.
+// GetAuth retrieves an endpoint with the credential and returns its status and bounded body. A
+// nonnil record captures the transaction; responseType labels the response as a poll or direct
+// retrieval.
 func GetAuth(ctx context.Context, endpoint string, credential AuthCredential, responseType string, record *metadata.Record) (status int, respBody []byte, err error) {
 	return send(ctx, http.MethodGet, endpoint, credential, "", nil, responseType, record)
 }
 
-// send performs a request and captures its bounded body before provider decoding.
+// send performs a request and reads its bounded body before provider decoding. It captures the
+// transaction in a nonnil record, including incomplete response bytes on failure.
 func send(ctx context.Context, httpMethod, endpoint string, credential AuthCredential, contentType string, body []byte, responseType string, record *metadata.Record) (status int, respBody []byte, err error) {
 	headers := make(http.Header)
 	if contentType != "" {
@@ -76,7 +80,7 @@ func send(ctx context.Context, httpMethod, endpoint string, credential AuthCrede
 	defer response.Body.Close() //nolint:errcheck // Reading or streaming reports transfer failures; closing this response only releases its connection.
 
 	responseBody, readErr := readFirstBytes(response.Body, maxRespBytes)
-	record.Receive(requestIndex, responseType, response.StatusCode, response.Header.Get(headerContentType), responseBody, nil, readErr)
+	record.Receive(requestIndex, responseType, response.StatusCode, response.Header.Get(headerContentType), responseBody, readErr)
 
 	if readErr != nil {
 		return response.StatusCode, nil, requestFailure(ctx, endpoint, readErr)
@@ -85,8 +89,8 @@ func send(ctx context.Context, httpMethod, endpoint string, credential AuthCrede
 	return response.StatusCode, responseBody, nil
 }
 
-// request constructs and authenticates a request, retaining its submission and
-// any failure before a response. Callers own the successful response body.
+// request authenticates and sends an HTTP request, recording submitted requests and send failures.
+// The caller must close a successful response body.
 func request(ctx context.Context, method, endpoint string, credential AuthCredential, headers http.Header, body []byte, record *metadata.Record) (*http.Response, int, error) {
 	req, err := http.NewRequestWithContext(ctx, method, endpoint, bytes.NewReader(body))
 	if err != nil {
@@ -98,7 +102,7 @@ func request(ctx context.Context, method, endpoint string, credential AuthCreden
 	}
 
 	credential.set(req.Header)
-	requestIndex := record.Begin(method, endpoint, req.Header.Get(headerContentType), body, nil)
+	requestIndex := record.Begin(method, endpoint, req.Header.Get(headerContentType), body)
 
 	response, err := client(credential, req.URL).Do(req)
 	if err != nil {
@@ -114,8 +118,8 @@ func request(ctx context.Context, method, endpoint string, credential AuthCreden
 	return response, requestIndex, nil
 }
 
-// requestFailure preserves a failed request or body operation and classifies an
-// explicit cancellation without losing the underlying transport or read cause.
+// requestFailure preserves a failed request or body operation and classifies an explicit
+// cancellation without losing the underlying transport or read cause.
 func requestFailure(ctx context.Context, endpoint string, cause error) error {
 	if contextErr := ctx.Err(); errors.Is(contextErr, context.Canceled) {
 		cause = errors.Join(errs.ErrCanceled, cause, contextErr)
@@ -124,7 +128,7 @@ func requestFailure(ctx context.Context, endpoint string, cause error) error {
 	return fmt.Errorf("%q: %w", endpoint, cause)
 }
 
-// client returns an HTTP client that removes credential after a redirect to a different origin.
+// client limits redirects and confines the supplied credential to the original origin.
 func client(credential AuthCredential, origin *url.URL) *http.Client {
 	return &http.Client{
 		Timeout: httpTimeout,
@@ -140,4 +144,34 @@ func client(credential AuthCredential, origin *url.URL) *http.Client {
 			return nil
 		},
 	}
+}
+
+// readFirstBytes returns at most byteLimit bytes and reports read or size errors. On failure it
+// preserves the received prefix for optional response recording.
+func readFirstBytes(reader io.Reader, byteLimit int64) ([]byte, error) {
+	if byteLimit < 0 {
+		return nil, fmt.Errorf("%q, %w", fmt.Sprintf(ByteLimitForm, byteLimit), errs.ErrTransportSize)
+	}
+
+	readLimit := byteLimit
+	if readLimit < math.MaxInt64 {
+		readLimit++
+	}
+
+	data, err := io.ReadAll(io.LimitReader(reader, readLimit))
+
+	oversized := int64(len(data)) > byteLimit
+	if oversized {
+		data = data[:byteLimit] //nolint:nilaway // len(data) > the nonnegative limit proves this slice is non-nil and the bound is valid.
+	}
+
+	if err != nil {
+		return data, fmt.Errorf("%q, %w, %w", fmt.Sprintf(ByteLimitForm, byteLimit), errs.ErrTransportRead, err)
+	}
+
+	if oversized {
+		return data, fmt.Errorf("%q, %w", fmt.Sprintf(ByteLimitForm, byteLimit), errs.ErrTransportSize)
+	}
+
+	return data, nil
 }

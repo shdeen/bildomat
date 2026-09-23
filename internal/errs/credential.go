@@ -2,8 +2,10 @@ package errs
 
 import "fmt"
 
-// CredentialError names the environment variable and optional provider entry
-// under api-keys that can supply a missing credential. It never holds a secret.
+// CredentialError names the environment variable and optional provider entry under api-keys that
+// can supply a missing credential. It never holds a secret.
+//   - EnvVar: the credential environment-variable name
+//   - ProviderID: the optional provider key under api-keys
 type CredentialError struct {
 	EnvVar     string
 	ProviderID string

@@ -81,6 +81,7 @@ const (
 	OnlyForModels              = "This option is available only for models %s."
 	OutPathDisplayName         = "Output path"
 	OutputCleanupFailed        = "We could not remove the temporary file %q."
+	OutputReadFailed           = "We could not read the generated media file %q."
 	OutputWriteFailed          = "We could not write the output to %q. Check the directory's permissions and free space."
 	PixelRange                 = "total pixels (width x height): %d-%d"
 	PollIdentity               = "Model: %s; operation: %s."

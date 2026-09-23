@@ -13,8 +13,9 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// submitImage sends the request described by api and returns the generated artifacts.
-// It calls sendImageRequest to contact the provider.
+// submitImage sends an image request and returns its artifacts. For multipart requests, it replaces
+// the request's input media with downloaded data and records the prepared media and provider
+// responses.
 func submitImage(ctx context.Context, api *catalog.ImageAPI, apiKey string, run *generation.Generation, stringParams ...params.FlagType) ([]artifact.Media, error) {
 	if len(run.InputMedia) > 0 && api.InputMediaURL != "" && api.InputMediaPayloadType == catalog.InputMediaPayloadForm {
 		downloadedInputs, err := httpapi.DownloadInputMedia(ctx, run.InputMedia)
@@ -38,9 +39,8 @@ func submitImage(ctx context.Context, api *catalog.ImageAPI, apiKey string, run 
 	return createImageArtifacts(ctx, provModelLabel, api, status, body, run.Record)
 }
 
-// sendImageRequest sends an image request and returns its status code and response body.
-// Input media routes the request to the media endpoint, as a multipart form when the API
-// declares the form encoding; every other request posts JSON.
+// sendImageRequest sends JSON or multipart data to the configured image endpoint and returns the
+// HTTP status and response body. It records the prepared media and request.
 func sendImageRequest(ctx context.Context, credential httpapi.AuthCredential, api *catalog.ImageAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, record *metadata.Record, stringParams ...params.FlagType) (status int, respBody []byte, err error) {
 	mediaEndpoint := len(mediaInputs) > 0 && api.InputMediaURL != ""
 	record.Prepared(mediaInputs)

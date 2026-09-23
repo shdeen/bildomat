@@ -18,8 +18,8 @@ type Media struct {
 	FileExt string
 }
 
-// New returns a bytes-backed artifact with an extension inferred from its MIME type,
-// data, or fallback extension.
+// New returns a bytes-backed artifact with an extension inferred from its MIME type, data, or
+// fallback extension.
 func New(data []byte, mime, fallbackExt string) (Media, error) {
 	if len(data) == 0 {
 		return Media{}, fmt.Errorf("%q, %w", ResponseEmptyInline, errs.ErrResponseNoData)
@@ -28,9 +28,8 @@ func New(data []byte, mime, fallbackExt string) (Media, error) {
 	return Media{Data: data, FileExt: media.ExtForData(mime, data, fallbackExt)}, nil
 }
 
-// Cleanup attempts each owned temporary source once and returns every failure.
-// Each attempted path is cleared, including failures already represented in the
-// returned error. This prevents deferred cleanup from repeating a failed attempt.
+// Cleanup attempts to remove every temporary source in the supplied artifacts. It clears their
+// TmpPath fields even on failure and returns all removal errors.
 func Cleanup(artifacts []Media) error {
 	var cleanupErr error
 	for artifactIndex := range artifacts {
@@ -40,7 +39,7 @@ func Cleanup(artifacts []Media) error {
 	return cleanupErr
 }
 
-// cleanup relinquishes this artifact's temporary source after one removal attempt.
+// cleanup attempts to remove this artifact's temporary source and clears TmpPath, even on failure.
 func (generated *Media) cleanup() error {
 	if generated.TmpPath == "" {
 		return nil

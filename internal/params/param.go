@@ -35,11 +35,11 @@ const (
 //   - CustomSize: the optional constraints for free-form dimensions
 //   - RuleDescription: the user-facing description of a parameter adjustment rule
 //   - ModelInfoComment: expanded model-specific guidance appended on the model's details page
-//   - Required: whether the provider's documentation names the parameter as required;
-//     a record declaring nothing is optional
+//   - Required: whether the provider's documentation names the parameter as required; a record
+//     declaring nothing is optional
 //
-// The encoding carries only what a record declares: the request key and every
-// constraint are absent when empty, and an unset bound is absent rather than null.
+// The encoding carries only what a record declares: the request key and every constraint are absent
+// when empty, and an unset bound is absent rather than null.
 type Definition struct {
 	ParamID          string            `json:"paramID,omitempty"`
 	FlagID           FlagType          `json:"flagID"`

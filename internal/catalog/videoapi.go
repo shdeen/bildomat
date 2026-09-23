@@ -48,8 +48,7 @@ type VideoAPI struct {
 	PollTimeout             PollSeconds     `json:"pollTimeout"`
 }
 
-// FrameFields reports whether the frame description is absent or complete.
-// A partially declared description returns false for complete and true for present.
+// FrameFields reports whether any frame field is present and whether all frame fields are present.
 func (api *VideoAPI) FrameFields() (present, complete bool) {
 	fields := []string{api.FrameMediaProvParam, api.FrameRoleProvParam, api.FirstFrameProvValue, api.LastFrameProvValue}
 	count := 0

@@ -11,15 +11,8 @@ import (
 	"github.com/shdeen/bildomat/internal/media"
 )
 
-// File: internal/output/examples.go
-// The usage examples the help tips and the aggregator summary's footer draw
-// from a provider's catalog:
-// one model key per medium and the search terms that illustrate the search
-// rules, each chosen at random so that every example is a command that
-// returns something for this provider.
-
-// The measures and separators of the examples. A key's tokens are split on
-// the key separator and a name's tokens on the dash.
+// The measures and separators of the examples. A key's tokens are split on the key separator and a
+// name's tokens on the dash.
 //   - keywordLength: the characters of a token the keyword example takes
 //   - minTermLength: the shortest token a pattern example draws
 //   - alternationSeparator: the bar between the terms of an alternation pattern
@@ -31,14 +24,14 @@ const (
 	numericTokenChars    = "0123456789."
 )
 
-// usageExamples carries the examples a page's footer names.
+// usageExamples contains the model keys and search terms shown in a page footer.
 //   - Keys: one fully qualified key per medium the models span, image first
 //   - Keyword: a term some model's slash-delimited token begins with
 //   - KeywordMatch: the bare ID of the model the keyword matches
 //   - AliasKeyword: a term some alias begins with, empty when no model declares an alias
 //   - AliasMatch: the alias the alias keyword matches
 //   - Alternation: a pattern of two terms joined by a bar
-//   - AnyPart: a term found inside a model's ID and opening no model's ID
+//   - AnyPart: an escaped term selected from inside a model ID
 //   - AcrossTokens: a pattern spanning two consecutive slash-delimited tokens of a key
 type usageExamples struct {
 	Keys         []string
@@ -51,9 +44,8 @@ type usageExamples struct {
 	AcrossTokens string
 }
 
-// drawUsageExamples takes a provider ID and the models a page shows, and
-// returns the footer's examples drawn at random from them; no models draw
-// no examples.
+// drawUsageExamples draws model and search examples from a provider's selected models. Empty input
+// returns no examples.
 func drawUsageExamples(providerID string, models []catalog.Model) usageExamples {
 	if len(models) == 0 {
 		return usageExamples{}
@@ -73,15 +65,13 @@ func drawUsageExamples(providerID string, models []catalog.Model) usageExamples 
 	return examples
 }
 
-// randomModel takes models and returns one of them at random.
+// randomModel returns a randomly selected model from a nonempty slice.
 func randomModel(models []catalog.Model) *catalog.Model {
 	// #nosec G404 -- the examples need variety, not unpredictability.
 	return &models[rand.IntN(len(models))]
 }
 
-// preferInnerTokens takes models and returns those whose bare ID holds a
-// slash, or all of them when none does, so an example can illustrate an
-// inner token wherever the catalog has one.
+// preferInnerTokens selects models whose IDs contain a slash, or returns all models if none do.
 func preferInnerTokens(models []catalog.Model) []catalog.Model {
 	var slashed []catalog.Model
 
@@ -98,8 +88,7 @@ func preferInnerTokens(models []catalog.Model) []catalog.Model {
 	return slashed
 }
 
-// exampleKeys takes a provider ID and models and returns one fully qualified
-// key per medium with a model, image first, each model chosen at random.
+// exampleKeys returns a random fully qualified model key per medium, images before videos.
 func exampleKeys(providerID string, models []catalog.Model) []string {
 	var keys []string
 
@@ -112,8 +101,7 @@ func exampleKeys(providerID string, models []catalog.Model) []string {
 	return keys
 }
 
-// keywordExample takes a model and returns the opening characters of the
-// last slash-delimited token of its ID, the whole token when it is shorter.
+// keywordExample returns up to keywordLength runes from the last slash-delimited model ID token.
 func keywordExample(model *catalog.Model) string {
 	tokens := strings.Split(model.ID, catalog.KeySeparator)
 	last := []rune(tokens[len(tokens)-1])
@@ -125,9 +113,8 @@ func keywordExample(model *catalog.Model) string {
 	return string(last[:keywordLength])
 }
 
-// aliasExample takes models and returns a term some alias begins with — the
-// first hyphen-delimited token of an alias chosen at random — and that
-// alias; empty strings when no model declares an alias.
+// aliasExample selects a random alias and returns its first hyphen-delimited token followed by the
+// full alias. It returns two empty strings when no aliases exist.
 func aliasExample(models []catalog.Model) (term, alias string) {
 	var aliases []string
 	for i := range models {
@@ -145,11 +132,8 @@ func aliasExample(models []catalog.Model) (term, alias string) {
 	return term, alias
 }
 
-// alternationExample takes a provider ID and models and returns a pattern of
-// two distinct hyphen-delimited tokens of the models' IDs joined by a bar,
-// digits-only and short tokens excluded, chosen at random; when fewer than two such
-// tokens exist, the provider ID and a random model's ID. Each term is
-// escaped so that it matches itself literally.
+// alternationExample joins two random eligible model-name tokens with a regex alternation. With
+// fewer than two tokens, it uses the provider ID and a random model ID. All terms are escaped.
 func alternationExample(providerID string, models []catalog.Model) string {
 	var tokens []string
 
@@ -171,16 +155,19 @@ func alternationExample(providerID string, models []catalog.Model) string {
 	return regexp.QuoteMeta(tokens[order[0]]) + alternationSeparator + regexp.QuoteMeta(tokens[order[1]])
 }
 
-// anyPartExample takes models and returns a hyphen-delimited token found
-// inside a model's ID — never its first token, never digits only or short,
-// and never the opening of any model's ID — chosen at random; when none exists, a
-// random model's ID without its first character. The term is escaped so
-// that it matches itself literally.
+// anyPartExample returns an escaped token from inside a model ID that prefixes no model ID. If no
+// token qualifies, it removes the first rune of a random ID and escapes the remainder; an ID
+// shorter than two runes produces no text.
 func anyPartExample(models []catalog.Model) string {
 	var inner []string
 
 	for i := range models {
-		for _, token := range nameTokens(models[i].ID)[1:] {
+		tokens := nameTokens(models[i].ID)
+		if len(tokens) < 2 {
+			continue
+		}
+
+		for _, token := range tokens[1:] {
 			if exampleTerm(token) && !opensAnyID(models, token) && !slices.Contains(inner, token) {
 				inner = append(inner, token)
 			}
@@ -189,6 +176,9 @@ func anyPartExample(models []catalog.Model) string {
 
 	if len(inner) == 0 {
 		id := []rune(randomModel(models).ID)
+		if len(id) < 2 {
+			return ""
+		}
 
 		return regexp.QuoteMeta(string(id[1:]))
 	}
@@ -197,43 +187,36 @@ func anyPartExample(models []catalog.Model) string {
 	return regexp.QuoteMeta(inner[rand.IntN(len(inner))])
 }
 
-// acrossTokensExample takes a provider ID and a model and returns a pattern
-// spanning two consecutive slash-delimited tokens of the model's fully
-// qualified key: the last hyphen-delimited token of the first and the first
-// hyphen-delimited token of the second, over the key's last slash, each
-// escaped so that it matches itself literally.
+// acrossTokensExample returns an escaped search pattern spanning the last slash in a model key. It
+// joins the neighboring name tokens, or returns empty text if either token is absent.
 func acrossTokensExample(providerID string, model *catalog.Model) string {
 	tokens := strings.Split(providerID+catalog.KeySeparator+model.ID, catalog.KeySeparator)
 	before := nameTokens(tokens[len(tokens)-2])
 	after := nameTokens(tokens[len(tokens)-1])
 
 	if len(before) == 0 || len(after) == 0 {
-		return regexp.QuoteMeta(tokens[len(tokens)-2]) + catalog.KeySeparator + regexp.QuoteMeta(tokens[len(tokens)-1])
+		return ""
 	}
 
 	return regexp.QuoteMeta(before[len(before)-1]) + catalog.KeySeparator + regexp.QuoteMeta(after[0])
 }
 
-// nameTokens takes a model ID and returns its tokens split on every slash
-// and hyphen, empty tokens dropped.
+// nameTokens splits a model ID at slashes and hyphens, dropping empty tokens.
 func nameTokens(modelID string) []string {
 	return strings.FieldsFunc(modelID, isTokenSeparator)
 }
 
-// isTokenSeparator takes a rune and reports whether it separates the tokens
-// of a model ID: a slash or a hyphen.
+// isTokenSeparator reports whether a rune is a slash or hyphen.
 func isTokenSeparator(r rune) bool {
 	return string(r) == catalog.KeySeparator || string(r) == "-"
 }
 
-// exampleTerm takes a token and reports whether a pattern example may draw
-// it: at least the minimum length and not digits and dots alone.
+// exampleTerm accepts tokens of at least minTermLength runes that are not solely digits and dots.
 func exampleTerm(token string) bool {
 	return len([]rune(token)) >= minTermLength && strings.Trim(token, numericTokenChars) != ""
 }
 
-// opensAnyID takes models and a term and reports whether any model's ID
-// begins with the term.
+// opensAnyID reports whether any model ID starts with the supplied term.
 func opensAnyID(models []catalog.Model, term string) bool {
 	for i := range models {
 		if strings.HasPrefix(models[i].ID, term) {
@@ -244,12 +227,13 @@ func opensAnyID(models []catalog.Model, term string) bool {
 	return false
 }
 
-// pageFooter carries the data the footer's template text names.
+// pageFooter contains examples and explanatory sentences for the footer template.
 //   - Examples: the usage examples drawn from the page's models
-//   - AnyPartArgument: the any-part term as a shell argument: bare, or single-quoted when it carries escapes
+//   - AnyPartArgument: the any-part term as a shell argument: bare, or single-quoted when it
+//     carries escapes
 //   - KeysSentence: the examples sentence naming the example keys, wrapped
 //   - MatchSentence: the sentence naming what the keyword examples match, wrapped
-//   - VendorExamples: per selected medium on the summary, the media filter and the top vendor
+//   - VendorExamples: the media filter and highest-count vendor for each selected medium
 type pageFooter struct {
 	Examples        usageExamples
 	AnyPartArgument string
@@ -258,10 +242,7 @@ type pageFooter struct {
 	VendorExamples  []vendorExample
 }
 
-// footerData takes a provider ID and the models a page shows, and returns
-// the footer's data: the examples, the sentence naming the example keys, and
-// the sentence naming what the keyword examples match, each wrapped within
-// the page width.
+// footerData prepares model and search examples with explanatory text wrapped to the page width.
 func footerData(providerID string, shown []catalog.Model) pageFooter {
 	examples := drawUsageExamples(providerID, shown)
 	footer := pageFooter{Examples: examples, AnyPartArgument: shellArgument(examples.AnyPart)}
@@ -270,21 +251,23 @@ func footerData(providerID string, shown []catalog.Model) pageFooter {
 		return footer
 	}
 
-	footer.KeysSentence = wrapWords(fmt.Sprintf(ExamplesSentence, strings.Join(examples.Keys, itemJoiner)), infoContentWidth)
+	footer.KeysSentence = wrapWords(fmt.Sprintf(ExamplesSentence, strings.Join(examples.Keys, itemJoiner)), pageWidth)
+
+	if examples.Keyword == "" {
+		return footer
+	}
 
 	sentence := fmt.Sprintf(KeywordMatchExample, examples.Keyword, examples.KeywordMatch)
 	if examples.AliasKeyword != "" {
 		sentence += itemJoiner + fmt.Sprintf(AliasMatchExample, examples.AliasKeyword, examples.AliasMatch)
 	}
 
-	footer.MatchSentence = wrapWords(sentence+".", infoContentWidth)
+	footer.MatchSentence = wrapWords(sentence+".", pageWidth)
 
 	return footer
 }
 
-// shellArgument takes a pattern and returns it as the argument a shell passes
-// through unchanged: bare when it holds no escape, and otherwise within
-// single quotes.
+// shellArgument encloses patterns containing backslashes in single quotes.
 func shellArgument(pattern string) string {
 	if !strings.Contains(pattern, patternEscape) {
 		return pattern

@@ -13,32 +13,36 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// The status vocabulary of the JSON outcomes, shared with the run boundary.
-//   - StatusCompleted: the run produced its artifacts
+// Status values used by JSON generation outcomes.
+//   - statusCompleted: the run produced its artifacts
 //   - StatusCanceled: the user canceled the run
-//   - StatusFailed: the run stopped on a failure
+//   - statusFailed: the run stopped on a failure
 const (
-	StatusCompleted = "completed"
+	statusCompleted = "completed"
 	StatusCanceled  = "canceled"
-	StatusFailed    = "failed"
+	statusFailed    = "failed"
 )
 
-// fallbackFailureOutcome is the failure outcome written when the encoder
-// itself fails, spelled out because nothing else can be encoded at that point.
+// fallbackFailureOutcome is the literal result used if encoding the failure document also fails.
 const fallbackFailureOutcome = `{"status":"failed","errors":[]}`
 
-// FailureOutcome is the JSON result for a command that failed before producing a more
-// specific outcome.
+// FailureOutcome is the JSON result for a command that failed before producing a more specific
+// outcome.
+//   - Status: the failed command status
+//   - Errors: the rendered command failure messages
 type FailureOutcome struct {
 	Status string   `json:"status"`
 	Errors []string `json:"errors"`
 }
 
-// SavedFile is one file written by a generation, in the same user-facing terms as the
-// regular Saved line.
+// SavedFile is one file written by a generation, in the same user-facing terms as the regular Saved
+// line.
 type SavedFile = artifact.SavedFile
 
 // Adjustment is one user-facing flag adjustment made before provider submission.
+//   - Flag: the permanent parameter flag identifier
+//   - Submitted, Used: the original and adjusted values in display form
+//   - Notice: the rendered explanation of the change
 type Adjustment struct {
 	Flag      string `json:"flag"`
 	Submitted string `json:"submitted,omitempty"`
@@ -47,6 +51,16 @@ type Adjustment struct {
 }
 
 // GenerationOutcome is the complete user-facing JSON result of one generation request.
+//   - Timestamp: the UTC start time in RFC 3339 format
+//   - DurationMS: the elapsed run time in milliseconds
+//   - Status: the completed, canceled, or failed result
+//   - Provider, Model: the selected catalog identifiers
+//   - Prompt: the submitted prompt
+//   - Flags: the submitted values keyed by permanent flag identifier
+//   - Adjustments: the changes made before submission
+//   - Artifacts: the successfully saved files
+//   - Notices: the rendered warnings and adjustment explanations
+//   - Errors: the rendered run failure messages
 type GenerationOutcome struct {
 	Timestamp   string         `json:"timestamp"`
 	DurationMS  int64          `json:"durationMs"`
@@ -61,8 +75,8 @@ type GenerationOutcome struct {
 	Errors      []string       `json:"errors,omitempty"`
 }
 
-// NewGenerationOutcome takes a start time, prompt, and submitted flags and returns the
-// initial JSON generation result.
+// NewGenerationOutcome initializes a generation result with a UTC start time. The result retains
+// the supplied flag map without copying it.
 func NewGenerationOutcome(startedAt time.Time, prompt string, flags map[string]any) *GenerationOutcome {
 	return &GenerationOutcome{
 		Timestamp: documentTimestamp(startedAt),
@@ -71,16 +85,12 @@ func NewGenerationOutcome(startedAt time.Time, prompt string, flags map[string]a
 	}
 }
 
-// documentTimestamp takes a time and returns it as the timestamp the JSON
-// document and the sidecar front matter carry: UTC, in RFC 3339 form with
-// fractional seconds.
+// documentTimestamp returns a UTC timestamp in RFC 3339 format with available fractional seconds.
 func documentTimestamp(moment time.Time) string {
 	return moment.UTC().Format(time.RFC3339Nano)
 }
 
-// AdjustmentRecords takes the parameter-flag definitions and parameter-change
-// records and returns the records' user-facing JSON representation without
-// provider parameter names.
+// AdjustmentRecords formats parameter changes as user-facing JSON adjustment records.
 func AdjustmentRecords(paramFlags []params.Flag, paramChanges []params.Adjustment, flagNames map[params.FlagType]string) []Adjustment {
 	adjustments := make([]Adjustment, 0, len(paramChanges))
 	for i := range paramChanges {
@@ -96,9 +106,7 @@ func AdjustmentRecords(paramFlags []params.Flag, paramChanges []params.Adjustmen
 	return adjustments
 }
 
-// NoticeTexts takes the parameter-flag definitions and parameter-change
-// records and returns each record's regular user-facing notice text for JSON
-// result notices.
+// NoticeTexts formats parameter changes as user-facing notice strings.
 func NoticeTexts(paramFlags []params.Flag, paramChanges []params.Adjustment, flagNames map[params.FlagType]string) []string {
 	notices := make([]string, 0, len(paramChanges))
 	for i := range paramChanges {
@@ -114,20 +122,20 @@ func NewFailureOutcome(err error, providerDisplayName, modelName string, debugMo
 	if usageError {
 		errorText = usageErrorText(err, debugMode)
 	} else {
-		errorText = UserErrorText(err, providerDisplayName, modelName, debugMode)
+		errorText = userErrorText(err, providerDisplayName, modelName, debugMode)
 	}
 
-	return FailureOutcome{Status: StatusFailed, Errors: []string{errorText}}
+	return FailureOutcome{Status: statusFailed, Errors: []string{errorText}}
 }
 
-// PrintJSON writes exactly one indented JSON document to destination. A fallback
-// failure document does not erase the original encoding failure. Failed delivery
-// retains its write cause alongside any encoding cause.
+// PrintJSON writes one JSON document to destination, indenting successfully encoded values. If
+// encoding fails, it writes a failure document and returns the original encoding error. A write
+// failure is returned together with any encoding error.
 func PrintJSON(destination io.Writer, value any) error {
 	encoded, encodeErr := encodeJSON(value)
 	if encodeErr != nil {
 		fallback, fallbackErr := json.Marshal(FailureOutcome{
-			Status: StatusFailed,
+			Status: statusFailed,
 			Errors: []string{encodeErr.Error()},
 		})
 		if fallbackErr != nil {
@@ -142,10 +150,7 @@ func PrintJSON(destination io.Writer, value any) error {
 	return errors.Join(encodeErr, WriteText(destination, "%s", encoded))
 }
 
-// encodeJSON takes an outcome or an info page and returns it as one indented
-// JSON value ending in a newline, without the HTML escaping of angle brackets
-// and ampersands that the encoder applies by default, or the serialization
-// error.
+// encodeJSON returns indented JSON followed by a newline, without HTML escaping.
 func encodeJSON(value any) ([]byte, error) {
 	var encoded bytes.Buffer
 
@@ -160,29 +165,27 @@ func encodeJSON(value any) ([]byte, error) {
 	return encoded.Bytes(), nil
 }
 
-// Complete records the elapsed time, final status, and generation error before
-// delivery. A later delivery failure cannot alter a document already written.
+// Complete records the elapsed time and final status, and appends a formatted generation error when
+// one is present.
 func (outcome *GenerationOutcome) Complete(startedAt time.Time, providerDisplayName, modelName string, generationErr error, debugMode bool) {
 	outcome.DurationMS = time.Since(startedAt).Milliseconds()
 
 	outcome.Status = generationStatus(generationErr, outcome.Status)
 	if generationErr != nil {
-		outcome.Errors = append(outcome.Errors, UserErrorText(generationErr, providerDisplayName, modelName, debugMode))
+		outcome.Errors = append(outcome.Errors, userErrorText(generationErr, providerDisplayName, modelName, debugMode))
 	}
 }
 
-// generationStatus takes the run's error and the generation outcome's
-// current status and returns the status the completed outcome carries:
-// canceled for a canceled run, failed for any other error, and otherwise the
-// current status, or completed when none was set.
+// generationStatus returns canceled or failed for an error. Otherwise it preserves an existing
+// status or supplies completed.
 func generationStatus(runErr error, outcomeStatus string) string {
 	switch {
 	case errors.Is(runErr, errs.ErrCanceled):
 		return StatusCanceled
 	case runErr != nil:
-		return StatusFailed
+		return statusFailed
 	case outcomeStatus == "":
-		return StatusCompleted
+		return statusCompleted
 	default:
 		return outcomeStatus
 	}

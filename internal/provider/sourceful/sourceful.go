@@ -28,12 +28,14 @@ var ConfigJSON []byte
 // ProviderID is the Sourceful provider identifier.
 const ProviderID = "sourceful"
 
-// generator generates images through the Sourceful Design API.
+// generator holds the Sourceful request settings.
+//   - adapterAPI: endpoints, polling limits, and artifact defaults
 type generator struct {
 	adapterAPI *catalog.AdapterAPI
 }
 
-// NewProvider returns a generator with owned adapter settings, or a missing-description error.
+// NewProvider returns a generator with independent adapter settings. It rejects missing settings
+// and configured paths that overwrite required request fields.
 func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error) {
 	adapterSettings, err := provider.AdapterSettings(providerDescription, ProviderID)
 	if err != nil {
@@ -83,10 +85,7 @@ func (sourceful *generator) Generate(ctx context.Context, generationRequest *gen
 	return generation.Result{Preparation: generationRequest.Clone(), Artifacts: []artifact.Media{generatedMedia}}, nil
 }
 
-// createJob posts the generation request to the creation route its inputs
-// select, the image route with reference images and the text route without,
-// checks the response status, and returns the job ID the creation response
-// carries.
+// createJob posts a text or image generation request and returns its job ID.
 func (sourceful *generator) createJob(ctx context.Context, apiCredential httpapi.AuthCredential, providerModelName string, generationRequest *generation.Generation) (string, error) {
 	creationRoute := textRoute
 	if len(generationRequest.InputMedia) > 0 {
@@ -110,9 +109,8 @@ func (sourceful *generator) createJob(ctx context.Context, apiCredential httpapi
 	return creationJobID(creationBody, providerModelName)
 }
 
-// fetchResult polls the job until it completes, resolves the download's
-// fallback extension from the result's MIME type, and fetches the result
-// image.
+// fetchResult waits for the job to complete and downloads its image artifact. It records provider
+// completion and the artifact response.
 func (sourceful *generator) fetchResult(ctx context.Context, apiCredential httpapi.AuthCredential, providerModelName, jobID string, record *metadata.Record) (artifact.Media, error) {
 	jobPoll := &jobPoll{
 		adapterAPI:        sourceful.adapterAPI,

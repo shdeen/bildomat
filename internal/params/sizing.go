@@ -24,8 +24,8 @@ type SizeBounds struct {
 	LongEdge   int     `json:"longEdge,omitempty"`
 }
 
-// parseRatio takes an A:B aspect ratio and returns its positive finite quotient and whether
-// parsing succeeded.
+// parseRatio takes an A:B aspect ratio and returns its positive finite quotient and whether parsing
+// succeeded.
 func parseRatio(ratio string) (float64, bool) {
 	parts := strings.SplitN(ratio, ":", 2)
 	if len(parts) != 2 {
@@ -68,8 +68,8 @@ func ParseDimensions(size string) (parsedWidth, parsedHeight int, isValid bool) 
 // fmtWH takes width and height values and returns WxH dimensions.
 func fmtWH(width, height int) string { return strconv.Itoa(width) + "x" + strconv.Itoa(height) }
 
-// suffixNum takes text and a required suffix and returns the positive integer before that
-// suffix and whether parsing succeeded.
+// suffixNum takes text and a required suffix and returns the positive integer before that suffix
+// and whether parsing succeeded.
 func suffixNum(text, suffix string) (int, bool) {
 	if !strings.HasSuffix(text, suffix) {
 		return 0, false
@@ -83,9 +83,8 @@ func suffixNum(text, suffix string) (int, bool) {
 	return n, true
 }
 
-// aspectNearest takes an aspect-ratio value and allowed values and returns the exact member
-// or nearest parseable ratio. Its boolean result reports whether the input was already a
-// member.
+// aspectNearest takes an aspect-ratio value and allowed values and returns the exact member or
+// nearest parseable ratio. Its boolean result reports whether the input was already a member.
 func aspectNearest(input string, allowed []string) (string, bool) {
 	trimmedInput := strings.TrimSpace(input)
 	if member, found := allowedMember(trimmedInput, allowed); found {
@@ -113,8 +112,8 @@ func aspectNearest(input string, allowed []string) (string, bool) {
 	return nearest, false
 }
 
-// snapInt takes an integer and allowed values and returns the nearest allowed value. A tie
-// returns the first matching value.
+// snapInt takes an integer and allowed values and returns the nearest allowed value. A tie returns
+// the first matching value.
 func snapInt(sec int, allowed []int) int {
 	nearest, distance := 0, math.MaxFloat64
 	for _, candidate := range allowed {
@@ -126,8 +125,8 @@ func snapInt(sec int, allowed []int) int {
 	return nearest
 }
 
-// nearestRes takes a height and allowed resolution labels and returns the label with the
-// nearest representative height.
+// nearestRes takes a height and allowed resolution labels and returns the label with the nearest
+// representative height.
 func nearestRes(height int, allowed []string) string {
 	nearest, distance := "", math.MaxFloat64
 
@@ -148,8 +147,8 @@ func nearestRes(height int, allowed []string) string {
 // The resolution labels repHeight maps to a representative height.
 //   - labelSuffixP: the suffix of a height label such as 720p; the number before it is the height
 //   - labelSuffixK: the suffix of a K label such as 2k; the number before it counts K units
-//   - heightPerK: the representative height of one K unit, which the K rule
-//     multiplies by the label's count; for 4K and 8K it yields the published heights
+//   - heightPerK: the representative height of one K unit, which the K rule multiplies by the
+//     label's count; for 4K and 8K it yields the published heights
 const (
 	labelSuffixP = "p"
 	labelSuffixK = "k"
@@ -186,9 +185,9 @@ func repHeight(size string) (int, bool) {
 	return 0, false
 }
 
-// PickSize selects declared dimensions by orientation, nearest short edge,
-// nearest supplied ratio, and declaration order. If the requested orientation
-// has no candidate, it considers both orientations.
+// PickSize selects declared dimensions by orientation, nearest short edge, nearest supplied ratio,
+// and declaration order. If the requested orientation has no candidate, it considers both
+// orientations.
 func PickSize(sizes []string, landscape bool, tierH int, requestedRatio Nullable[float64]) string {
 	var sizeCands []string
 
@@ -230,8 +229,8 @@ func PickSize(sizes []string, landscape bool, tierH int, requestedRatio Nullable
 	return nearest
 }
 
-// nearestSize takes allowed dimensions and an aspect ratio and returns the dimensions with
-// the nearest ratio. A tie returns the first matching value.
+// nearestSize takes allowed dimensions and an aspect ratio and returns the dimensions with the
+// nearest ratio. A tie returns the first matching value.
 func nearestSize(sizes []string, ratio float64) string {
 	nearest, nearestDist := "", math.MaxFloat64
 
@@ -249,8 +248,8 @@ func nearestSize(sizes []string, ratio float64) string {
 	return nearest
 }
 
-// deriveSize takes size bounds and an aspect ratio and returns constrained dimensions based
-// on the configured long edge. It returns an empty string when no long edge is configured.
+// deriveSize takes size bounds and an aspect ratio and returns constrained dimensions based on the
+// configured long edge. It returns an empty string when no long edge is configured.
 func deriveSize(bounds SizeBounds, ratio float64) string {
 	if bounds.LongEdge == 0 {
 		return ""
@@ -269,8 +268,8 @@ func deriveSize(bounds SizeBounds, ratio float64) string {
 	return fmtWH(cw, ch)
 }
 
-// clampFree takes size bounds and dimensions and returns dimensions adjusted to the
-// configured ratio, edge, pixel-count, and increment constraints.
+// clampFree takes size bounds and dimensions and returns dimensions adjusted to the configured
+// ratio, edge, pixel-count, and increment constraints.
 func clampFree(bounds SizeBounds, width, height int) (adjustedWidth, adjustedHeight int) {
 	floatWidth, floatHeight := capRatio(bounds, float64(width), float64(height))
 	floatWidth, floatHeight = scaleTo(floatWidth, floatHeight, scaleLongFactor(bounds, floatWidth, floatHeight))
@@ -290,7 +289,7 @@ func fixRounded(bounds SizeBounds, width, height int) (adjustedWidth, adjustedHe
 		return width, height
 	}
 
-	shortEdge, longEdge := units.nearestDimensions(float64(min(width, height))/float64(step), float64(max(width, height))/float64(step))
+	shortEdge, longEdge := units.searchNearestDimensions(float64(min(width, height))/float64(step), float64(max(width, height))/float64(step))
 
 	adjustedWidth, adjustedHeight = longEdge*step, shortEdge*step
 	if width < height {
@@ -304,8 +303,8 @@ func fixRounded(bounds SizeBounds, width, height int) (adjustedWidth, adjustedHe
 	return adjustedWidth, adjustedHeight
 }
 
-// incrementBounds expresses the constraints in whole edge increments.
-// Pixel limits use division so neither the step square nor the area can overflow.
+// incrementBounds expresses the constraints in whole edge increments. Pixel limits use division so
+// neither the step square nor the area can overflow.
 func (bounds SizeBounds) incrementBounds() (units SizeBounds, step int, usable bool) {
 	step = max(bounds.EdgeIncrem, 1)
 
@@ -330,9 +329,9 @@ func (bounds SizeBounds) incrementBounds() (units SizeBounds, step int, usable b
 	return units, step, usable
 }
 
-// nearestDimensions searches a finite interval of shorter edges. A nearby supported
-// pair narrows that interval; longForShort provides the complete admissible longer range.
-func (bounds SizeBounds) nearestDimensions(requestedShort, requestedLong float64) (shortEdge, longEdge int) {
+// searchNearestDimensions searches a finite interval of shorter edges. A nearby supported pair
+// narrows that interval; longForShort provides the complete admissible longer range.
+func (bounds SizeBounds) searchNearestDimensions(requestedShort, requestedLong float64) (shortEdge, longEdge int) {
 	shortMaximum := max(bounds.MinEdge, boundedInt(math.Ceil(requestedShort)), ceilSquareRoot(bounds.MinPx))
 	if bounds.MaxRatio > 0 {
 		shortMaximum = max(shortMaximum, boundedInt(math.Ceil(requestedLong/bounds.MaxRatio)))
@@ -343,7 +342,7 @@ func (bounds SizeBounds) nearestDimensions(requestedShort, requestedLong float64
 		shortMaximum = min(shortMaximum, floorSquareRoot(bounds.MaxPx))
 	}
 
-	shortEdge, longEdge, distance := bounds.nearbyDimensions(requestedShort, requestedLong, shortMaximum)
+	shortEdge, longEdge, distance := bounds.probeInitialDimensions(requestedShort, requestedLong, shortMaximum)
 
 	firstShort := bounds.MinEdge
 	if !math.IsInf(distance, 1) {
@@ -367,8 +366,8 @@ func (bounds SizeBounds) nearestDimensions(requestedShort, requestedLong float64
 	return shortEdge, longEdge
 }
 
-// nearbyDimensions compares the requested shorter edge with the two search limits.
-func (bounds SizeBounds) nearbyDimensions(requestedShort, requestedLong float64, shortMaximum int) (shortEdge, longEdge int, distance float64) {
+// probeInitialDimensions compares the requested shorter edge with the two search limits.
+func (bounds SizeBounds) probeInitialDimensions(requestedShort, requestedLong float64, shortMaximum int) (shortEdge, longEdge int, distance float64) {
 	distance = math.Inf(1)
 
 	initialShort := min(max(boundedInt(math.Round(requestedShort)), bounds.MinEdge), shortMaximum)
@@ -387,8 +386,8 @@ func (bounds SizeBounds) nearbyDimensions(requestedShort, requestedLong float64,
 	return shortEdge, longEdge, distance
 }
 
-// closerDimensions orders usable dimensions by distance, then a balanced shape,
-// then preservation of the requested longer edge on an exact tie.
+// closerDimensions orders usable dimensions by distance, then a balanced shape, then preservation
+// of the requested longer edge on an exact tie.
 func closerDimensions(requestedShort, requestedLong float64, shortEdge, longEdge, chosenShort, chosenLong int) bool {
 	if chosenShort == 0 {
 		return true
@@ -434,8 +433,8 @@ func (bounds SizeBounds) longForShort(shortEdge int, requestedLong float64) int 
 	return min(max(boundedInt(math.Round(requestedLong)), lower), upper)
 }
 
-// validDimensions checks every declared constraint without multiplying the edges.
-// Its callers first validate the declaration through incrementBounds.
+// validDimensions checks every declared constraint without multiplying the edges. Its callers first
+// validate the declaration through incrementBounds.
 func (bounds SizeBounds) validDimensions(width, height int) bool {
 	if width <= 0 || height <= 0 || min(width, height) < bounds.MinEdge {
 		return false
@@ -473,7 +472,7 @@ func boundedInt(value float64) int {
 	return int(value)
 }
 
-// floorSquareRoot returns the exact integer square root of a nonnegative count.
+// floorSquareRoot returns the floor of the square root of a nonnegative count.
 func floorSquareRoot(count int) int {
 	if count <= 0 {
 		return 0
@@ -519,9 +518,8 @@ func capRatio(bounds SizeBounds, floatWidth, floatHeight float64) (adjustedWidth
 	return floatWidth, floatHeight
 }
 
-// scaleLongFactor takes size bounds and floating-point dimensions and returns the scale that
-// brings the longer edge within the configured maximum. It returns one when no reduction is
-// needed.
+// scaleLongFactor takes size bounds and floating-point dimensions and returns the scale that brings
+// the longer edge within the configured maximum. It returns one when no reduction is needed.
 func scaleLongFactor(bounds SizeBounds, floatWidth, floatHeight float64) float64 {
 	if m := math.Max(floatWidth, floatHeight); bounds.MaxEdge > 0 && m > float64(bounds.MaxEdge) {
 		return float64(bounds.MaxEdge) / m
@@ -530,8 +528,8 @@ func scaleLongFactor(bounds SizeBounds, floatWidth, floatHeight float64) float64
 	return 1
 }
 
-// scalePxFactor takes size bounds and a pixel count and returns the scale that brings the
-// count within the configured range. It returns one when no scaling is needed.
+// scalePxFactor takes size bounds and a pixel count and returns the scale that brings the count
+// within the configured range. It returns one when no scaling is needed.
 func scalePxFactor(bounds SizeBounds, pixelCount float64) float64 {
 	if bounds.MaxPx > 0 && pixelCount > float64(bounds.MaxPx) {
 		return math.Sqrt(float64(bounds.MaxPx) / pixelCount)
@@ -544,8 +542,8 @@ func scalePxFactor(bounds SizeBounds, pixelCount float64) float64 {
 	return 1
 }
 
-// scaleTo takes floating-point dimensions and a scale and returns both dimensions multiplied
-// by that scale.
+// scaleTo takes floating-point dimensions and a scale and returns both dimensions multiplied by
+// that scale.
 func scaleTo(floatWidth, floatHeight, scale float64) (scaledWidth, scaledHeight float64) {
 	return floatWidth * scale, floatHeight * scale
 }

@@ -18,8 +18,8 @@ import (
 // dimensionsForm renders a width and height as a dimension value.
 const dimensionsForm = "%dx%d"
 
-// Resize center-crops local images and returns replacement PNG bytes at concrete dimensions.
-// The original byte buffers and optional timestamps remain unchanged.
+// Resize center-crops local images and returns replacement PNG bytes at concrete dimensions. The
+// original byte buffers and optional timestamps remain unchanged.
 func Resize(width, height int, mediaInputs []Input) ([]Input, error) {
 	if len(mediaInputs) == 0 {
 		return mediaInputs, nil
@@ -62,7 +62,7 @@ func resizeItem(mediaInput *Input, width, height int, position string) (Input, e
 		return Input{}, &errs.MediaError{Problem: position, Cause: errors.Join(errs.ErrInputMediaEncode, err)}
 	}
 
-	return Input{Bytes: encoded.Bytes(), MIME: MimePNG, Filepath: mediaInput.Filepath, Time: mediaInput.Time, FrameAnchor: mediaInput.FrameAnchor}, nil
+	return Input{Bytes: encoded.Bytes(), MIME: mimePNG, Filepath: mediaInput.Filepath, Time: mediaInput.Time, FrameAnchor: mediaInput.FrameAnchor}, nil
 }
 
 // centerCrop returns the largest centered source rectangle at the target ratio.

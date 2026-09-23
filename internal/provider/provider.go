@@ -13,10 +13,11 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// sectionVideoAPI names the video API section in configuration errors.
-const sectionVideoAPI = "VideoAPI"
-
-// sharedProvider owns the execution settings for a descriptor-class provider.
+// sharedProvider holds independent request settings for a descriptor-class provider.
+//   - providerID: the provider identity used in errors
+//   - imageAPI: optional image request settings
+//   - videoAPI: optional video request settings
+//   - stringParams: parameters that must be encoded as strings
 type sharedProvider struct {
 	providerID   string
 	imageAPI     *catalog.ImageAPI
@@ -24,7 +25,8 @@ type sharedProvider struct {
 	stringParams []params.FlagType
 }
 
-// NewProvider requires the API sections used by the provider's models and owns copies of them.
+// NewProvider validates the API sections required by the models and returns a generator with
+// independent copies of the request settings.
 func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error) {
 	if providerDescription == nil || providerDescription.Config == nil {
 		return nil, &errs.ConfigError{Cause: errs.ErrProvConfigInvalid}
@@ -38,7 +40,7 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 		}
 
 		if model.Media == media.Video && providerSettings.VideoAPI == nil {
-			return nil, missingAPIError(providerDescription.ID, sectionVideoAPI)
+			return nil, missingAPIError(providerDescription.ID, catalog.SectionVideoAPI)
 		}
 	}
 
@@ -49,8 +51,8 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 	return &sharedProvider{providerID: providerDescription.ID, imageAPI: providerSettings.ImageAPI, videoAPI: providerSettings.VideoAPI, stringParams: providerSettings.StringParams}, nil
 }
 
-// AdapterSettings returns an owned copy of the selected provider's adapter settings.
-// A missing description or adapter section returns a configuration error naming providerID.
+// AdapterSettings returns an owned copy of the selected provider's adapter settings. A missing
+// description or adapter section returns a configuration error naming providerID.
 func AdapterSettings(providerDescription *catalog.Provider, providerID string) (*catalog.AdapterAPI, error) {
 	if providerDescription == nil || providerDescription.Config == nil || providerDescription.Config.AdapterAPI == nil {
 		return nil, &errs.ConfigError{Provider: providerID, Cause: errs.ErrProvConfigNoAdapterAPI}
@@ -61,7 +63,8 @@ func AdapterSettings(providerDescription *catalog.Provider, providerID string) (
 	return providerSettings.AdapterAPI, nil
 }
 
-// AdjustParams applies common scalar rules, then the retained collection's frame and image rules.
+// AdjustParams returns adjusted parameters, retained media, and change records. Video API settings
+// determine frame handling and image resizing.
 func (provider *sharedProvider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error) {
 	preparedGeneration, err := generation.AdjustGeneration(model, inputs, mediaInputs)
 	if err != nil {
@@ -96,7 +99,8 @@ func (provider *sharedProvider) AdjustParams(model *catalog.Model, inputs params
 	return preparedGeneration, nil
 }
 
-// Generate owns its request copy and returns all completed preparation facts on either outcome.
+// Generate submits the selected image or video request and returns its artifacts. It copies the
+// request preparation and returns any preparation completed before a failure.
 func (provider *sharedProvider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error) {
 	request := *run
 	request.Preparation = run.Clone()
@@ -106,7 +110,7 @@ func (provider *sharedProvider) Generate(ctx context.Context, run *generation.Ge
 
 	if run.Model.Media == media.Video {
 		if provider.videoAPI == nil {
-			return result, missingAPIError(provider.providerID, sectionVideoAPI)
+			return result, missingAPIError(provider.providerID, catalog.SectionVideoAPI)
 		}
 
 		result.Artifacts, err = submitVideo(ctx, provider.videoAPI, run.APIKey, &request, provider.stringParams...)

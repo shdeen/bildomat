@@ -6,7 +6,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// checkParamCfg returns an error when a parameter configuration does not match the parameter flag definitions.
+// checkParamCfg returns an error when a parameter configuration does not match the parameter flag
+// definitions.
 func checkParamCfg(cfgName, modelID string, paramCfg *params.Definition, flagsByID map[params.FlagType]params.Flag) error {
 	paramFlag, enumerated := flagsByID[paramCfg.FlagID]
 	if !enumerated {
@@ -26,10 +27,10 @@ func checkParamCfg(cfgName, modelID string, paramCfg *params.Definition, flagsBy
 		if err != nil {
 			return createInvalidCfgError(cfgName, fmt.Sprintf(AllowedValueFault, modelID, string(paramCfg.FlagID), err.Error()))
 		}
-		// The count floor is universal: an image count below one is never a
-		// valid value, so a declared member under one is incoherent config —
-		// membership could otherwise transmit it, and floor-raising a miss
-		// would transmit a value outside the declared set.
+		// The count floor is universal: an image count below one is never a valid value, so
+		// a declared member under one is incoherent config — membership could otherwise
+		// transmit it, and floor-raising a miss would transmit a value outside the declared
+		// set.
 		if memberCount, ok := parsedVal.(int); paramCfg.FlagID == params.FlagTypeImageN && ok && memberCount < 1 {
 			return createInvalidCfgError(cfgName, fmt.Sprintf(AllowedValueBelowCount, modelID, string(paramCfg.FlagID), allowedVal))
 		}

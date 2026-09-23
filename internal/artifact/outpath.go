@@ -22,7 +22,8 @@ type Location struct {
 	Format string
 }
 
-// ParseOutPath returns the directory, filename stem, extension, and image format represented by an output path.
+// ParseOutPath separates an output path into its directory, stem, and supported media extension.
+// Unsupported extensions are discarded; only image extensions select an output format.
 func ParseOutPath(outPath string) Location {
 	if outPath == "" {
 		return Location{}
@@ -57,7 +58,7 @@ func ParseOutPath(outPath string) Location {
 	return Location{Dir: dir, Stem: stem, Ext: ext, Format: format}
 }
 
-// pathIsExistingDirectory checks a path using the shared home expansion rules.
+// pathIsExistingDirectory reports whether a path names a directory after home expansion.
 func pathIsExistingDirectory(path string) bool {
 	statPath, err := ExpandHome(path)
 	if err != nil {
@@ -72,7 +73,8 @@ func pathIsExistingDirectory(path string) bool {
 	return fileInfo.IsDir()
 }
 
-// outPathFormat returns the image format represented by an extension and whether the extension is supported.
+// outPathFormat returns the image format represented by an extension and whether the extension is
+// supported.
 func outPathFormat(ext string) (string, bool) {
 	switch strings.ToLower(strings.TrimPrefix(ext, ".")) {
 	case media.FormatPNG:
@@ -88,7 +90,8 @@ func outPathFormat(ext string) (string, bool) {
 	return "", false
 }
 
-// FormatExt returns the canonical file extension for format, or an empty string when format is unsupported.
+// FormatExt returns the canonical file extension for format, or an empty string when format is
+// unsupported.
 func FormatExt(format string) string {
 	switch strings.ToLower(format) {
 	case media.FormatPNG:
@@ -102,9 +105,8 @@ func FormatExt(format string) string {
 	return ""
 }
 
-// ExpandHome takes a path and returns it with a leading tilde expanded to the user's home
-// directory. It returns the path unchanged when no expansion is needed and an error when
-// the home directory is unavailable.
+// ExpandHome replaces ~ or a leading ~/ with the home directory, returning an error if it is
+// unavailable. Other paths are unchanged.
 func ExpandHome(path string) (string, error) {
 	if path != "~" && !strings.HasPrefix(path, "~/") {
 		return path, nil
@@ -118,10 +120,8 @@ func ExpandHome(path string) (string, error) {
 	return filepath.Join(home, strings.TrimPrefix(path, "~")), nil
 }
 
-// resolveOutputDir takes an output-directory path, expands a leading tilde, resolves a
-// relative path against the working directory, and returns the resulting absolute path. It
-// creates the directory and missing parents and returns an error if expansion, resolution,
-// or creation fails.
+// resolveOutputDir expands a leading tilde, resolves an absolute path, and creates the directory
+// and any missing parents.
 func resolveOutputDir(userInputDirPath string) (string, error) {
 	expandedDir, err := ExpandHome(userInputDirPath)
 	if err != nil {
@@ -140,8 +140,7 @@ func resolveOutputDir(userInputDirPath string) (string, error) {
 	return outDir, nil
 }
 
-// CreateDir creates an already resolved output directory and its missing parents.
-// It may be called again after a long generation without resolving the path again.
+// CreateDir creates a directory and missing parents, accepting an existing directory.
 func CreateDir(path string) error {
 	// #nosec G301 -- generated output directories follow the invoking user's umask.
 	if err := os.MkdirAll(path, 0o755); err != nil {
@@ -151,8 +150,8 @@ func CreateDir(path string) error {
 	return nil
 }
 
-// Resolve makes the location's directory absolute, creates it, and sanitizes
-// the requested stem. An empty stem remains empty for command format precedence.
+// Resolve makes the location's directory absolute, creates it, and sanitizes its stem. It updates
+// Dir only after successful directory creation and leaves an empty stem empty.
 func (location *Location) Resolve() error {
 	directory, err := resolveOutputDir(location.Dir)
 	if err != nil {
@@ -165,7 +164,7 @@ func (location *Location) Resolve() error {
 	return nil
 }
 
-// sanitizeFilename takes filename text and returns it with slashes and control characters replaced by hyphens.
+// sanitizeFilename replaces path separators and ASCII control characters with hyphens.
 func sanitizeFilename(text string) string {
 	var builder strings.Builder
 

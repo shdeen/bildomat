@@ -15,8 +15,8 @@ type jobPoll interface {
 	Poll(ctx context.Context) (jobDone bool, err error)
 }
 
-// Poll checks a job at fixed intervals until it completes, the context ends, or the polling budget expires.
-// The caller may read its poller's completed result only after Poll succeeds.
+// Poll checks a job at fixed intervals until it completes, the context ends, or the polling budget
+// expires. The caller may read its poller's completed result only after Poll succeeds.
 func Poll(ctx context.Context, pace, pollBudget time.Duration, poller jobPoll) error {
 	dctx, cancel := context.WithTimeout(ctx, pollBudget)
 	defer cancel()
@@ -57,8 +57,9 @@ func Poll(ctx context.Context, pace, pollBudget time.Duration, poller jobPoll) e
 	}
 }
 
-// retryablePollError gives permanent classifications precedence over a
-// simultaneous response-body read failure.
+// retryablePollError recognizes transport failures and temporary response statuses that can be
+// retried. Permanent classifications take precedence over a simultaneous response-body read
+// failure.
 func retryablePollError(err error) bool {
 	if errors.Is(err, errs.ErrCanceled) || errors.Is(err, errs.ErrTransportSize) || errors.Is(err, errs.ErrResponseDecode) {
 		return false
@@ -84,7 +85,7 @@ func wait(ctx context.Context, d time.Duration) error {
 	}
 }
 
-// getPollTimeout preserves the last failed observation across pending replies.
+// getPollTimeout returns a polling timeout error retaining the last failed observation, if any.
 func getPollTimeout(timeout time.Duration, last error) error {
 	detail := fmt.Sprintf(TimeoutAfterForm, timeout)
 

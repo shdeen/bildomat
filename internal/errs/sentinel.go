@@ -1,19 +1,18 @@
-// Package errs defines the sentinels for bildomat's internal error contract. The
-// error model is a hierarchy of categories and more specific failures. Category roots
-// are the stable errors.Is targets that internal/output dispatches user
-// messages on. Each root is a bare subject noun ("transport", "input media", …).
-// Beneath each root sit PRECISE operation/condition sentinels, defined as
-// fmt.Errorf("%w: <predicate>", <root>) so a sentinel reads as "subject: predicate"
-// (e.g. "transport: request failed") and errors.Is matches BOTH the precise
-// sentinel and its root. Every error site wraps the PRECISE sentinel and adds only
-// the nearest granular detail (endpoint, path, id, model) as context, so the
-// operation/condition lives in the sentinel rather than in repeated context text.
+// Package errs defines the sentinels for bildomat's internal error contract. The error model is a
+// hierarchy of categories and more specific failures. Category roots are the stable errors.Is
+// targets that internal/output dispatches user messages on. Each root is a bare subject noun
+// ("transport", "input media", …). Beneath each root sit PRECISE operation/condition sentinels,
+// defined as fmt.Errorf("%w: <predicate>", <root>) so a sentinel reads as "subject: predicate"
+// (e.g. "transport: request failed") and errors.Is matches BOTH the precise sentinel and its root.
+// Every error site wraps the PRECISE sentinel and adds only the nearest granular detail (endpoint,
+// path, id, model) as context, so the operation/condition lives in the sentinel rather than in
+// repeated context text.
 //
-// ErrKeyMissing and ErrCanceled are separate standalone markers: neither belongs
-// to a category. Credential errors retain the provider's setting locations;
-// ErrCanceled is wrapped directly over the context error. Record and video-reuse
-// sentinels also stand alone: their complete messages pass through the fallback
-// renderer because none of the existing category messages describes those failures.
+// ErrKeyMissing and ErrCanceled are separate standalone markers: neither belongs to a category.
+// Credential errors retain the provider's setting locations; ErrCanceled is wrapped directly over
+// the context error. Record and video-reuse sentinels also stand alone: their complete messages
+// pass through the fallback renderer because none of the existing category messages describes those
+// failures.
 package errs
 
 import (
@@ -34,12 +33,12 @@ import (
 //   - ErrOutputPage is the category root for embedded output-page template failures.
 //   - ErrSearch is the category root for list-search failures.
 //   - ErrUserConfig is the category root for optional user configuration faults.
-//   - ErrJSON is the category root for JSON encoding and decoding failures outside a
-//     provider response.
-//   - ErrKeyMissing marks an unset provider credential; the provider names the
-//     environment variable and user-config key in the wrapping context.
-//   - ErrCanceled marks a run canceled through the command context (Ctrl-C);
-//     waits and transport surface it so cancellation interrupts long work.
+//   - ErrJSON is the category root for JSON encoding and decoding failures outside a provider
+//     response.
+//   - ErrKeyMissing marks an unset provider credential; the provider names the environment variable
+//     and user-config key in the wrapping context.
+//   - ErrCanceled marks a run canceled through the command context (Ctrl-C); waits and transport
+//     surface it so cancellation interrupts long work.
 var (
 	ErrCLI          = errors.New("CLI")
 	ErrProcess      = errors.New("process")
@@ -63,15 +62,19 @@ var (
 //   - ErrCLIPromptMissing marks a missing or empty prompt argument.
 //   - ErrCLINoModelInput marks a missing --model input when the command requires one.
 //   - ErrCLINoArgs marks a command that takes no arguments but was given one or more.
-//   - ErrCLIOneArg marks a command that takes exactly one argument but was given none or more than one.
+//   - ErrCLIOneArg marks a command that takes exactly one argument but was given none or more than
+//     one.
 //   - ErrCLIOneArgMax marks a command that takes at most one argument but was given more than one.
 //   - ErrCLIUnknownHelpTopic marks a help argument naming no command.
-//   - ErrCLISearchPattern marks a search or exclusion term that does not compile as a regular expression under --regex.
+//   - ErrCLISearchPattern marks a search or exclusion term that does not compile as a regular
+//     expression under --regex.
 //   - ErrCLISearchTermMissing marks a search given neither a search term nor an exclusion term.
 //   - ErrCLISearchTermEmpty marks a search term or an exclusion term typed as the empty string.
-//   - ErrCLIHelpCombined marks a help or version flag given beside other flags or positional arguments.
+//   - ErrCLIHelpCombined marks a help or version flag given beside other flags or positional
+//     arguments.
 //   - ErrCLIFlagsBeforeCommand marks a flag placed before a command word.
-//   - ErrCLINoDefaultModel marks an omitted --model when no configured provider carries a default model.
+//   - ErrCLINoDefaultModel marks an omitted --model when no configured provider carries a default
+//     model.
 var (
 	ErrCLIFlagParse          = fmt.Errorf("%w: flag parse failed", ErrCLI)
 	ErrCLIPromptMissing      = fmt.Errorf("%w: prompt missing", ErrCLI)
@@ -123,32 +126,33 @@ var (
 // Response sentinels:
 //   - ErrResponseDecode marks a response body that could not be decoded.
 //   - ErrResponseNoData marks a response missing its expected data.
+//   - ErrResponseStatusTemporary marks a provider status eligible for a bounded polling retry.
 //   - ErrResponseStatus marks a non-2xx provider API response.
-//   - ErrResponseServer marks a provider server message extracted from an
-//     error response's documented body shape; the extracted text is the
-//     ProviderError message, retained separately for the renderer.
+//   - ErrResponseServer marks a provider server message extracted from an error response's
+//     documented body shape; the extracted text is the ProviderError message, retained separately
+//     for the renderer.
 //   - ErrResponseGen marks a provider-reported generation failure.
 //   - ErrResponseNoSample marks a ready response that lacks a sample.
 //   - ErrResponseUnknown marks an unrecognized poll status.
 //   - ErrResponseNoJobID marks a start response that lacks a job ID.
-//   - ErrResponseCodeMissing marks a Kling envelope with no code field; it
-//     refines ErrResponseNoData.
-//   - ErrResponseCodeInvalid marks a Kling envelope code that is not an
-//     integer; it refines ErrResponseDecode.
-//   - ErrResponseTaskDataMissing marks a task response with no data object;
-//     it refines ErrResponseNoData.
-//   - ErrResponseTaskRecordInvalid marks a task record that is not an
-//     object; it refines ErrResponseDecode.
-//   - ErrResponseResultInvalid marks a result record that is not an object;
-//     it refines ErrResponseDecode.
-//   - ErrResponseResultIndexInvalid marks a result record whose index is not
-//     an integer; it refines ErrResponseDecode.
-//   - ErrResponseResultIndexDuplicate marks two result records sharing one
-//     index; it refines ErrResponseDecode.
-//   - ErrResponseOutputInvalid marks an output record that is not an object;
-//     it refines ErrResponseDecode.
-//   - ErrResponseJobStatusMissing marks a job response with no status; it
-//     refines ErrResponseNoData.
+//   - ErrResponseCodeMissing marks a Kling envelope with no code field; it refines
+//     ErrResponseNoData.
+//   - ErrResponseCodeInvalid marks a Kling envelope code that is not an integer; it refines
+//     ErrResponseDecode.
+//   - ErrResponseTaskDataMissing marks a task response with no data object; it refines
+//     ErrResponseNoData.
+//   - ErrResponseTaskRecordInvalid marks a task record that is not an object; it refines
+//     ErrResponseDecode.
+//   - ErrResponseResultInvalid marks a result record that is not an object; it refines
+//     ErrResponseDecode.
+//   - ErrResponseResultIndexInvalid marks a result record whose index is not an integer; it refines
+//     ErrResponseDecode.
+//   - ErrResponseResultIndexDuplicate marks two result records sharing one index; it refines
+//     ErrResponseDecode.
+//   - ErrResponseOutputInvalid marks an output record that is not an object; it refines
+//     ErrResponseDecode.
+//   - ErrResponseJobStatusMissing marks a job response with no status; it refines
+//     ErrResponseNoData.
 var (
 	ErrResponseDecode          = fmt.Errorf("%w: decode failed", ErrResponse)
 	ErrResponseNoData          = fmt.Errorf("%w: no data", ErrResponse)
@@ -208,6 +212,7 @@ var (
 //   - ErrOutputFileHome marks a failed home-directory lookup.
 //   - ErrOutputFileMkdir marks a failed output-directory creation.
 //   - ErrOutputFileEmpty marks an empty artifact set.
+//   - ErrOutputFileRead marks a failed read of downloaded or saved media.
 //   - ErrOutputFileWrite marks a failed artifact write.
 //   - ErrOutputFileClose marks a failed file close.
 //   - ErrOutputFileCreate marks a failed exclusive file create.
@@ -216,6 +221,7 @@ var (
 	ErrOutputFileHome   = fmt.Errorf("%w: home directory lookup failed", ErrOutputFile)
 	ErrOutputFileMkdir  = fmt.Errorf("%w: directory creation failed", ErrOutputFile)
 	ErrOutputFileEmpty  = fmt.Errorf("%w: no artifacts to write", ErrOutputFile)
+	ErrOutputFileRead   = fmt.Errorf("%w: read failed", ErrOutputFile)
 	ErrOutputFileWrite  = fmt.Errorf("%w: write failed", ErrOutputFile)
 	ErrOutputFileClose  = fmt.Errorf("%w: close failed", ErrOutputFile)
 	ErrOutputFileCreate = fmt.Errorf("%w: create failed", ErrOutputFile)
@@ -223,26 +229,25 @@ var (
 )
 
 // Provider-config sentinels
-//   - ErrProvConfigDecode marks an embedded provider config that failed to decode
-//     (malformed JSON or an unknown field).
-//   - ErrProvConfigInvalid marks a decoded provider config with invalid content (bad
-//     enum, missing medium description, invalid numeric field).
-//   - ErrProvConfigDupAlias marks an alias token declared twice across the
-//     catalog's healthy configs.
+//   - ErrProvConfigDecode marks an embedded provider config that failed to decode (malformed JSON
+//     or an unknown field).
+//   - ErrProvConfigInvalid marks a decoded provider config with invalid content (bad enum, missing
+//     medium description, invalid numeric field).
+//   - ErrProvConfigDupAlias marks an alias token declared twice across the catalog's healthy
+//     configs.
 //   - ErrProvConfigDupModel marks a duplicate provider-model pair.
-//   - ErrProvConfigNoConstructor marks a provider whose config loaded but for which
-//     no constructor was registered: a wiring defect in the provider table.
-//   - ErrProvConfigNotLoaded marks a provider the catalog holds no healthy config
-//     for, whether its config failed to load or the provider was never registered.
-//   - ErrProvConfigConstructorFailed marks a constructor that returned an interface
-//     holding a nil pointer, which compares unequal to nil yet fails on the first
-//     method call.
+//   - ErrProvConfigNoConstructor marks a provider whose config loaded but for which no constructor
+//     was registered: a wiring defect in the provider table.
+//   - ErrProvConfigNotLoaded marks a provider the catalog holds no healthy config for, whether its
+//     config failed to load or the provider was never registered.
+//   - ErrProvConfigConstructorFailed marks a constructor that returned an interface holding a nil
+//     pointer, which compares unequal to nil yet fails on the first method call.
 //   - ErrProvConfigNilInterface marks a constructor that returned a nil Generator.
-//   - ErrProvConfigTrailing marks a provider config document with
-//     trailing content after the JSON object.
+//   - ErrProvConfigTrailing marks a provider config document with trailing content after the JSON
+//     object.
 //   - ErrProvConfigNoAdapterAPI marks a provider config that lacks an AdapterAPI section.
-//   - ErrProvConfigParamUnplaced marks a declared parameter that the provider's adapter
-//     has no request field for, so its value could not reach the request.
+//   - ErrProvConfigParamUnplaced marks a declared parameter that the provider's adapter has no
+//     request field for, so its value could not reach the request.
 var (
 	ErrProvConfigDecode            = fmt.Errorf("%w: decode failed", ErrProvConfig)
 	ErrProvConfigInvalid           = fmt.Errorf("%w: invalid content", ErrProvConfig)
@@ -263,8 +268,8 @@ var (
 //   - ErrParamValueInteger marks text that cannot be parsed as an integer.
 //   - ErrParamValueBoolean marks text that cannot be parsed as a boolean.
 //   - ErrParamValueDataType marks a data type outside the supported vocabulary.
-//   - ErrParamValueTypeMismatch marks a stored parameter value whose type differs from the
-//     type its flag declares.
+//   - ErrParamValueTypeMismatch marks a stored parameter value whose type differs from the type its
+//     flag declares.
 var (
 	ErrParamValueNumber       = fmt.Errorf("%w: not a number", ErrParamValue)
 	ErrParamValueInteger      = fmt.Errorf("%w: not an integer", ErrParamValue)
@@ -284,8 +289,8 @@ var (
 )
 
 // Search sentinels:
-//   - ErrSearchTooManyResults marks a list search whose provider and model
-//     results together exceed the display limit.
+//   - ErrSearchTooManyResults marks a list search whose provider and model results together exceed
+//     the display limit.
 var (
 	ErrSearchTooManyResults = fmt.Errorf("%w: too many results to display", ErrSearch)
 )
@@ -328,14 +333,14 @@ var (
 
 // User-config sentinels:
 //   - ErrUserConfigRead marks a config file that exists but could not be read.
-//   - ErrUserConfigDecode marks a config file whose content could not be
-//     decoded as the expected YAML document.
-//   - ErrUserConfigLocate marks a failed lookup of the config file's
-//     location (the home directory could not be resolved).
-//   - ErrUserConfigUnknownSetting marks a top-level key the schema does not
-//     declare; the known settings still apply.
-//   - ErrUserConfigUnknownProvider marks a non-empty api-keys entry naming a
-//     provider the catalog does not hold; the remaining entries still apply.
+//   - ErrUserConfigDecode marks a config file whose content could not be decoded as the expected
+//     YAML document.
+//   - ErrUserConfigLocate marks a failed lookup of the config file's location (the home directory
+//     could not be resolved).
+//   - ErrUserConfigUnknownSetting marks a top-level key the schema does not declare; the known
+//     settings still apply.
+//   - ErrUserConfigUnknownProvider marks a non-empty api-keys entry naming a provider the catalog
+//     does not hold; the remaining entries still apply.
 var (
 	ErrUserConfigRead            = fmt.Errorf("%w: file read failed", ErrUserConfig)
 	ErrUserConfigDecode          = fmt.Errorf("%w: decode failed", ErrUserConfig)

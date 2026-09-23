@@ -17,7 +17,13 @@ import (
 	"github.com/shdeen/bildomat/internal/provider"
 )
 
-// The Kling content fields and prompt content type.
+// Kling content fields identify prompts and media.
+//   - fieldPrompt: the generation prompt
+//   - fieldImage: an input image reference
+//   - fieldType: the content kind
+//   - fieldText: prompt content text
+//   - fieldURL: the media location
+//   - contentPrompt: the prompt content kind
 const (
 	fieldPrompt   = "prompt"
 	fieldImage    = "image"
@@ -27,12 +33,11 @@ const (
 	contentPrompt = "prompt" //nolint:goconst // The content type and prompt field name are independent protocol values.
 )
 
-// familyOmni names the model family the omni routes serve; the config
-// declares it on each omni model.
+// familyOmni identifies models that use the omni request routes.
 const familyOmni = "omni"
 
-// The creation paths, one per Kling product. A video path takes the escaped
-// model ID as its final segment.
+// The creation paths, one per Kling product. A video path takes the escaped model ID as its final
+// segment.
 //   - imagePath: standard image generation
 //   - omniImagePath: omni image generation
 //   - omniVideoPath: omni video generation
@@ -75,9 +80,8 @@ func buildRequestBody(generationRequest *generation.Generation) (creationPath st
 	return creationPath, videoRequestBody(generationRequest, omniRequest)
 }
 
-// selectCreationPath selects a documented creation path from a model's medium
-// and family and its retained input count. It returns an empty path for an
-// unsupported medium.
+// selectCreationPath selects a documented creation path from a model's medium and family and its
+// retained input count. It returns an empty path for an unsupported medium.
 func selectCreationPath(model *catalog.Model, mediaCount int) string {
 	if model == nil {
 		return ""
@@ -165,8 +169,7 @@ func videoRequestBody(generationRequest *generation.Generation, omniRequest bool
 	}
 }
 
-// omniContents returns anchored frames and unanchored reference images in
-// their retained order.
+// omniContents returns anchored frames and unanchored reference images in their retained order.
 func omniContents(mediaInputs []media.Input) []any {
 	contents := make([]any, 0, len(mediaInputs))
 	for mediaIndex := range mediaInputs {
@@ -189,9 +192,8 @@ func omniContents(mediaInputs []media.Input) []any {
 	return contents
 }
 
-// frameContents maps at most two images onto opening and closing frames.
-// Explicit anchors keep their roles; unanchored images fill the free roles in
-// retained order.
+// frameContents maps at most two images onto opening and closing frames. Explicit anchors keep
+// their roles; unanchored images fill the free roles in retained order.
 func frameContents(mediaInputs []media.Input) []any {
 	firstFrameAssigned, lastFrameAssigned := false, false
 

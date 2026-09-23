@@ -22,7 +22,8 @@ const (
 	bodyDecodeContext = "json decode"
 )
 
-// classifyResponse returns whether a job response indicates continued polling, completion, or failure.
+// classifyResponse maps a job response to continued polling, completion, or a classified error. A
+// non-null error field takes precedence over the status.
 func classifyResponse(jobID string, body []byte, runningWords []string, doneWord string, failedWords []string) (keepPolling, jobDone bool, err error) {
 	pollResp, err := getRespBody(body)
 	if err != nil {
@@ -97,7 +98,7 @@ func getUnknownErr(jobID string, observed any, body []byte) error {
 	return fmt.Errorf("%q, %w", diagnostic, errs.ErrResponseUnknown)
 }
 
-// getRespBody returns a json response body decoded as a string-keyed map, or an error when decoding fails.
+// getRespBody decodes a JSON response object and preserves any decoding error.
 func getRespBody(body []byte) (map[string]any, error) {
 	var jsonBody map[string]any
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"mime"
 	"net/http"
 	"slices"
@@ -24,10 +23,10 @@ const headerRange = "Range"
 // bytePrefixRangeForm expresses an inclusive HTTP byte range starting at zero.
 const bytePrefixRangeForm = "bytes=0-%d"
 
-// ResolveInputMediaTypes returns copies with unresolved remote media identified.
-// It tries HTTP metadata, then a bounded content sample, without provider credentials.
-// Source URLs, existing metadata, bytes, and frame information remain unchanged.
-// A source that cannot be read or identified returns a classified input error.
+// ResolveInputMediaTypes returns copies with unresolved remote media identified. It tries HTTP
+// metadata, then a bounded content sample, without provider credentials. Source URLs, existing
+// metadata, bytes, and frame information remain unchanged. A source that cannot be read or
+// identified returns a classified input error.
 func ResolveInputMediaTypes(ctx context.Context, mediaInputs []media.Input) ([]media.Input, error) {
 	resolvedInputs := slices.Clone(mediaInputs)
 	for inputIndex, mediaInput := range resolvedInputs {
@@ -62,9 +61,9 @@ func ResolveInputMediaTypes(ctx context.Context, mediaInputs []media.Input) ([]m
 	return resolvedInputs, nil
 }
 
-// requestMediaType inspects successful source metadata and, for GET, a bounded
-// prefix. HEAD servers may omit metadata or reject the method; the caller decides
-// whether to retry using GET. Even servers that ignore Range are read only to the limit.
+// requestMediaType inspects successful source metadata and, for GET, a bounded prefix. HEAD servers
+// may omit metadata or reject the method; the caller decides whether to retry using GET. Even
+// servers that ignore Range are read only to the limit.
 func requestMediaType(ctx context.Context, sourceURL, method string) (string, error) {
 	headers := make(http.Header)
 	if method == http.MethodGet {
@@ -106,11 +105,9 @@ func usableMediaType(contentType string) string {
 	return mediaType
 }
 
-// DownloadInputMedia downloads URL inputs without a provider credential and returns
-// bytes-backed media. Existing bytes-backed inputs pass through unchanged and input order
-// is preserved. Format compatibility remains the receiving provider's decision unless a
-// later Bild operation must decode or transform the bytes. A failure returns completed
-// downloads alongside untouched remaining sources, without modifying the caller's slice.
+// DownloadInputMedia downloads URL inputs without credentials into a copied media slice. It
+// preserves source order and leaves format compatibility to the receiving provider. On failure it
+// returns completed downloads and untouched remaining inputs without mutating the caller's slice.
 func DownloadInputMedia(ctx context.Context, mediaInputs []media.Input) ([]media.Input, error) {
 	downloadedInputs := slices.Clone(mediaInputs)
 	for inputIndex, mediaInput := range mediaInputs {
@@ -139,34 +136,4 @@ func DownloadInputMedia(ctx context.Context, mediaInputs []media.Input) ([]media
 	}
 
 	return downloadedInputs, nil
-}
-
-// readFirstBytes returns at most byteLimit bytes, preserving a received prefix
-// alongside any read or size error so optional response capture remains truthful.
-func readFirstBytes(reader io.Reader, byteLimit int64) ([]byte, error) {
-	if byteLimit < 0 {
-		return nil, fmt.Errorf("%q, %w", fmt.Sprintf(ByteLimitForm, byteLimit), errs.ErrTransportSize)
-	}
-
-	readLimit := byteLimit
-	if readLimit < math.MaxInt64 {
-		readLimit++
-	}
-
-	data, err := io.ReadAll(io.LimitReader(reader, readLimit))
-
-	oversized := int64(len(data)) > byteLimit
-	if oversized {
-		data = data[:byteLimit] //nolint:nilaway // len(data) > the nonnegative limit proves this slice is non-nil and the bound is valid.
-	}
-
-	if err != nil {
-		return data, fmt.Errorf("%q, %w, %w", fmt.Sprintf(ByteLimitForm, byteLimit), errs.ErrTransportRead, err)
-	}
-
-	if oversized {
-		return data, fmt.Errorf("%q, %w", fmt.Sprintf(ByteLimitForm, byteLimit), errs.ErrTransportSize)
-	}
-
-	return data, nil
 }

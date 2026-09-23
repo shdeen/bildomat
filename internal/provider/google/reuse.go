@@ -14,12 +14,17 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// VeoExtendID identifies provisional, experimental Veo extension. Its selection
-// syntax and the generation-record format are subject to change.
+// VeoExtendID identifies provisional, experimental Veo extension. Its selection syntax and the
+// generation-record format are subject to change.
 const VeoExtendID = "veo-extend"
 
-// Veo extension accepts full and Fast targets, 720p sources, and at most 141
-// seconds of source video. The request duration is always eight seconds.
+// Veo extension targets and accepted source references.
+//   - veoExtensionModel: the standard extension model
+//   - veoExtensionFast: the fast extension model
+//   - veoExtensionResolution: the required source and output resolution
+//   - veoExtensionMaxSourceSeconds: the longest accepted source duration
+//   - googleVideoHost: the host of original Google video references
+//   - googleVideoScheme: the required reference scheme
 const (
 	veoExtensionModel            = "veo-3.1-generate-preview"
 	veoExtensionFast             = "veo-3.1-fast-generate-preview"
@@ -29,16 +34,18 @@ const (
 	googleVideoScheme            = "https"
 )
 
-// reuseSourceSettings decodes restrictions known from the earlier generation.
+// reuseSourceSettings decodes restrictions retained from an earlier generation.
 type reuseSourceSettings struct {
-	Resolution string  `json:"resolution"`
-	Aspect     string  `json:"aspect-ratio"`
-	Duration   float64 `json:"duration"`
+	// Resolution is the source video resolution.
+	Resolution string `json:"resolution"`
+	// Aspect is the source aspect ratio.
+	Aspect string `json:"aspect-ratio"`
+	// Duration is the source video length in seconds.
+	Duration float64 `json:"duration"`
 }
 
-// adjustReuse resolves an experimental Veo extension reference and adjusts its
-// required output settings before parameter notices are printed. The caller
-// supplies a non-nil reuse selection.
+// adjustReuse validates a non-nil reuse selection and returns its original video URI. It forces
+// duration and resolution in the supplied parameter map and returns change records.
 func adjustReuse(model *catalog.Model, parameterValues params.Values, inputs []media.Input, reuse *metadata.Reuse) (string, []params.Adjustment, error) {
 	if len(inputs) != 0 {
 		return "", nil, fmt.Errorf("%q: %w", VeoExtendID, errs.ErrReuseInputMedia)
@@ -130,8 +137,8 @@ func recordVideoURI(record *metadata.Record) (string, error) {
 	return videoURIs[0], nil
 }
 
-// checkReuseSource rejects restrictions contradicted by available metadata.
-// Omitted fields do not prove eligibility; Google validates the original video.
+// checkReuseSource rejects incompatible source resolution, aspect, or duration metadata. Omitted
+// fields are accepted; they do not establish that Google will accept the source.
 func checkReuseSource(adjusted json.RawMessage) error {
 	if len(adjusted) == 0 {
 		return nil
@@ -151,9 +158,8 @@ func checkReuseSource(adjusted json.RawMessage) error {
 	return nil
 }
 
-// responseVideoURIs extracts references from completed operation bodies. This
-// also detects multiple videos when the extracted return values are incomplete.
-// Non-operation responses are ignored.
+// responseVideoURIs extracts references from completed operation bodies. This also detects multiple
+// videos when the extracted return values are incomplete. Non-operation responses are ignored.
 func responseVideoURIs(responses []metadata.Response) []string {
 	var videoURIs []string
 
@@ -173,8 +179,8 @@ func responseVideoURIs(responses []metadata.Response) []string {
 	return videoURIs
 }
 
-// originalVideoURI checks the form of a Google Files reference without replacing
-// or fetching it. Only Google can confirm its provenance and current lifetime.
+// originalVideoURI checks the form of a Google Files reference without replacing or fetching it.
+// Only Google can confirm its provenance and current lifetime.
 func originalVideoURI(videoURI string) bool {
 	reference, err := url.Parse(videoURI)
 

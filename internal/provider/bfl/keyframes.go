@@ -10,10 +10,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// buildKeyframes returns an all-string or all-tuple keyframe array: the media
-// values alone when no image carries a frame time, and otherwise time and
-// media value pairs, with the missing times filled from the duration and every
-// time checked for order and range.
+// buildKeyframes returns media strings when no frame has an explicit time. Otherwise it fills
+// missing times and returns validated time/media pairs.
 func buildKeyframes(imageInputs []media.Input, parameterValues params.Values) ([]any, error) {
 	times, timeSet := keyframeTimes(imageInputs)
 	if !slices.Contains(timeSet, true) {
@@ -36,8 +34,8 @@ func buildKeyframes(imageInputs []media.Input, parameterValues params.Values) ([
 	return timedKeyframes(imageInputs, times), nil
 }
 
-// keyframeTimes takes the image inputs and returns each input's frame time and
-// whether the input carries one, in input order.
+// keyframeTimes takes the image inputs and returns each input's frame time and whether the input
+// carries one, in input order.
 func keyframeTimes(imageInputs []media.Input) (times []float64, timeSet []bool) {
 	times = make([]float64, len(imageInputs))
 	timeSet = make([]bool, len(imageInputs))
@@ -49,8 +47,8 @@ func keyframeTimes(imageInputs []media.Input) (times []float64, timeSet []bool) 
 	return times, timeSet
 }
 
-// untimedKeyframes takes image inputs carrying no frame times and returns the
-// keyframe array of their media values alone.
+// untimedKeyframes takes image inputs carrying no frame times and returns the keyframe array of
+// their media values alone.
 func untimedKeyframes(imageInputs []media.Input) []any {
 	keyframes := make([]any, 0, len(imageInputs))
 	for _, mediaInput := range imageInputs {
@@ -60,11 +58,9 @@ func untimedKeyframes(imageInputs []media.Input) []any {
 	return keyframes
 }
 
-// fillKeyframeTimes takes the frame times, their set flags, and the duration,
-// and fills the missing times in place: an unset first time becomes zero and
-// an unset last time becomes the duration; when a time is still unset, missing
-// time takes its even share of the duration. Supplied values remain unchanged;
-// disagreement beyond arithmetic rounding fails.
+// fillKeyframeTimes updates the supplied times and presence flags. Missing endpoints become zero
+// and duration; missing interior times require evenly spaced positions. Supplied times remain
+// unchanged, and inconsistent positions return an error.
 func fillKeyframeTimes(times []float64, timeSet []bool, durationSeconds float64) error {
 	lastIndex := len(times) - 1
 
@@ -84,8 +80,8 @@ func fillKeyframeTimes(times []float64, timeSet []bool, durationSeconds float64)
 	for inputIndex := range times {
 		positionTime := float64(inputIndex) * interval
 		if timeSet[inputIndex] {
-			// One rounding step in division and one in multiplication bound
-			// the difference between equivalent evenly spaced positions.
+			// One rounding step in division and one in multiplication bound the
+			// difference between equivalent evenly spaced positions.
 			tolerance := float64(inputIndex)*(math.Nextafter(interval, math.Inf(1))-interval) + (math.Nextafter(positionTime, math.Inf(1)) - positionTime)
 			if math.Abs(times[inputIndex]-positionTime) > tolerance {
 				return &errs.MediaError{Problem: fmt.Sprintf(KeyframePositionConflict, inputIndex+1, times[inputIndex], positionTime), Cause: errs.ErrInputMediaTime}
@@ -100,8 +96,8 @@ func fillKeyframeTimes(times []float64, timeSet []bool, durationSeconds float64)
 	return nil
 }
 
-// checkKeyframeTimes takes the frame times and the duration and fails on a time
-// below zero, above the duration, or not later than the time before it.
+// checkKeyframeTimes takes the frame times and the duration and fails on a time below zero, above
+// the duration, or not later than the time before it.
 func checkKeyframeTimes(times []float64, durationSeconds float64) error {
 	previousTime := -1.0
 	for inputIndex, keyframeTime := range times {
@@ -115,8 +111,8 @@ func checkKeyframeTimes(times []float64, durationSeconds float64) error {
 	return nil
 }
 
-// timedKeyframes takes the image inputs and their frame times and returns the
-// keyframe array of time and media value pairs.
+// timedKeyframes takes the image inputs and their frame times and returns the keyframe array of
+// time and media value pairs.
 func timedKeyframes(imageInputs []media.Input, times []float64) []any {
 	keyframes := make([]any, 0, len(imageInputs))
 	for inputIndex, mediaInput := range imageInputs {
@@ -138,11 +134,9 @@ func parseDuration(parameterValues params.Values) (float64, bool) {
 	return 0, false
 }
 
-// resolveFluxFrameAnchors resolves the first and last anchor keywords for the
-// arbitrary-time keyframe request, mutating the media inputs in place. With a
-// duration set, the anchors become the zero and duration keyframe times. With
-// none set, they reorder the media so the opening image leads and the closing
-// image trails, which the keyframe array's own position inference then honors.
+// resolveFluxFrameAnchors updates the supplied media in place and clears its frame anchors. With a
+// duration, anchors become zero and duration timestamps; otherwise opening and closing images move
+// to the beginning and end.
 func resolveFluxFrameAnchors(mediaInputs []media.Input, parameterValues params.Values) {
 	durationSeconds, durationSet := parseDuration(parameterValues)
 	if durationSet && durationSeconds >= 0 {
@@ -170,8 +164,8 @@ func resolveFluxFrameAnchors(mediaInputs []media.Input, parameterValues params.V
 	}
 }
 
-// compareFrameOrder orders media inputs by frame anchor: the opening image
-// first, unanchored media between, and the closing image last.
+// compareFrameOrder orders media inputs by frame anchor: the opening image first, unanchored media
+// between, and the closing image last.
 //
 //nolint:gocritic // slices.SortStableFunc requires a comparator taking its element type by value.
 func compareFrameOrder(a, b media.Input) int {

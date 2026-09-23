@@ -12,25 +12,15 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// File: internal/output/info.go
-// The details pages the info command renders: the model card, the standard
-// provider page, and the aggregator summary. Each assembles its page data,
-// laid out in the pages' columns, and hands it to its template; none holds
-// page copy. The JSON document of the same details is the reduced catalog
-// (catalog.go), and the constraint sentences the pages share live in
-// constraints.go.
-
 // The pages' layout measures, counted from the left margin.
-//   - infoContentWidth: the page column that wrapped and flowed content stays within
 //   - infoLabelWidth: the identity block's label field on the provider pages
 //   - infoCardLabelWidth: the identity block's label field on the model card
 //   - infoFlagWidth: an option's flag field, so its details start at the column after it
 //   - infoIDWidth: a roster model's ID field, so aliases start at the column after it
-//   - infoIntroColumn: a group's intro line, above the details column
+//   - infoIntroColumn: the indentation of a model-group introduction
 //   - infoVendorWidth: the summary's vendor field
 //   - infoVendorCountWidth: the summary's right-aligned vendor count
 const (
-	infoContentWidth     = 80
 	infoLabelWidth       = 10
 	infoCardLabelWidth   = 16
 	infoFlagWidth        = 32
@@ -40,14 +30,17 @@ const (
 	infoVendorCountWidth = 2
 )
 
-// The widths the columns leave for their content.
+// The widths available after the option labels.
+//   - infoDetailsWidth: the space for parameter descriptions
+//   - infoIntroWidth: the space for model-group introductions
 const (
-	infoDetailsWidth = infoContentWidth - infoFlagWidth
-	infoIntroWidth   = infoContentWidth - infoIntroColumn
+	infoDetailsWidth = pageWidth - infoFlagWidth
+	infoIntroWidth   = pageWidth - infoIntroColumn
 )
 
 // The quoting characters the pages use.
-//   - singleQuote: the quote around a footer pattern carrying an escape, and around a string value in a change notice
+//   - singleQuote: the quote around a footer pattern carrying an escape, and around a string value
+//     in a change notice
 //   - patternEscape: the backslash that marks a pattern as needing the quotes
 const (
 	singleQuote   = "'"
@@ -57,8 +50,7 @@ const (
 // itemJoiner is the separator and the space placed between the items of a list.
 const itemJoiner = ListSeparator + " "
 
-// pageStyle holds the styling codes an info page renders with, each empty off
-// a terminal so the page renders plain.
+// pageStyle contains the ANSI codes used by an info page. Empty codes produce plain text.
 //   - steel: the steel-blue accent, on option headings
 //   - clay: the clay accent, on the required classification and on values
 //   - dim: the dim shade, on the optional classification, column headers, and rules
@@ -70,8 +62,8 @@ type pageStyle struct {
 	reset string
 }
 
-// apiKeySettings identifies the environment variable and the provider key under
-// api-keys in the user's config file.
+// apiKeySettings identifies the environment variable and the provider key under api-keys in the
+// user's config file.
 //   - ProviderID: the key under api-keys
 //   - EnvVar: the alternative environment-variable name
 type apiKeySettings struct {
@@ -90,8 +82,8 @@ type apiKeySettings struct {
 //   - ProviderName, ProviderID: the provider's display name and catalog identifier
 //   - Credentials: the environment variable and user-config key for the API key
 //   - LabelWidth: the column the template pads the labels to
-//   - Dim, Reset: the dim shade and the reset the template styles the column header and rule with
-//   - Options: one option per declared parameter, each its lines from the page indent
+//   - Dim, Reset: ANSI codes for dimmed column headers and rules, and for restoring normal text
+//   - Options: rendered lines for each declared parameter option
 type modelCardPage struct {
 	Name              string
 	ID                string
@@ -109,17 +101,17 @@ type modelCardPage struct {
 	Options           [][]string
 }
 
-// providerPage carries the standard provider page's data.
-//   - Name: the provider's display name
-//   - ID: the provider's catalog identifier
-//   - DocsURL: the provider's documentation address, empty when it declares none
-//   - Credentials: the environment variable and user-config key for the API key
-//   - CatalogMedia: the model counts per medium
-//   - ModelCount: the provider's model count
-//   - LabelWidth, IDWidth: the columns the template pads to
-//   - Dim, Reset: the dim shade and the reset the template styles the column headers and rules with
-//   - Sections: one section per selected medium the provider declares a model for
-type providerPage struct {
+// providerHeader contains the identity, credential guidance, and catalog totals shared by detailed
+// provider pages and aggregator summaries.
+//   - Name, ID: the published name and catalog identifier
+//   - DocsURL: the provider documentation URL
+//   - Credentials: the supported credential settings
+//   - CatalogMedia: the generated media labels
+//   - ModelCount: the number of models before display filtering
+//   - LabelWidth: the padded width of identity labels
+//   - Aggregator: whether to describe models by vendor
+//   - Dim, Reset: the terminal styling sequences, empty for plain output
+type providerHeader struct {
 	Name         string
 	ID           string
 	DocsURL      string
@@ -127,10 +119,20 @@ type providerPage struct {
 	CatalogMedia string
 	ModelCount   int
 	LabelWidth   int
-	IDWidth      int
+	Aggregator   bool
 	Dim          string
 	Reset        string
-	Sections     []providerSection
+}
+
+// providerPage contains a common header and the selected model and option sections.
+//   - providerHeader: the shared identity and catalog totals
+//   - IDWidth: the model identifier column width
+//   - Sections: the selected models and options grouped by medium
+type providerPage struct {
+	providerHeader
+
+	IDWidth  int
+	Sections []providerSection
 }
 
 // vendorExample carries one summary search example naming a medium's top vendor.
@@ -145,8 +147,8 @@ type vendorExample struct {
 //   - Media: the medium the section covers
 //   - ModelCount: the section's model count
 //   - HasAliases: whether any model of the section declares aliases
-//   - Roster: the section's models, each its ID with its aliases, from the page indent
-//   - Options: the section's options, each its lines from the page indent
+//   - Roster: rendered model IDs and aliases for the section
+//   - Options: rendered lines for each option in the section
 type providerSection struct {
 	Media      media.Kind
 	ModelCount int
@@ -155,32 +157,22 @@ type providerSection struct {
 	Options    [][]string
 }
 
-// summaryPage carries the aggregator summary's data.
-//   - Name, ID, DocsURL, Credentials: as on the provider page
-//   - LabelWidth: the columns the template pads to
-//   - Dim, Reset: the dim shade and the reset the template styles the rules with
-//   - CatalogMedia, ModelCount: as on the provider page
-//   - Vendors: per selected medium, the vendor counts
-//   - SharedFlags: per selected medium, the dashed flag names flowed into lines
-//   - Footer: the footer's examples, drawn from the models the summary covers
+// summaryPage contains a common provider header and the selected aggregator summary.
+//   - providerHeader: the shared identity and catalog totals
+//   - Vendors: the vendor counts grouped by medium
+//   - SharedFlags: flags declared by at least one selected model, grouped by medium
+//   - Footer: the model and search examples
 type summaryPage struct {
-	Name         string
-	ID           string
-	DocsURL      string
-	Credentials  apiKeySettings
-	CatalogMedia string
-	ModelCount   int
-	LabelWidth   int
-	Dim          string
-	Reset        string
-	Vendors      []summaryMediaLines
-	SharedFlags  []summaryMediaLines
-	Footer       pageFooter
+	providerHeader
+
+	Vendors     []summaryMediaLines
+	SharedFlags []summaryMediaLines
+	Footer      pageFooter
 }
 
 // summaryMediaLines carries one medium's lines on the summary.
 //   - Media: the medium
-//   - Lines: the lines
+//   - Lines: the rendered vendor counts or shared parameter labels
 type summaryMediaLines struct {
 	Media media.Kind
 	Lines []string
@@ -202,20 +194,25 @@ type vendorCount struct {
 	count  int
 }
 
-// PrintModelInfo writes the model card with the requested terminal styling.
-// Template and delivery failures are returned to the command.
+// PrintModelInfo writes the model card with the requested terminal styling. Template and delivery
+// failures are returned to the command.
 func PrintModelInfo(destination io.Writer, provModelPair *catalog.ProvModelPair, paramFlags []params.Flag, styled bool) error {
 	return writePage(destination, pageModelInfo, modelCardData(provModelPair, paramFlags, pageStyleValues(styled)))
 }
 
-// PrintProviderInfo writes the selected provider's detailed page or aggregator
-// summary. It returns template and delivery failures to the command.
-func PrintProviderInfo(destination io.Writer, prov *catalog.Provider, paramFlags []params.Flag, printImage, printVideo bool, mediaFilterFlags map[media.Kind]string, styled bool) error {
-	if prov.Aggregator {
-		return writePage(destination, pageProviderSummary, summaryData(prov, paramFlags, printImage, printVideo, pageStyleValues(styled), mediaFilterFlags))
+// PrintProviderInfo writes the selected provider's detailed page or aggregator summary. It returns
+// template and delivery failures to the command.
+func PrintProviderInfo(destination io.Writer, prov *catalog.Provider, pairs []catalog.ProvModelPair, paramFlags []params.Flag, mediaFilterFlags map[media.Kind]string, styled bool) error {
+	models := make([]catalog.Model, 0, len(pairs))
+	for index := range pairs {
+		models = append(models, pairs[index].Model)
 	}
 
-	return writePage(destination, pageProviderInfo, providerPageData(prov, paramFlags, printImage, printVideo, pageStyleValues(styled)))
+	if prov.Aggregator {
+		return writePage(destination, pageProviderSummary, summaryData(prov, models, paramFlags, pageStyleValues(styled), mediaFilterFlags))
+	}
+
+	return writePage(destination, pageProviderInfo, providerPageData(prov, models, paramFlags, pageStyleValues(styled)))
 }
 
 // pageStyleValues returns the selected info-page colors, or empty strings for plain text.
@@ -227,8 +224,7 @@ func pageStyleValues(styled bool) pageStyle {
 	return pageStyle{}
 }
 
-// modelCardData takes a provider-model pair, the parameter enumeration, and
-// the page style, and returns the model card's page data.
+// modelCardData prepares a model card with its identity and declared parameter details.
 func modelCardData(provModelPair *catalog.ProvModelPair, paramFlags []params.Flag, style pageStyle) modelCardPage {
 	model := &provModelPair.Model
 	page := modelCardPage{
@@ -265,25 +261,13 @@ func modelCardData(provModelPair *catalog.ProvModelPair, paramFlags []params.Fla
 	return page
 }
 
-// providerPageData takes a provider, the parameter enumeration, the media
-// selections, and the page style, and returns the standard provider page's
-// data.
-func providerPageData(prov *catalog.Provider, paramFlags []params.Flag, printImage, printVideo bool, style pageStyle) providerPage {
-	page := providerPage{
-		Name:         prov.DisplayName,
-		ID:           prov.ID,
-		DocsURL:      prov.DocsURL,
-		Credentials:  apiKeySettings{ProviderID: prov.ID, EnvVar: prov.APIKeyEnvVar},
-		CatalogMedia: catalogMediaCounts(prov.Models),
-		ModelCount:   len(prov.Models),
-		LabelWidth:   infoLabelWidth,
-		IDWidth:      infoIDWidth,
-		Dim:          style.dim,
-		Reset:        style.reset,
-	}
+// providerPageData prepares the standard provider page from its selected models, parameter
+// declarations, and page style.
+func providerPageData(prov *catalog.Provider, models []catalog.Model, paramFlags []params.Flag, style pageStyle) providerPage {
+	page := providerPage{providerHeader: providerHeaderData(prov, style), IDWidth: infoIDWidth}
 
-	for _, media := range selectedMediaOrder(printImage, printVideo) {
-		mediaModels := modelsOfMedia(prov.Models, media)
+	for _, media := range []media.Kind{media.Image, media.Video} {
+		mediaModels := modelsOfMedia(models, media)
 		if len(mediaModels) == 0 {
 			continue
 		}
@@ -294,9 +278,7 @@ func providerPageData(prov *catalog.Provider, paramFlags []params.Flag, printIma
 	return page
 }
 
-// providerSectionData takes a medium, the provider's models of that medium,
-// the parameter enumeration, and the page style, and returns the medium's
-// section: the model roster and the options.
+// providerSectionData prepares one medium's model roster and option descriptions.
 func providerSectionData(mediaKind media.Kind, models []catalog.Model, paramFlags []params.Flag, style pageStyle) providerSection {
 	section := providerSection{Media: mediaKind, ModelCount: len(models)}
 
@@ -311,26 +293,17 @@ func providerSectionData(mediaKind media.Kind, models []catalog.Model, paramFlag
 	return section
 }
 
-// summaryData takes a provider, the parameter enumeration, the media
-// selections, and the page style, and returns the aggregator summary's
-// data.
-func summaryData(prov *catalog.Provider, paramFlags []params.Flag, printImage, printVideo bool, style pageStyle, mediaFilterFlags map[media.Kind]string) summaryPage {
-	page := summaryPage{
-		Name:         prov.DisplayName,
-		ID:           prov.ID,
-		DocsURL:      prov.DocsURL,
-		Credentials:  apiKeySettings{ProviderID: prov.ID, EnvVar: prov.APIKeyEnvVar},
-		LabelWidth:   infoLabelWidth,
-		Dim:          style.dim,
-		Reset:        style.reset,
-		CatalogMedia: catalogMediaCounts(prov.Models),
-		ModelCount:   len(prov.Models),
-	}
+// summaryData prepares the aggregator summary from its selected models, parameter declarations,
+// page style, and command filter names.
+func summaryData(prov *catalog.Provider, models []catalog.Model, paramFlags []params.Flag, style pageStyle, mediaFilterFlags map[media.Kind]string) summaryPage {
+	page := summaryPage{providerHeader: providerHeaderData(prov, style)}
+
+	var vendorExamples []vendorExample
 
 	var shown []catalog.Model
 
-	for _, media := range selectedMediaOrder(printImage, printVideo) {
-		mediaModels := modelsOfMedia(prov.Models, media)
+	for _, media := range []media.Kind{media.Image, media.Video} {
+		mediaModels := modelsOfMedia(models, media)
 		if len(mediaModels) == 0 {
 			continue
 		}
@@ -338,41 +311,35 @@ func summaryData(prov *catalog.Provider, paramFlags []params.Flag, printImage, p
 		shown = append(shown, mediaModels...)
 		vendors := vendorCounts(mediaModels)
 
-		vendorCounts := make([]string, 0, len(vendors))
+		vendorLines := make([]string, 0, len(vendors))
 		for _, vendor := range vendors {
-			vendorCounts = append(vendorCounts, padText(vendor.vendor, infoVendorWidth)+fmt.Sprintf("%*d", infoVendorCountWidth, vendor.count))
+			vendorLines = append(vendorLines, padText(vendor.vendor, infoVendorWidth)+fmt.Sprintf("%*d", infoVendorCountWidth, vendor.count))
 		}
 
-		page.Vendors = append(page.Vendors, summaryMediaLines{Media: media, Lines: vendorCounts})
-		page.SharedFlags = append(page.SharedFlags, summaryMediaLines{Media: media, Lines: flowPhrases(sharedFlagNames(mediaModels, paramFlags), " ", infoContentWidth)})
-		page.Footer.VendorExamples = append(page.Footer.VendorExamples, vendorExample{Filter: DashedFlagNames([]string{mediaFilterFlags[media]}, ""), Vendor: vendors[0].vendor})
+		page.Vendors = append(page.Vendors, summaryMediaLines{Media: media, Lines: vendorLines})
+		page.SharedFlags = append(page.SharedFlags, summaryMediaLines{Media: media, Lines: flowPhrases(sharedFlagNames(mediaModels, paramFlags), " ", pageWidth)})
+		vendorExamples = append(vendorExamples, vendorExample{Filter: dashedFlagNames([]string{mediaFilterFlags[media]}, ""), Vendor: vendors[0].vendor})
 	}
 
-	vendorExamples := page.Footer.VendorExamples
 	page.Footer = footerData(prov.ID, shown)
 	page.Footer.VendorExamples = vendorExamples
 
 	return page
 }
 
-// selectedMediaOrder takes the media selections and returns the selected
-// media in page order, image before video.
-func selectedMediaOrder(printImage, printVideo bool) []media.Kind {
-	var selectedMedia []media.Kind
-
-	if printImage {
-		selectedMedia = append(selectedMedia, media.Image)
+// providerHeaderData prepares the common identity and full-catalog totals.
+func providerHeaderData(prov *catalog.Provider, style pageStyle) providerHeader {
+	return providerHeader{
+		Name: prov.DisplayName, ID: prov.ID, DocsURL: prov.DocsURL,
+		Credentials:  apiKeySettings{ProviderID: prov.ID, EnvVar: prov.APIKeyEnvVar},
+		CatalogMedia: catalogMediaCounts(prov.Models), ModelCount: len(prov.Models),
+		LabelWidth: infoLabelWidth, Aggregator: prov.Aggregator,
+		Dim: style.dim, Reset: style.reset,
 	}
-
-	if printVideo {
-		selectedMedia = append(selectedMedia, media.Video)
-	}
-
-	return selectedMedia
 }
 
-// catalogMediaCounts takes a provider's models and returns its model counts
-// per medium, omitting a medium with no model.
+// catalogMediaCounts formats the number of image and video models, omitting any medium with no
+// models.
 func catalogMediaCounts(models []catalog.Model) string {
 	var counts []string
 
@@ -389,16 +356,14 @@ func catalogMediaCounts(models []catalog.Model) string {
 	return strings.Join(counts, " "+CatalogSeparator+" ")
 }
 
-// modelRosterText takes a model and returns its roster text on the provider page: its
-// bare ID in the ID column with its aliases beside it, flowed within the page
-// width and continued at the alias column, or, for an ID filling the column,
-// the ID alone with every alias line at the alias column.
+// modelRosterText formats a model ID and its aliases within the roster columns. Aliases continue on
+// indented lines when they exceed the available width.
 func modelRosterText(model *catalog.Model) []string {
 	if len(model.Aliases) == 0 {
 		return []string{model.ID}
 	}
 
-	aliasLines := flowPhrases(model.Aliases, itemJoiner, infoContentWidth-infoIDWidth)
+	aliasLines := flowPhrases(model.Aliases, itemJoiner, pageWidth-infoIDWidth)
 
 	modelText := []string{model.ID}
 	if len(aliasLines) > 0 && textWidth(model.ID) < infoIDWidth {
@@ -413,13 +378,9 @@ func modelRosterText(model *catalog.Model) []string {
 	return modelText
 }
 
-// sectionOptions takes the models of one medium, the parameter enumeration,
-// and the page style, and returns one option per flag at least one model
-// declares, in the enumeration's order: a single option where the declaring
-// models declare the flag alike, and otherwise the heading over the flag's
-// description, comment, and examples, then one introduced group per
-// declaration; either form ends with the scope note when models of the
-// medium lack the flag.
+// sectionOptions returns options in flag-record order and groups differing model constraints. When
+// some models lack an option, its scope note names either the supporting models or the models that
+// lack it, whichever list is shorter.
 func sectionOptions(models []catalog.Model, paramFlags []params.Flag, style pageStyle) [][]string {
 	var options [][]string
 
@@ -456,8 +417,7 @@ func sectionOptions(models []catalog.Model, paramFlags []params.Flag, style page
 	return options
 }
 
-// introducedGroup pairs a declaration group with the intro line that opens
-// it on the page.
+// introducedGroup pairs a declaration group with the intro line that opens it on the page.
 //   - group: the declaration group
 //   - intro: the line introducing it: the remainder form, or the form naming its models
 type introducedGroup struct {
@@ -465,10 +425,8 @@ type introducedGroup struct {
 	intro string
 }
 
-// introducedGroups takes the declaration groups of one flag and returns them
-// with their intros in page order: the group holding more models than any
-// other first, in the remainder form, then the rest in their given order,
-// each naming its models; groups tied for the largest are all named.
+// introducedGroups places a uniquely largest model group first with a remainder heading. Other
+// groups retain their order and name their models; tied largest groups are also named.
 func introducedGroups(groups []declarationGroup) []introducedGroup {
 	leading := leadingGroupIndex(groups)
 	ordered := make([]introducedGroup, 0, len(groups))
@@ -486,8 +444,7 @@ func introducedGroups(groups []declarationGroup) []introducedGroup {
 	return ordered
 }
 
-// leadingGroupIndex takes declaration groups and returns the index of the
-// one holding more models than any other, or -1 when the largest groups tie.
+// leadingGroupIndex returns the uniquely largest group's index, or -1 for a tie or no groups.
 func leadingGroupIndex(groups []declarationGroup) int {
 	leading := -1
 	tied := false
@@ -508,11 +465,8 @@ func leadingGroupIndex(groups []declarationGroup) int {
 	return leading
 }
 
-// scopeNote takes the models of a medium and the declaration groups of one
-// flag, and returns the sentence naming the shorter list when not every
-// model declares the flag: the models not declaring it when they are fewer
-// than the declaring ones, otherwise the models declaring it; an empty
-// string when every model declares it.
+// scopeNote describes partial flag support using the shorter model list. Ties name supporting
+// models; universal support needs no note.
 func scopeNote(models []catalog.Model, groups []declarationGroup) string {
 	var declaring, missing []string
 
@@ -535,9 +489,7 @@ func scopeNote(models []catalog.Model, groups []declarationGroup) string {
 	return fmt.Sprintf(OnlyForModels, joinNames(declaring, ListPairAnd, ListLastAnd))
 }
 
-// joinNames takes names and the catalog's pair and last forms, and returns
-// the names as an English list: one alone, two in the pair form, and more
-// separated up to the last two, which take the last form.
+// joinNames formats names as an English list using the supplied two-name and final-name forms.
 func joinNames(names []string, pairForm, lastForm string) string {
 	switch len(names) {
 	case 0:
@@ -551,9 +503,7 @@ func joinNames(names []string, pairForm, lastForm string) string {
 	return fmt.Sprintf(lastForm, strings.Join(names[:len(names)-1], itemJoiner), names[len(names)-1])
 }
 
-// declarationGroups takes models and a flag and returns one group per
-// distinct declaration of the flag among the models declaring it, in the
-// models' first-occurrence order; no group when no model declares it.
+// declarationGroups groups models with identical flag constraints in first-occurrence order.
 func declarationGroups(models []catalog.Model, flagID params.FlagType) []declarationGroup {
 	var groups []declarationGroup
 
@@ -584,10 +534,8 @@ func declarationGroups(models []catalog.Model, flagID params.FlagType) []declara
 	return groups
 }
 
-// sameDeclaration takes two parameter declarations and reports whether they
-// state the same constraints: allowed values, range bounds, repeat maximum,
-// size bounds, rule description, and requirement. A model's expanded
-// comment does not count.
+// sameDeclaration compares display constraints, requirements, and rule descriptions. Provider
+// parameter names and model-specific comments do not affect equality.
 func sameDeclaration(first, second *params.Definition) bool {
 	firstMin, firstHasMin := first.MinValue.ValIf()
 	secondMin, secondHasMin := second.MinValue.ValIf()
@@ -603,8 +551,7 @@ func sameDeclaration(first, second *params.Definition) bool {
 		first.Required == second.Required
 }
 
-// sameSizeBounds takes two optional size bounds and reports whether both are
-// absent or both state the same bounds.
+// sameSizeBounds reports whether two optional size constraints are both absent or equal.
 func sameSizeBounds(first, second *params.SizeBounds) bool {
 	if first == nil || second == nil {
 		return first == second
@@ -613,18 +560,13 @@ func sameSizeBounds(first, second *params.SizeBounds) bool {
 	return *first == *second
 }
 
-// optionHeading takes a flag record and returns the option heading: the flag's
-// dashed short and long forms with its value hint, as the help page heads
-// the flag.
+// optionHeading formats a parameter's short and long flags with its value hint.
 func optionHeading(paramFlag *params.Flag) string {
-	return DashedFlagNames(append([]string{string(paramFlag.FlagID)}, paramFlag.Aliases...), paramFlag.TextHint)
+	return dashedFlagNames(append([]string{string(paramFlag.FlagID)}, paramFlag.Aliases...), paramFlag.TextHint)
 }
 
-// headedLines takes an option heading, the detail lines beneath it, and the
-// page style, and returns the option's lines: the heading, in the steel-blue
-// accent, in the flag field with the first detail beside it, or alone when
-// the heading fills the field, then the remaining details at the details
-// column.
+// headedLines aligns option details beside a styled heading. A heading that fills the column stands
+// alone above its details.
 func headedLines(heading string, details []string, style pageStyle) []string {
 	styledHeading := style.steel + heading + style.reset
 
@@ -646,11 +588,7 @@ func headedLines(heading string, details []string, style pageStyle) []string {
 	return optionText
 }
 
-// groupLines takes an introduced group, its flag record, and the page
-// style, and returns the group's lines: a blank line, the intro wrapped
-// from the intro column, then the group's classification sentence opening
-// its first constraint sentence and the remaining constraint sentences at
-// the details column.
+// groupLines formats a model group's introduction and constraint details after a blank line.
 func groupLines(introduced introducedGroup, paramFlag *params.Flag, style pageStyle) []string {
 	introLines := wrapWords(introduced.intro, infoIntroWidth)
 
@@ -677,11 +615,8 @@ func groupLines(introduced introducedGroup, paramFlag *params.Flag, style pageSt
 	return groupText
 }
 
-// flagGuidanceLines takes a flag record, the sentence opening its
-// description (empty for none), and the page style, and returns the record's
-// help-page guidance wrapped within the details column: the opened
-// description, the comment where declared, and the examples sentence where
-// the record declares example values, each example in the value accent.
+// flagGuidanceLines wraps a flag's description, optional comment, and example values. A nonempty
+// opening precedes the description.
 func flagGuidanceLines(paramFlag *params.Flag, opening string, style pageStyle) []string {
 	sentences := []string{strings.TrimSpace(opening + " " + paramFlag.Description), paramFlag.Comment}
 	if len(paramFlag.ExampleValues) > 0 {
@@ -691,10 +626,8 @@ func flagGuidanceLines(paramFlag *params.Flag, opening string, style pageStyle) 
 	return wrapSentences(sentences)
 }
 
-// requirementSentence takes a declaration and the page style and returns the
-// Required classification as a sentence, in the clay accent with the sentence
-// end, for a required parameter. An optional parameter is the default and
-// carries no classification, so the sentence is empty.
+// requirementSentence returns the styled requirement label, or empty text for an optional
+// parameter.
 func requirementSentence(paramCfg *params.Definition, style pageStyle) string {
 	if paramCfg.Required {
 		return style.clay + RequiredLabel + style.reset + "."
@@ -703,8 +636,7 @@ func requirementSentence(paramCfg *params.Definition, style pageStyle) string {
 	return ""
 }
 
-// wrapSentences takes sentences and returns them wrapped within the details
-// column, each sentence starting a line; an empty sentence yields no line.
+// wrapSentences wraps each nonempty sentence separately within the details column.
 func wrapSentences(sentences []string) []string {
 	lines := make([]string, 0, len(sentences))
 	for _, sentence := range sentences {
@@ -714,15 +646,12 @@ func wrapSentences(sentences []string) []string {
 	return lines
 }
 
-// accentValue takes one value and the page style and returns the value in
-// the style's value accent.
+// accentValue surrounds a value with the selected accent and reset codes.
 func accentValue(value string, style pageStyle) string {
 	return style.clay + value + style.reset
 }
 
-// accentValues takes values, their separator, and the page style, and returns
-// the values joined by the separator, each in the value accent and the
-// separator plain.
+// accentValues joins accented values with an unstyled separator.
 func accentValues(values []string, separator string, style pageStyle) string {
 	accented := make([]string, 0, len(values))
 	for _, value := range values {
@@ -732,9 +661,8 @@ func accentValues(values []string, separator string, style pageStyle) string {
 	return strings.Join(accented, separator)
 }
 
-// vendorCounts takes the models of one medium and returns each vendor with
-// its model count, ordered by count descending and then vendor ascending. A
-// model's vendor is the first slash-delimited token of its bare ID.
+// vendorCounts counts models by the first slash-delimited part of their IDs. Results sort by
+// descending count, then ascending vendor name.
 func vendorCounts(models []catalog.Model) []vendorCount {
 	counts := map[string]int{}
 
@@ -753,8 +681,7 @@ func vendorCounts(models []catalog.Model) []vendorCount {
 	return vendors
 }
 
-// compareVendorCounts orders two vendor counts by count descending and then
-// vendor ascending, for the summary's vendor list.
+// compareVendorCounts orders vendors by descending model count, then ascending name.
 func compareVendorCounts(first, second vendorCount) int {
 	if first.count != second.count {
 		return second.count - first.count
@@ -763,9 +690,7 @@ func compareVendorCounts(first, second vendorCount) int {
 	return strings.Compare(first.vendor, second.vendor)
 }
 
-// sharedFlagNames takes the models of one medium and the parameter
-// enumeration, and returns the dashed long name of every flag any of the
-// models declares, in the enumeration's order.
+// sharedFlagNames returns each flag declared by at least one model, in flag declaration order.
 func sharedFlagNames(models []catalog.Model, paramFlags []params.Flag) []string {
 	var names []string
 

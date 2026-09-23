@@ -9,32 +9,49 @@ import (
 // Kind identifies an image or video. An empty kind has not been established.
 type Kind string
 
-// Image and Video are the supported media kinds.
+// Supported media kinds.
+//   - Image: still images
+//   - Video: moving images
 const (
 	Image Kind = "image"
 	Video Kind = "video"
 )
 
-// Known MIME values for supported local inputs and generated SVG output.
+// MIME types recognized for local input or generated output.
+//   - mimePNG: PNG images
+//   - mimeJPEG: JPEG images
+//   - mimeWebP: WebP images
+//   - mimeMP4: MP4 video
+//   - mimeSVG: SVG output, which is not accepted as local input
 const (
-	MimePNG  = "image/png"
-	MimeJPEG = "image/jpeg"
-	MimeWebP = "image/webp"
-	MimeMP4  = "video/mp4"
+	mimePNG  = "image/png"
+	mimeJPEG = "image/jpeg"
+	mimeWebP = "image/webp"
+	mimeMP4  = "video/mp4"
 	mimeSVG  = "image/svg+xml"
 )
 
-// Format tokens used in provider requests and file extensions.
+// Format names used in provider requests and file extensions.
+//   - FormatPNG: PNG encoding
+//   - FormatJPEG: JPEG encoding
+//   - FormatJPG: the canonical JPEG extension
+//   - FormatWebP: WebP encoding
+//   - FormatMP4: MP4 encoding
+//   - formatSVG: SVG encoding
 const (
 	FormatPNG  = "png"
 	FormatJPEG = "jpeg"
 	FormatJPG  = "jpg"
 	FormatWebP = "webp"
 	FormatMP4  = "mp4"
-	FormatSVG  = "svg"
+	formatSVG  = "svg"
 )
 
-// format describes a known encoding, its canonical extension, and input support.
+// format describes a recognized media encoding.
+//   - mime: the canonical MIME type
+//   - extension: the canonical extension without a leading dot
+//   - aliases: accepted alternate MIME types
+//   - localInput: whether local files of this type are accepted
 type format struct {
 	mime       string
 	extension  string
@@ -49,11 +66,11 @@ const mimeJPG = "image/jpg"
 //
 //nolint:gochecknoglobals // immutable format descriptions, initialized once
 var formats = []format{
-	{mime: MimePNG, extension: FormatPNG, localInput: true},
-	{mime: MimeJPEG, extension: FormatJPG, aliases: []string{mimeJPG}, localInput: true},
-	{mime: MimeWebP, extension: FormatWebP, localInput: true},
-	{mime: MimeMP4, extension: FormatMP4, localInput: true},
-	{mime: mimeSVG, extension: FormatSVG},
+	{mime: mimePNG, extension: FormatPNG, localInput: true},
+	{mime: mimeJPEG, extension: FormatJPG, aliases: []string{mimeJPG}, localInput: true},
+	{mime: mimeWebP, extension: FormatWebP, localInput: true},
+	{mime: mimeMP4, extension: FormatMP4, localInput: true},
+	{mime: mimeSVG, extension: formatSVG},
 }
 
 // MIMEKind returns the image or video category of a MIME value, or empty when unresolved.
@@ -83,8 +100,8 @@ func formatForMIME(mimeType string) (format, bool) {
 	return format{}, false
 }
 
-// extForMime returns a canonical media extension or a bare dot when unavailable.
-// Valid unknown image/video subtypes retain their existing extension fallback.
+// extForMime returns a known encoding's canonical extension or a parsed image/video subtype. It
+// returns a bare dot when no usable extension is present.
 func extForMime(mimeType string) string {
 	_, subtype, valid := splitMIME(mimeType)
 	if !valid || subtype == "" {
@@ -107,7 +124,8 @@ func ExtForMimeOr(mimeType, fallback string) string {
 	return fallback
 }
 
-// splitMIME normalizes a media category and its leading subtype token.
+// splitMIME normalizes an image/video category and its leading subtype token. The boolean validates
+// the category; the subtype may still be empty.
 func splitMIME(mimeType string) (category, subtype string, valid bool) {
 	category, subtype, separated := strings.Cut(strings.ToLower(strings.TrimSpace(mimeType)), "/")
 	if !separated || (category != string(Image) && category != string(Video)) {
@@ -130,7 +148,8 @@ func mimeSubtype(mimeValue string) string {
 	return mimeValue
 }
 
-// ExtForData returns an extension inferred from a MIME type, leading bytes, or a fallback extension in that order.
+// ExtForData returns an extension inferred from a MIME type, leading bytes, or a fallback extension
+// in that order.
 func ExtForData(mime string, byteHead []byte, fallbackExt string) string {
 	if ext := ExtForMimeOr(mime, ""); ext != "" {
 		return ext

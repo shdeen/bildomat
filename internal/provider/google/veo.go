@@ -16,7 +16,11 @@ import (
 	"github.com/shdeen/bildomat/internal/provider"
 )
 
-// The Veo instance fields for ordinary image, video, and prompt inputs.
+// Veo instance fields identify media and prompt inputs.
+//   - veoFieldMIMEType: the image MIME type
+//   - veoFieldImage: an image reference or opening frame
+//   - veoFieldVideo: a video input
+//   - veoFieldPrompt: the generation prompt
 const (
 	veoFieldMIMEType = "mimeType"
 	veoFieldImage    = "image"
@@ -24,8 +28,8 @@ const (
 	veoFieldPrompt   = "prompt"
 )
 
-// The forced-duration rule: the resolutions that force the duration, and the
-// duration Veo requires under them or with reference images.
+// The forced-duration rule: the resolutions that force the duration, and the duration Veo requires
+// under them or with reference images.
 //   - resolution1080p: full HD output
 //   - resolution4K: 4K output
 //   - forcedDurationSeconds: the required duration, in seconds
@@ -39,9 +43,9 @@ const (
 // startResponseContext names the operation start response in a failed-decode context.
 const startResponseContext = "start response"
 
-// adjustVeoDuration forces an eight-second duration when inputs or high-resolution output require it.
-// It mutates params and returns a record when the duration changes, or the parameter error when
-// a stored resolution or duration has another type.
+// adjustVeoDuration forces eight seconds for any media input or high-resolution output. It updates
+// the supplied parameter map and returns a change record, or an error for an incompatible
+// resolution or duration value.
 func adjustVeoDuration(parameterValues params.Values, inputs []media.Input) ([]params.Adjustment, error) {
 	adjustedRes, err := params.Value[string](parameterValues, params.FlagTypeResolution)
 	if err != nil {
@@ -134,8 +138,7 @@ type video struct {
 	Encoding string `json:"encoding"`
 }
 
-// The Veo API's tokens; the prompt, video, and image fields and the
-// camel-cased MIME type field are the shared words.
+// The Veo API's endpoint and request field tokens.
 //   - modelsPathPrefix: the start-request path before the model ID
 //   - predictActionSuffix: the start-request action after the model ID
 //   - wireKeyLastFrame: the instance field carrying the closing frame image
@@ -169,8 +172,8 @@ const (
 func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, reuseURI string) map[string]any {
 	inst := map[string]any{veoFieldPrompt: prompt}
 	if reuseURI != "" {
-		// Reuse preserves Google's original reference. The video has already
-		// been generated; it needs neither input-media discovery nor encoding.
+		// Reuse preserves Google's original reference. The video has already been
+		// generated; it needs neither input-media discovery nor encoding.
 		inst[veoFieldVideo] = map[string]any{wireKeyURI: reuseURI}
 	} else if len(mediaInputs) > 0 {
 		placeInstanceMedia(inst, model, mediaInputs)
@@ -187,10 +190,7 @@ func requestBody(model *catalog.Model, prompt string, parameterValues params.Val
 	return body
 }
 
-// placeInstanceMedia takes the request instance, the model, and the input
-// media, and writes the media into the instance: one video under the video
-// field in the video encoding, or otherwise the frame images under their
-// fields and the remaining images as the single image or the reference list.
+// placeInstanceMedia writes video or image inputs into the supplied request instance.
 func placeInstanceMedia(inst map[string]any, model *catalog.Model, mediaInputs []media.Input) {
 	imageInputs, videoInputs := media.SplitInputs(mediaInputs)
 	if len(videoInputs) == 1 {
@@ -202,10 +202,8 @@ func placeInstanceMedia(inst map[string]any, model *catalog.Model, mediaInputs [
 	placeOrdinaryImages(inst, model, placeFrameImages(inst, imageInputs))
 }
 
-// placeFrameImages takes the request instance and the image inputs, writes the
-// opening frame under the image field and the closing frame under the
-// last-frame field, and returns the images carrying no frame anchor, in input
-// order.
+// placeFrameImages writes opening and closing frame images into the supplied instance and returns
+// unanchored images in input order.
 func placeFrameImages(inst map[string]any, imageInputs []media.Input) []media.Input {
 	ordinaryImages := make([]media.Input, 0, len(imageInputs))
 	for imageIndex := range imageInputs {
@@ -224,11 +222,9 @@ func placeFrameImages(inst map[string]any, imageInputs []media.Input) []media.In
 	return ordinaryImages
 }
 
-// placeOrdinaryImages takes the request instance, the model, and the images
-// carrying no frame anchor, and writes them into the instance: as the single
-// image when there is one, the model takes one input, and no opening frame
-// took the image field, and otherwise as the reference image list. No images
-// write nothing.
+// placeOrdinaryImages writes unanchored images into the supplied request instance. A single image
+// uses the image field only for single-input models with no opening frame; otherwise the images
+// become asset references.
 func placeOrdinaryImages(inst map[string]any, model *catalog.Model, ordinaryImages []media.Input) {
 	if len(ordinaryImages) == 0 {
 		return
@@ -249,9 +245,7 @@ func placeOrdinaryImages(inst map[string]any, model *catalog.Model, ordinaryImag
 	inst[wireKeyReferenceImages] = refs
 }
 
-// inputVideoObject returns a video's local bytes or remote URI encoded for a Veo
-// request: the bytes under encodedVideo, or the URI under uri, with the MIME type
-// under encoding either way.
+// inputVideoObject returns a video URI or base64 bytes with the input MIME type.
 func inputVideoObject(mediaInput *media.Input) map[string]any {
 	videoObject := map[string]any{wireKeyEncoding: mediaInput.MIME}
 	if mediaInput.URL != "" {
@@ -280,6 +274,7 @@ func inputMediaObject(mediaInput *media.Input) map[string]any {
 //   - credential: the credential sent with each status request
 //   - name: the operation resource name
 //   - completed: the completed operation response
+//   - record: optional retention of every operation response
 type operationProbe struct {
 	apiBase    string
 	credential httpapi.AuthCredential
@@ -319,8 +314,8 @@ func (probe *operationProbe) Poll(ctx context.Context) (complete bool, err error
 	return true, nil
 }
 
-// completedSamples validates required output while preserving sample-specific
-// errors and safety-filter explanations from a completed operation.
+// completedSamples validates required output while preserving sample-specific errors and
+// safety-filter explanations from a completed operation.
 func completedSamples(completed operation, identity string) ([]sample, error) {
 	var (
 		samples       []sample

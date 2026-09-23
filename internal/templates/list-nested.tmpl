@@ -1,7 +1,7 @@
 {{range .Providers}}{{.DisplayName}} ({{.ID}})
-{{with mediaModels .Models "image"}}  Image models:
+{{with .ModelsForMedia "image"}}  Image models:
 {{range .}}    {{modelRow .ID .Aliases}}
-{{end}}{{end}}{{with mediaModels .Models "video"}}  Video models:
+{{end}}{{end}}{{with .ModelsForMedia "video"}}  Video models:
 {{range .}}    {{modelRow .ID .Aliases}}
 {{end}}{{end}}
 {{end}}

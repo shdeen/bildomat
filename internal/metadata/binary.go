@@ -23,8 +23,16 @@ import (
 	"github.com/shdeen/bildomat/internal/media"
 )
 
-// Binary capture uses JSON null while file locations are pending, the standard
-// data URI delimiter, and explicit HTTP schemes to distinguish remote sources.
+// Binary capture formats and field names.
+//   - jsonNull: a pending binary location in JSON
+//   - base64Delimiter: the data URI separator before encoded content
+//   - dataURIPrefix: the explicit data URI scheme
+//   - httpSourcePrefix, httpsSourcePrefix: the remote source schemes
+//   - audioMIMEPrefix: the prefix for audio content types
+//   - binaryFormat: the fallback filename extension without a period
+//   - multipartContentType: the submitted form content type
+//   - contentTypeHeader: the MIME header in a multipart part
+//   - retainedFileField: the JSON property for a retained file path
 const (
 	jsonNull             = "null"
 	base64Delimiter      = ";base64,"
@@ -38,44 +46,52 @@ const (
 	retainedFileField    = "file"
 )
 
-// BinaryField identifies a known encoded field by its JSON path. An asterisk
-// matches one array index or object property. MIMEField names a sibling field.
+// BinaryField declares a base64 value at a JSON path; an asterisk matches one path segment.
+//   - Path: the property names or array indexes leading to the value
+//   - MIMEField: the optional sibling property that supplies the content type
+//   - MIME: the content type used when the sibling property supplies none
 type BinaryField struct {
 	Path      []string
 	MIMEField string
 	MIME      string
 }
 
-// binaryReference identifies a JSON value removed during binary capture. Only
-// these exact locations receive replacement markers when final paths exist.
+// binaryReference identifies captured content and its replacement location.
+//   - Path: the exact JSON location that receives the saved reference
+//   - Digest: the fingerprint of the retained bytes
+//   - PlainPath: whether to insert a path alone instead of an explanatory marker
 type binaryReference struct {
 	Path      []string
 	Digest    [sha256.Size]byte
 	PlainPath bool
 }
 
-// binaryData owns one unique decoded body until the generation can be saved.
+// binaryData retains one unique decoded body until persistence.
+//   - Bytes: the captured binary content
+//   - MIME: the declared or detected content type
 type binaryData struct {
 	Bytes []byte
 	MIME  string
 }
 
-// binaryStore retains unique decoded content and verified local source paths.
-// Providers may discard their temporary artifacts without affecting this data.
+// binaryStore retains unique content independently of provider artifact cleanup.
+//   - content: the captured bytes and content types indexed by digest
+//   - sources: the unchanged local source paths indexed by digest
+//   - fileMIMEs: the content types associated with saved artifact paths
 type binaryStore struct {
 	content   map[[sha256.Size]byte]binaryData
 	sources   map[[sha256.Size]byte]string
 	fileMIMEs map[string]string
 }
 
-// normalize preserves unknown JSON values and exact numbers, replacing only
-// schema-declared base64 fields and explicit data URIs with pending references.
+// normalize captures declared base64 fields and explicit data URIs in the binary store. It returns
+// JSON with pending references while preserving other values and exact numbers.
 func (store *binaryStore) normalize(body []byte, fields []BinaryField) (json.RawMessage, []binaryReference, error) {
 	return store.normalizeValue(bytes.TrimSpace(body), nil, nil, fields)
 }
 
-// normalizeValue recursively processes one value from an already validated JSON
-// body. Decoded object members and array elements retain that validity.
+// normalizeValue captures binary content from one validated JSON value. It updates the store and
+// returns the value with pending references.
 func (store *binaryStore) normalizeValue(value json.RawMessage, path []string, parent map[string]json.RawMessage, fields []BinaryField) (json.RawMessage, []binaryReference, error) {
 	var (
 		references    []binaryReference
@@ -127,8 +143,8 @@ func (store *binaryStore) normalizeValue(value json.RawMessage, path []string, p
 	return value, nil, nil
 }
 
-// normalizeString recognizes one declared binary value without guessing from
-// field names or string length. HTTP references remain exactly as submitted.
+// normalizeString captures a declared base64 value or explicit data URI in the store. It returns a
+// pending reference, or the unchanged value when no binary content is declared.
 func (store *binaryStore) normalizeString(value json.RawMessage, path []string, parent map[string]json.RawMessage, fields []BinaryField) (json.RawMessage, []binaryReference, error) {
 	var text string
 	if err := json.Unmarshal(value, &text); err != nil {
@@ -181,7 +197,7 @@ func encodedValue(text string, path []string, parent map[string]json.RawMessage,
 	return "", "", false
 }
 
-// matchesPath matches one schema path without recursively matching unrelated data.
+// matchesPath compares equal-length JSON paths, allowing an asterisk to match one segment.
 func matchesPath(pattern, path []string) bool {
 	if len(pattern) != len(path) {
 		return false
@@ -243,14 +259,14 @@ func (store *binaryStore) copyFile(path, contentType string) (binaryReference, e
 	// #nosec G304 -- path is the downloaded temporary artifact.
 	content, err := os.ReadFile(path)
 	if err != nil {
-		return binaryReference{}, &errs.MediaError{Source: path, Cause: errors.Join(errs.ErrInputMediaRead, err)}
+		return binaryReference{}, errs.FileError(errs.FileOpRead, path, errs.ErrOutputFileRead, err)
 	}
 
 	return binaryReference{Digest: store.add(content, contentType)}, nil
 }
 
-// persist matches completed artifacts first, then unchanged inputs, and finally
-// writes only binary content that needs its own retained file.
+// persist matches completed artifacts first, then unchanged inputs, and finally writes only binary
+// content that needs its own retained file.
 func (store *binaryStore) persist(dir, stem string, files []artifact.SavedFile) (paths map[[sha256.Size]byte]string, failures map[[sha256.Size]byte]error, artifactErr error) {
 	paths, artifactErr = store.matchArtifacts(files)
 	failures = make(map[[sha256.Size]byte]error)
@@ -287,8 +303,8 @@ func (store *binaryStore) persist(dir, stem string, files []artifact.SavedFile) 
 	return paths, failures, artifactErr
 }
 
-// matchArtifacts identifies completed media by its actual bytes and retains the
-// provider-declared MIME type when matching captured content supplies it.
+// matchArtifacts identifies completed media by its actual bytes and retains the provider-declared
+// MIME type when matching captured content supplies it.
 func (store *binaryStore) matchArtifacts(files []artifact.SavedFile) (map[[sha256.Size]byte]string, error) {
 	paths := make(map[[sha256.Size]byte]string)
 	store.fileMIMEs = make(map[string]string)
@@ -299,7 +315,7 @@ func (store *binaryStore) matchArtifacts(files []artifact.SavedFile) (map[[sha25
 		// #nosec G304 -- file.Path is a successfully closed generated artifact.
 		data, err := os.ReadFile(file.Path)
 		if err != nil {
-			readErrors = append(readErrors, &errs.MediaError{Source: file.Path, Cause: errors.Join(errs.ErrInputMediaRead, err)})
+			readErrors = append(readErrors, errs.FileError(errs.FileOpRead, file.Path, errs.ErrOutputFileRead, err))
 
 			continue
 		}
@@ -333,8 +349,8 @@ func sortedDigests(content map[[sha256.Size]byte]binaryData) [][sha256.Size]byte
 // compareDigests orders binary fingerprints lexicographically.
 func compareDigests(left, right [sha256.Size]byte) int { return bytes.Compare(left[:], right[:]) }
 
-// binaryExtension prefers a declared format, then detected bytes, and otherwise
-// uses a binary extension instead of inventing an image format.
+// binaryExtension prefers a declared format, then detected bytes, and otherwise uses a binary
+// extension instead of inventing an image format.
 func binaryExtension(contentType string, data []byte) string {
 	if extension := media.ExtForMimeOr(contentType, ""); extension != "" {
 		return extension
@@ -356,8 +372,8 @@ func binaryExtension(contentType string, data []byte) string {
 	return "." + binaryFormat
 }
 
-// request captures JSON, multipart fields with repeated names, or an opaque
-// request body. It parses the actual body that transport will send.
+// request captures JSON, multipart fields with repeated names, or an opaque request body. It parses
+// the actual body that transport will send.
 func (store *binaryStore) request(body []byte, contentType string, fields []BinaryField) (json.RawMessage, []binaryReference, error) {
 	if len(body) == 0 {
 		return json.RawMessage(jsonNull), nil, nil
@@ -380,7 +396,12 @@ func (store *binaryStore) request(body []byte, contentType string, fields []Bina
 	return encoded, nil, nil
 }
 
-// formPart represents one submitted multipart part, preserving repeated names.
+// formPart describes a submitted multipart part without merging repeated names.
+//   - Name: the form field name
+//   - Filename: the submitted filename for a binary part
+//   - ContentType: the part's declared content type
+//   - Value: the body of a text part
+//   - File: the retained binary path, empty until persistence
 //
 //nolint:tagliatelle // Keep the provisional record's hyphenated JSON keys.
 type formPart struct {
@@ -434,7 +455,7 @@ func (store *binaryStore) multipart(body []byte, boundary string) (json.RawMessa
 	return encoded, references, nil
 }
 
-// resolveReferences replaces only recorded binary locations with truthful paths.
+// resolveReferences replaces captured binary values with saved paths or failure markers.
 func resolveReferences(body json.RawMessage, references []binaryReference, paths map[[sha256.Size]byte]string, failures map[[sha256.Size]byte]error) (json.RawMessage, error) {
 	var fieldErrors []error
 

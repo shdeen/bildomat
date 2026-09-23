@@ -8,21 +8,23 @@ import (
 	"github.com/shdeen/bildomat/internal/metadata"
 )
 
-// retainedOperation is Google's provisional return-values shape. It preserves
-// original provider references independently of downloaded artifact paths.
+// retainedOperation is Google's provisional return-values shape. It preserves original provider
+// references independently of downloaded artifact paths.
 type retainedOperation struct {
-	Operation string          `json:"operation"`
-	Videos    []retainedVideo `json:"videos,omitempty"`
+	// Operation is the original operation resource name.
+	Operation string `json:"operation"`
+	// Videos contains original provider video references.
+	Videos []retainedVideo `json:"videos,omitempty"`
 }
 
 // retainedVideo identifies one original generated video for a follow-up request.
 type retainedVideo struct {
+	// URI is the original provider video reference.
 	URI string `json:"uri"`
 }
 
-// retainOperation captures an acknowledgement or completed operation before
-// later polling or artifact work can fail. The retained shape is experimental
-// and subject to change with the provisional generation-record format.
+// retainOperation appends the operation name and original video URIs to the supplied record. It
+// accepts a nil record. The retained format is provisional.
 func retainOperation(record *metadata.Record, model string, completed operation) error {
 	if record == nil {
 		return nil

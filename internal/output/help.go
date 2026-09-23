@@ -6,38 +6,29 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// File: internal/output/help.go
-// The help pages this package owns: the page measures every page lays out to,
-// the indentation step, the dashed flag heading, the paragraph wrapping, and
-// the value words for the flags the command layer declares directly. The help
-// page copy itself lives in internal/templates.
-
-// The layout measures of the rendered pages. Section labels sit flush left and
-// each nested level steps in by one indent.
-//   - PageWidth: the column at which page text wraps
-//   - IndentWidth: the number of spaces in one indentation step
+// The layout measures of the rendered pages. Section labels sit flush left and each nested level
+// steps in by one indent.
+//   - pageWidth: the column at which page text wraps
+//   - indentWidth: the number of spaces in one indentation step
 const (
-	PageWidth   = 80
-	IndentWidth = 4
+	pageWidth   = 80
+	indentWidth = 4
 )
 
-// IndentText takes a number of indentation steps and a block of text, and
-// returns that text with every line indented by the given number of steps.
+// IndentText indents every line by the requested number of indentation steps.
 func IndentText(steps int, text string) string {
-	indentChars := strings.Repeat(" ", steps*IndentWidth)
+	indentChars := strings.Repeat(" ", steps*indentWidth)
 
 	return indentChars + strings.ReplaceAll(text, "\n", "\n"+indentChars)
 }
 
-// DashedFlagNames takes a flag's names and the word that names its value, and
-// returns them as one comma-separated heading. Every name carries a dash
-// prefix, the aliases come first and the long name last, and the heading ends
-// with the value word in angle brackets where the flag accepts a value.
-func DashedFlagNames(flagNames []string, valueHint string) string {
+// dashedFlagNames formats aliases before the long flag name, with their dash prefixes. A nonempty
+// value hint follows the names in angle brackets.
+func dashedFlagNames(flagNames []string, valueHint string) string {
 	if len(flagNames) == 0 {
 		return ""
 	}
-	// The library returns the long name first, then the aliases.
+	// The input lists the long name first, followed by aliases.
 	dashedNames := make([]string, 0, len(flagNames))
 	for _, alias := range flagNames[1:] {
 		if alias != "" {
@@ -53,8 +44,7 @@ func DashedFlagNames(flagNames []string, valueHint string) string {
 	return strings.Join(dashedNames, ", ") + " <" + valueHint + ">"
 }
 
-// dashedFlagName takes one of a flag's names and returns it with a dash prefix:
-// a single dash for a one-character name, and a double dash for a longer name.
+// dashedFlagName prefixes a one-byte name with one dash and longer names with two.
 func dashedFlagName(flagName string) string {
 	if len(flagName) == 1 {
 		return "-" + flagName
@@ -63,9 +53,7 @@ func dashedFlagName(flagName string) string {
 	return "--" + flagName
 }
 
-// WrapDetails takes a block of detail text and the number of indentation steps
-// to lay it out at, and returns it wrapped to the page width. It preserves the
-// blank line between paragraphs and drops any paragraph that holds no words.
+// WrapDetails wraps and indents paragraphs to the page width, separated by blank lines.
 func WrapDetails(steps int, detailText string) string {
 	var wrappedParagraphs []string
 
@@ -78,26 +66,21 @@ func WrapDetails(steps int, detailText string) string {
 	return strings.Join(wrappedParagraphs, "\n\n")
 }
 
-// wrapParagraph takes one paragraph and the number of indentation steps to lay
-// it out at, and returns it broken to the page width and indented to that
-// level, with every run of whitespace collapsed to a single space. A paragraph
-// holding no words returns an empty string, and a term wider than the margin
-// overruns it rather than being split.
+// wrapParagraph wraps and indents one paragraph, collapsing whitespace. Indivisible terms may
+// exceed the available width; empty paragraphs return no text.
 func wrapParagraph(steps int, paragraphText string) string {
-	wrappedLines := wrapWords(paragraphText, PageWidth-steps*IndentWidth)
+	wrappedLines := wrapWords(paragraphText, pageWidth-steps*indentWidth)
 	if len(wrappedLines) == 0 {
 		return ""
 	}
 
-	indentChars := strings.Repeat(" ", steps*IndentWidth)
+	indentChars := strings.Repeat(" ", steps*indentWidth)
 
 	return indentChars + strings.Join(wrappedLines, "\n"+indentChars)
 }
 
-// FlagValueHint takes a flag's long name and the parameter enumeration, and
-// returns the word naming that flag's value: the hint on the matching
-// parameter record, then the hint declared for a directly declared flag, and
-// otherwise the long name itself.
+// FlagValueHint returns the parameter hint when present. Otherwise, it returns the command flag
+// hint, or the long flag name if neither hint exists.
 func FlagValueHint(longName string, paramFlags []params.Flag, flagHints map[string]string) string {
 	for paramFlagIndex := range paramFlags {
 		paramFlag := &paramFlags[paramFlagIndex]
@@ -113,9 +96,7 @@ func FlagValueHint(longName string, paramFlags []params.Flag, flagHints map[stri
 	return longName
 }
 
-// FlagEntry takes a flag's names, the word naming its value, and its detail
-// text, and returns that flag's help page entry: the dashed names and value
-// word on the first line, with the wrapped details beneath.
+// FlagEntry formats a flag heading followed by its wrapped, indented description.
 func FlagEntry(flagNames []string, valueHint, detailText string) string {
-	return IndentText(1, DashedFlagNames(flagNames, valueHint)) + "\n" + WrapDetails(2, detailText)
+	return IndentText(1, dashedFlagNames(flagNames, valueHint)) + "\n" + WrapDetails(2, detailText)
 }

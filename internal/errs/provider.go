@@ -2,8 +2,10 @@ package errs
 
 import "fmt"
 
-// ProviderError carries the provider's explanation independently of outer
-// request labels and other failures in the same error chain.
+// ProviderError carries the provider's explanation independently of outer request labels and other
+// failures in the same error chain.
+//   - Message: the provider-supplied failure explanation
+//   - Cause: the response failure classification and original error
 type ProviderError struct {
 	Message string
 	Cause   error

@@ -11,15 +11,15 @@ type PollSeconds int
 // Duration returns the configured number of seconds as a duration.
 func (seconds PollSeconds) Duration() time.Duration { return time.Duration(seconds) * time.Second }
 
-// checkPolling requires a complete positive pair when the operation polls.
-// An unused optional operation may omit both values.
+// checkPolling requires a complete positive pair when the operation polls. An unused optional
+// operation may omit both values.
 func checkPolling(cfgName, section string, interval, timeout PollSeconds, required bool) error {
 	if !required && interval == 0 && timeout == 0 {
 		return nil
 	}
 
 	if interval <= 0 {
-		if section == sectionVideoAPI {
+		if section == SectionVideoAPI {
 			return createInvalidCfgError(cfgName, fmt.Sprintf(PollIntervalNotPositive, interval))
 		}
 
@@ -27,7 +27,7 @@ func checkPolling(cfgName, section string, interval, timeout PollSeconds, requir
 	}
 
 	if timeout <= 0 {
-		if section == sectionVideoAPI {
+		if section == SectionVideoAPI {
 			return createInvalidCfgError(cfgName, fmt.Sprintf(PollBudgetNotPositive, timeout))
 		}
 

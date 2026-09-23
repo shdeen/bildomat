@@ -17,8 +17,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// submitVideo starts a video job, waits for completion, and returns the downloaded artifact.
-// It may resize input images and create a temporary artifact file.
+// submitVideo prepares and submits a video job, waits for completion, and downloads its artifact.
+// It updates the request's preparation and records the provider lifecycle.
 func submitVideo(ctx context.Context, api *catalog.VideoAPI, apiKey string, run *generation.Generation, stringParams ...params.FlagType) ([]artifact.Media, error) {
 	provModelLabel := run.Label()
 
@@ -53,9 +53,8 @@ func submitVideo(ctx context.Context, api *catalog.VideoAPI, apiKey string, run 
 	return []artifact.Media{generatedMedia}, nil
 }
 
-// prepareVideoInputs retrieves each retained multipart reference and applies model policy.
-// Completed media and adjustments survive a later retrieval or transformation failure.
-// The caller's request remains unchanged.
+// prepareVideoInputs downloads multipart references and resizes them when the API requires it. It
+// works on a copy and returns any media and adjustments prepared before a failure.
 func prepareVideoInputs(ctx context.Context, api *catalog.VideoAPI, run *generation.Generation) (generation.Preparation, error) {
 	preparedGeneration := run.Clone()
 	if api.InputMediaPayloadType != catalog.InputMediaPayloadForm {
@@ -130,7 +129,8 @@ func getVideoJobBody(api *catalog.VideoAPI, model *catalog.Model, prompt string,
 	return body, nil
 }
 
-// addVideoInputMedia writes ordinary references and configured opening or closing frames.
+// addVideoInputMedia writes ordinary references and configured opening or closing frames into the
+// supplied request body.
 func addVideoInputMedia(body map[string]any, api *catalog.VideoAPI, mediaInputs []media.Input) error {
 	ordinaryInputs, frameInputs := splitFrameInputs(mediaInputs)
 
@@ -156,8 +156,8 @@ func addVideoInputMedia(body map[string]any, api *catalog.VideoAPI, mediaInputs 
 	return nil
 }
 
-// splitFrameInputs takes media inputs and returns the inputs carrying no frame
-// prefix and the inputs carrying one, each in input order.
+// splitFrameInputs takes media inputs and returns the inputs carrying no frame prefix and the
+// inputs carrying one, each in input order.
 func splitFrameInputs(mediaInputs []media.Input) (ordinaryInputs, frameInputs []media.Input) {
 	ordinaryInputs = make([]media.Input, 0, len(mediaInputs))
 	frameInputs = make([]media.Input, 0, len(mediaInputs))
@@ -173,17 +173,14 @@ func splitFrameInputs(mediaInputs []media.Input) (ordinaryInputs, frameInputs []
 	return ordinaryInputs, frameInputs
 }
 
-// frameMediaValues takes the video API and the frame inputs and returns one
-// request object per input, carrying the media reference under its type and
-// the frame role under the API's role field. It fails on a frame on a video
-// input, on an anchor the frame resolution left unresolved, and on a role
-// claimed by two inputs.
+// frameMediaValues returns request objects for resolved first and last frame images. It rejects
+// video inputs, unresolved frame times, and duplicate frame roles.
 func frameMediaValues(api *catalog.VideoAPI, frameInputs []media.Input) ([]any, error) {
 	frameValues := make([]any, 0, len(frameInputs))
 	usedRoles := map[string]bool{}
 
-	// Frame resolution ran during parameter adjustment, so every frame input
-	// carries an anchor keyword here; anything else is a repository defect.
+	// Frame resolution ran during parameter adjustment, so every frame input carries an anchor
+	// keyword here; anything else is a repository defect.
 	for _, mediaInput := range frameInputs {
 		if mediaInput.Kind() == media.Video {
 			return nil, &errs.MediaError{Problem: fmt.Sprintf(generation.FrameOnVideo, mediaInput.Source()), Cause: errs.ErrInputMediaTime}
@@ -259,6 +256,7 @@ func getJobID(provModelLabel, idField string, status int, body []byte, errReceiv
 //   - api: the video API settings used to inspect the job
 //   - jobID: the video job identifier
 //   - record: optional retention of every status response
+//   - completed: the response retained after successful completion
 type videoJobProbe struct {
 	credential httpapi.AuthCredential
 	api        *catalog.VideoAPI
@@ -267,7 +265,7 @@ type videoJobProbe struct {
 	completed  []byte
 }
 
-// Poll checks the video job and returns its response body when generation is complete.
+// Poll retrieves the video job status and stores the successful response in the probe.
 func (probe *videoJobProbe) Poll(ctx context.Context) (isDone bool, pollErr error) {
 	status, body, err := httpapi.GetAuth(ctx, probe.api.AsyncJobsURL+"/"+probe.jobID, probe.credential, metadata.Asynchronous, probe.record)
 	if err := PollResponseError(probe.jobID, status, body, err); err != nil {
@@ -328,15 +326,16 @@ func fetchVideo(ctx context.Context, credential httpapi.AuthCredential, api *cat
 
 	generatedMedia, err := httpapi.Fetch(ctx, downloadURL, downloadCred, api.FallbackExt, record)
 	if err != nil {
-		// The fetch error carries its own endpoint context; this boundary adds
-		// the provider-model identity, which only the caller knows.
+		// The fetch error carries its own endpoint context; this boundary adds the
+		// provider-model identity, which only the caller knows.
 		return artifact.Media{}, fmt.Errorf("%q, %w", provModelLabel, err)
 	}
 
 	return generatedMedia, nil
 }
 
-// walkURL returns the string reached by traversing a polling response through path segments.
+// walkURL follows object keys and numeric array indices to a string in a polling response. It
+// returns an empty string for invalid JSON, missing paths, or type mismatches.
 func walkURL(pollBody []byte, segments []string) string {
 	var cur any
 	if json.Unmarshal(pollBody, &cur) != nil {

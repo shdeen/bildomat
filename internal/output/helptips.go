@@ -2,16 +2,10 @@ package output
 
 import "github.com/shdeen/bildomat/internal/catalog"
 
-// File: internal/output/helptips.go
-// The tips section of the general help page: the fully qualified model form
-// and the info and search examples, drawn from one provider's catalog by the
-// same example logic the aggregator summary's footer uses (examples.go).
-
-// helpTipsPage carries the data the tips section of the general help page
-// names.
+// helpTipsPage contains the heading, provider ID, examples, and styling for general-help tips.
 //   - Heading: the heading that opens the section
 //   - ID: the catalog identifier of the provider the examples draw from
-//   - Dim, Reset: the dim shade and the reset the template styles the rule with
+//   - Dim, Reset: ANSI codes for dimming the rule and restoring normal text
 //   - Footer: the examples, drawn from the provider's models
 type helpTipsPage struct {
 	Heading string
@@ -21,10 +15,7 @@ type helpTipsPage struct {
 	Footer  pageFooter
 }
 
-// HelpTips takes the provider whose models the examples draw from and returns
-// the tips section of the general help page: the fully qualified model form
-// and the info and search examples. It returns the template failure where the
-// embedded copy is malformed.
+// HelpTips renders general-help examples drawn from the supplied provider's models.
 func HelpTips(prov *catalog.Provider, styled bool) (string, error) {
 	style := pageStyleValues(styled)
 

@@ -4,11 +4,8 @@ import (
 	"fmt"
 )
 
-// GuidanceMissing takes a parameter configuration and its flag record
-// and reports whether the parameter leaves the user no value guidance: it
-// declares no allowed values, range bound, or size bounds, and the record
-// carries neither a text hint nor example values. A boolean flag takes no
-// value, so it never lacks guidance.
+// GuidanceMissing reports whether a parameter lacks declared constraints and flag value guidance.
+// Boolean flags need no value guidance.
 func GuidanceMissing(paramCfg *Definition, paramFlag *Flag) bool {
 	if paramFlag.DataType == DataBoolean {
 		return false
@@ -24,7 +21,8 @@ func GuidanceMissing(paramCfg *Definition, paramFlag *Flag) bool {
 	return paramFlag.TextHint == "" && len(paramFlag.ExampleValues) == 0
 }
 
-// ConstraintFault returns the first constraint error in a parameter configuration, or an empty string when it is valid.
+// ConstraintFault returns the first constraint error in a parameter configuration, or an empty
+// string when it is valid.
 func ConstraintFault(param *Definition) string {
 	minVal, hasMin := param.MinValue.ValIf()
 

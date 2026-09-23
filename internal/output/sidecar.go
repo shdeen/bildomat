@@ -9,13 +9,13 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// frontMatterFence is the line that opens and closes the front matter and
-// separates one thought from the next.
+// frontMatterFence is the line that opens and closes the front matter and separates one thought
+// from the next.
 const frontMatterFence = "---"
 
-// RenderSidecar takes run details, adjusted parameters, input media, and thoughts and
-// returns sidecar Markdown. The front matter includes the current UTC timestamp, in the
-// JSON document's form, and each present parameter in definition order.
+// RenderSidecar returns Markdown with the prompt, model ID, current UTC timestamp, and nonempty
+// parameters in flag-record order. It records the supplied input-media sources under input-media
+// and places thought chunks after the front matter, separated by fences.
 func RenderSidecar(prompt, modelID string, paramFlags []params.Flag, adjusted params.Values, inputMedia []media.Input, thoughts []string) []byte {
 	var builder strings.Builder
 	builder.WriteString(frontMatterFence + "\n")

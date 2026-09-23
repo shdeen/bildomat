@@ -3,9 +3,8 @@ package params
 // FlagInputs maps supplied parameter names to their parsed values.
 type FlagInputs map[FlagType]any
 
-// Supplied reports whether the parameter was
-// meaningfully supplied. Thought output requires true, and input media requires at least
-// one source.
+// Supplied reports whether a parameter has a meaningful supplied value. Thought output requires
+// true, and input media requires at least one source.
 func (userInputs FlagInputs) Supplied(flag FlagType) bool {
 	inputValue, ok := userInputs[flag]
 	if !ok {

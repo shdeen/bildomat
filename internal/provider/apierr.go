@@ -10,18 +10,16 @@ import (
 	"github.com/shdeen/bildomat/internal/errs"
 )
 
-// Provider error-body fields shared by supported response shapes.
+// Provider error fields carry validation details.
+//   - respFieldDetail: a message or list of validation failures
+//   - respFieldMsg: the message within a validation failure
 const (
 	respFieldDetail = "detail"
 	respFieldMsg    = "msg"
 )
 
-// APIErr returns an error for a failed provider response, classified as a
-// response-status failure. A server message extracted from the body's
-// documented shape is retained separately from status context, so the renderer
-// can surface the provider's own text. A body matching no documented shape
-// keeps a bounded excerpt in
-// the diagnostic context only.
+// APIErr classifies an unsuccessful HTTP response and preserves a recognized server message.
+// Otherwise it includes a bounded body excerpt. Statuses 429, 502, 503, and 504 are temporary.
 func APIErr(provModelLabel string, status int, body []byte) error {
 	statusContext := fmt.Sprintf(errs.StatusContextForm, provModelLabel, status)
 	classification := errs.ErrResponseStatus
@@ -40,9 +38,8 @@ func APIErr(provModelLabel string, status int, body []byte) error {
 		&errs.ProviderError{Message: msg, Cause: errs.ErrResponseServer})
 }
 
-// PollResponseError preserves both HTTP status and transport failures from one
-// observation. A truncated error body must not erase a permanent HTTP status.
-// Recovery is decided only by the polling loop; submissions are never retried.
+// PollResponseError combines an unsuccessful HTTP status with any transport error. A successful or
+// unavailable status returns the transport error unchanged.
 func PollResponseError(identity string, status int, body []byte, transportErr error) error {
 	if status != 0 && status/100 != 2 {
 		return errors.Join(APIErr(identity, status, body), transportErr)
@@ -51,13 +48,8 @@ func PollResponseError(identity string, status int, body []byte, transportErr er
 	return transportErr
 }
 
-// errMsg returns the server message from an error response body's documented
-// shape, or an empty string when the body matches none. OpenAI, xAI,
-// OpenRouter, and Google carry the message at error.message; Google's
-// streaming endpoint wraps that error document in a one-element JSON array;
-// BFL carries a top-level detail, which on validation failures is an array
-// of objects each carrying msg; Kling carries a top-level message. The
-// nested message wins when a response contains more than one shape.
+// errMsg extracts a message from a provider error object or the first array element. It checks
+// error.message, detail text or validation messages, then the top-level message.
 func errMsg(body []byte) string {
 	var rawErrResp map[string]any
 	if json.Unmarshal(body, &rawErrResp) != nil {
@@ -93,9 +85,7 @@ func errMsg(body []byte) string {
 	return ""
 }
 
-// joinDetailMessages returns the msg texts of a BFL validation-failure detail
-// array as one semicolon-separated text, or an empty string when no error detail
-// carries one.
+// joinDetailMessages joins nonempty validation messages with semicolons.
 func joinDetailMessages(errDetails []any) string {
 	var messages []string
 

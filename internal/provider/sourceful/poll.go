@@ -15,7 +15,14 @@ import (
 	"github.com/shdeen/bildomat/internal/provider"
 )
 
-// jobPoll retrieves and classifies one Sourceful job response.
+// jobPoll tracks one Sourceful generation job.
+//   - adapterAPI: endpoint, polling, and status settings
+//   - apiCredential: authentication for status requests
+//   - jobID: the provider job identifier
+//   - providerModelName: the provider/model label used in errors
+//   - resultMIME: the completed image MIME type
+//   - resultURL: the completed image download URL
+//   - record: optional request and response retention
 type jobPoll struct {
 	adapterAPI        *catalog.AdapterAPI
 	apiCredential     httpapi.AuthCredential
@@ -26,23 +33,33 @@ type jobPoll struct {
 	record            *metadata.Record
 }
 
+// jobData decodes the job and alternate result locations in a status response.
 type jobData struct {
-	Job    json.RawMessage `json:"job"`
+	// Job contains the job state and primary result.
+	Job json.RawMessage `json:"job"`
+	// Result contains a result object.
 	Result json.RawMessage `json:"result"`
 }
 
+// jobRecord preserves the types and presence of a job's status and result fields.
 type jobRecord struct {
-	Status           any             `json:"status"`
-	LastErrorMessage any             `json:"lastErrorMessage"`
-	Result           json.RawMessage `json:"result"`
+	// Status preserves the reported state and its JSON type.
+	Status any `json:"status"`
+	// LastErrorMessage preserves the optional provider failure message.
+	LastErrorMessage any `json:"lastErrorMessage"`
+	// Result contains a result object.
+	Result json.RawMessage `json:"result"`
 }
 
+// resultOutput preserves the types of an output URL and optional MIME value.
 type resultOutput struct {
-	URL  any `json:"url"`
+	// URL preserves the output location and its JSON type.
+	URL any `json:"url"`
+	// MIME preserves the optional output MIME type.
 	MIME any `json:"mimeType"`
 }
 
-// Poll retains the completed output only after the response passes validation.
+// Poll retrieves the job status and retains the URL and MIME type after valid completion.
 func (sourcefulPoll *jobPoll) Poll(ctx context.Context) (jobDone bool, err error) {
 	pollEndpoint := strings.TrimRight(sourcefulPoll.adapterAPI.APIBase, "/") + pollRoute + url.PathEscape(sourcefulPoll.jobID)
 
@@ -54,7 +71,8 @@ func (sourcefulPoll *jobPoll) Poll(ctx context.Context) (jobDone bool, err error
 	return sourcefulPoll.classifyJobResponse(body)
 }
 
-// classifyJobResponse preserves status and output presence distinctions.
+// classifyJobResponse returns whether the job completed and stores validated output in the poller.
+// Missing, failed, and unknown statuses return classified errors.
 func (sourcefulPoll *jobPoll) classifyJobResponse(responseBody []byte) (bool, error) {
 	var response responseEnvelope
 	if err := json.Unmarshal(responseBody, &response); err != nil {
@@ -93,8 +111,9 @@ func (sourcefulPoll *jobPoll) classifyJobResponse(responseBody []byte) (bool, er
 	}
 }
 
-// completedResult resolves each optional field independently. A present string,
-// including an empty string, wins over the alternate response location.
+// completedResult stores a completed output URL and optional MIME type in the poller. Each primary
+// string takes precedence independently, including empty strings; a missing or empty resolved URL
+// returns an error.
 func (sourcefulPoll *jobPoll) completedResult(primary, alternate json.RawMessage) (bool, error) {
 	primaryOutput := decodeResultOutput(primary)
 	alternateOutput := decodeResultOutput(alternate)
@@ -118,8 +137,8 @@ func (sourcefulPoll *jobPoll) completedResult(primary, alternate json.RawMessage
 	return true, nil
 }
 
-// decodeResultOutput treats an absent or incompatible optional output location
-// as unavailable, allowing the other published location to supply its fields.
+// decodeResultOutput treats an absent or incompatible optional output location as unavailable,
+// allowing the other published location to supply its fields.
 func decodeResultOutput(encodedResult json.RawMessage) resultOutput {
 	var result struct {
 		Output json.RawMessage `json:"output"`

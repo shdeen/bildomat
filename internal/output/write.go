@@ -8,8 +8,8 @@ import (
 	"github.com/shdeen/bildomat/internal/errs"
 )
 
-// WriteText writes formatted text to the supplied destination. Incomplete writes
-// retain their original cause and output-write classification, including short writes.
+// WriteText writes formatted text to the supplied destination. Incomplete writes retain their
+// original cause and output-write classification, including short writes.
 func WriteText(destination io.Writer, format string, values ...any) error {
 	content := fmt.Sprintf(format, values...)
 

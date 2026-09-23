@@ -1,9 +1,5 @@
-// Package config loads the user's optional configuration file at
-// <home>/.bildomat/config.yml: a default model, a default output directory,
-// and per-provider API keys, read once per run. A fault never stops the
-// caller; Load returns the decoded settings together with the classified
-// faults, each wrapping a sentinel under errs.ErrUserConfig, for the
-// caller's warning path.
+// Package config loads optional settings from <home>/.bildomat/config.yml. It returns settings and
+// classified faults so the caller can warn about configuration errors without stopping the run.
 package config
 
 import (
@@ -29,15 +25,12 @@ const fileName = "config.yml"
 // yamlTagKey is the struct tag key that carries each setting's document key.
 const yamlTagKey = "yaml"
 
-// Settings holds the user config file's three optional settings. An empty
-// value means unset: the loader drops empty values, so a consumer never
-// sees an empty-but-present setting.
-//   - DefaultModel: the model used when --model is omitted; anything the
-//     --model flag accepts
-//   - DefaultOutputDir: the directory used when no output location is given;
-//     anything the directory portion of --output-path accepts
-//   - APIKeys: API keys by provider ID, which outrank the providers'
-//     environment variables
+// Settings holds optional defaults and API keys. Empty values mean unset; Load removes empty API
+// keys.
+//   - DefaultModel: the model used when --model is omitted; anything the --model flag accepts
+//   - DefaultOutputDir: the directory used when no output location is given; anything the directory
+//     portion of --output-path accepts
+//   - APIKeys: API keys by provider ID, which outrank the providers' environment variables
 type Settings struct {
 	DefaultModel     string            `yaml:"default-model"`
 	DefaultOutputDir string            `yaml:"output-dir"`
@@ -49,8 +42,7 @@ type Settings struct {
 //nolint:gochecknoglobals // computed once from the Settings tags at package load, never written again.
 var declaredKeys = readSettingKeys()
 
-// readSettingKeys returns the schema's top-level keys from the Settings
-// yaml tags, so the schema is stated exactly once.
+// readSettingKeys returns the top-level configuration keys declared by Settings.
 func readSettingKeys() []string {
 	settingsType := reflect.TypeFor[Settings]()
 	keys := make([]string, 0, settingsType.NumField())
@@ -65,11 +57,8 @@ func readSettingKeys() []string {
 	return keys
 }
 
-// Load resolves the config file's location under the home directory, reads
-// and decodes the file, and returns the decoded settings, the file's
-// resolved path (empty when the location cannot be resolved), and the
-// classified faults. A missing file or a missing .bildomat directory is
-// silent: zero settings and no faults.
+// Load reads the optional configuration file and returns settings, its path, and classified faults.
+// A missing file returns empty settings without a fault; an unresolved home returns an empty path.
 func Load() (Settings, string, []error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -93,17 +82,13 @@ func Load() (Settings, string, []error) {
 	return settings, filePath, faults
 }
 
-// UnknownProviderFault returns the classified fault for a non-empty
-// api-keys entry naming a provider the catalog does not hold. The caller
-// supplies the config file's path and the offending provider ID.
+// UnknownProviderFault describes an api-keys provider absent from the catalog.
 func UnknownProviderFault(filePath, providerID string) error {
 	return &errs.ConfigError{Path: filePath, Provider: providerID, Cause: errs.ErrUserConfigUnknownProvider}
 }
 
-// decode decodes one config file's content into its settings, dropping
-// empty values, and returns the classified faults: a decode failure, or
-// one fault per unknown top-level key. The path labels the faults; it is
-// not read.
+// decode parses configuration bytes, drops empty API keys, and reports malformed YAML or unknown
+// top-level settings. The supplied path labels faults without being read.
 func decode(filePath string, content []byte) (Settings, []error) {
 	var settings Settings
 	if err := yaml.Unmarshal(content, &settings); err != nil {
