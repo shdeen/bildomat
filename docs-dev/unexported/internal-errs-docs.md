@@ -6,23 +6,76 @@
 import "github.com/shdeen/bildomat/internal/errs"
 ```
 
-Package errs defines the sentinels for bildomat's internal error contract. The error model is a two\-level hierarchy. The category ROOTS are the stable errors.Is targets that internal/output dispatches user messages on. Each root is a bare subject noun \("transport", "input media", …\). Beneath each root sit PRECISE operation/condition sentinels, defined as fmt.Errorf\("%w: \<predicate\>", \<root\>\) so a sentinel reads as "subject: predicate" \(e.g. "transport: request failed"\) and errors.Is matches BOTH the precise sentinel and its root. Every error site wraps the PRECISE sentinel and adds only the nearest granular detail \(endpoint, path, id, model\) as context, so the operation/condition lives in the sentinel rather than in repeated context text.
+Package errs defines the sentinels for bildomat's internal error contract. The error model is a hierarchy of categories and more specific failures. Category roots are the stable errors.Is targets that internal/output dispatches user messages on. Each root is a bare subject noun \("transport", "input media", …\). Beneath each root sit PRECISE operation/condition sentinels, defined as fmt.Errorf\("%w: \<predicate\>", \<root\>\) so a sentinel reads as "subject: predicate" \(e.g. "transport: request failed"\) and errors.Is matches BOTH the precise sentinel and its root. Every error site wraps the PRECISE sentinel and adds only the nearest granular detail \(endpoint, path, id, model\) as context, so the operation/condition lives in the sentinel rather than in repeated context text.
 
-ErrKeyMissing and ErrCanceled are separate standalone markers: neither belongs to a category. ErrKeyMissing follows the provider's credential\-setting context; ErrCanceled is wrapped directly over the context error.
+ErrKeyMissing and ErrCanceled are separate standalone markers: neither belongs to a category. Credential errors retain the provider's setting locations; ErrCanceled is wrapped directly over the context error. Record and video\-reuse sentinels also stand alone: their complete messages pass through the fallback renderer because none of the existing category messages describes those failures.
 
 ## Index
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
 - [func Excerpt\(encodedData \[\]byte\) string](<#Excerpt>)
+- [func FileError\(operation, path string, classification, cause error\) \*os.PathError](<#FileError>)
+- [type ConfigError](<#ConfigError>)
+  - [func \(failure \*ConfigError\) Error\(\) string](<#ConfigError.Error>)
+  - [func \(failure \*ConfigError\) Unwrap\(\) error](<#ConfigError.Unwrap>)
+- [type CredentialError](<#CredentialError>)
+  - [func \(failure \*CredentialError\) Error\(\) string](<#CredentialError.Error>)
+  - [func \(\*CredentialError\) Unwrap\(\) error](<#CredentialError.Unwrap>)
+- [type MediaError](<#MediaError>)
+  - [func \(failure \*MediaError\) Error\(\) string](<#MediaError.Error>)
+  - [func \(failure \*MediaError\) Unwrap\(\) error](<#MediaError.Unwrap>)
+- [type ModelError](<#ModelError>)
+  - [func \(failure \*ModelError\) Error\(\) string](<#ModelError.Error>)
+  - [func \(failure \*ModelError\) Unwrap\(\) error](<#ModelError.Unwrap>)
+- [type PollError](<#PollError>)
+  - [func \(failure \*PollError\) Error\(\) string](<#PollError.Error>)
+  - [func \(failure \*PollError\) Unwrap\(\) error](<#PollError.Unwrap>)
+- [type ProviderError](<#ProviderError>)
+  - [func \(failure \*ProviderError\) Error\(\) string](<#ProviderError.Error>)
+  - [func \(failure \*ProviderError\) Unwrap\(\) error](<#ProviderError.Unwrap>)
+- [type UsageError](<#UsageError>)
+  - [func \(failure \*UsageError\) Error\(\) string](<#UsageError.Error>)
+  - [func \(failure \*UsageError\) Unwrap\(\) error](<#UsageError.Unwrap>)
 
 
 ## Constants
 
-<a name="ExcerptLimit"></a>ExcerptLimit is the maximum number of bytes included in a diagnostic excerpt.
+<a name="FileOpCleanup"></a>File operation labels identify the action reported by a filesystem failure. Cleanup and expansion describe application operations; the remaining labels match the corresponding filesystem operations.
+
+- FileOpCleanup: remove an owned temporary or incomplete file
+- FileOpClose: close a file after writing
+- FileOpCreate: exclusively create a destination
+- FileOpExpand: resolve a home\-relative path
+- FileOpMkdir: create an output directory
+- FileOpRead: read owned file bytes
+- FileOpWrite: write destination bytes
 
 ```go
-const ExcerptLimit = 200
+const (
+    FileOpCleanup = "cleanup"
+    FileOpClose   = "close"
+    FileOpCreate  = "create"
+    FileOpExpand  = "expand"
+    FileOpMkdir   = "mkdir"
+    FileOpRead    = "read"
+    FileOpWrite   = "write"
+)
+```
+
+<a name="APIKeyMissingForm"></a>The internal/errs section of the copy catalog, one constant per entry.
+
+```go
+const (
+    APIKeyMissingForm = "%s %s (config key: api-keys.%s in ~/.bildomat/config.yml)"
+    StatusContextForm = "%s: status %v"
+)
+```
+
+<a name="excerptLimit"></a>excerptLimit is the maximum number of bytes included in a diagnostic excerpt.
+
+```go
+const excerptLimit = 200
 ```
 
 ## Variables
@@ -40,6 +93,7 @@ const ExcerptLimit = 200
 - ErrParamValue is the category root for typed parameter\-value parsing failures.
 - ErrOutputPage is the category root for embedded output\-page template failures.
 - ErrSearch is the category root for list\-search failures.
+- ErrUserConfig is the category root for optional user configuration faults.
 - ErrJSON is the category root for JSON encoding and decoding failures outside a provider response.
 - ErrKeyMissing marks an unset provider credential; the provider names the environment variable and user\-config key in the wrapping context.
 - ErrCanceled marks a run canceled through the command context \(Ctrl\-C\); waits and transport surface it so cancellation interrupts long work.
@@ -57,6 +111,7 @@ var (
     ErrParamValue   = errors.New("parameter value")
     ErrOutputPage   = errors.New("output page")
     ErrSearch       = errors.New("search")
+    ErrUserConfig   = errors.New("user config")
     ErrJSON         = errors.New("JSON")
     ErrKeyMissing   = errors.New("is not set")
     ErrCanceled     = errors.New("generation canceled")
@@ -114,7 +169,6 @@ var (
 - ErrTransportMarshal marks a failed request\-body marshal.
 - ErrTransportCreate marks a failed HTTP request construction.
 - ErrTransportRequest marks a failed HTTP request execution.
-- ErrTransportNilResp marks a nil HTTP response returned without an error.
 - ErrTransportRead marks a failed response\-body read.
 - ErrTransportSize marks a body that exceeds the read limit.
 - ErrTransportMultipart marks a failed multipart\-body assembly.
@@ -128,7 +182,6 @@ var (
     ErrTransportMarshal       = fmt.Errorf("%w: request marshal failed", ErrTransport)
     ErrTransportCreate        = fmt.Errorf("%w: request creation failed", ErrTransport)
     ErrTransportRequest       = fmt.Errorf("%w: request failed", ErrTransport)
-    ErrTransportNilResp       = fmt.Errorf("%w: nil response", ErrTransport)
     ErrTransportRead          = fmt.Errorf("%w: response read failed", ErrTransport)
     ErrTransportSize          = fmt.Errorf("%w: response exceeds size limit", ErrTransport)
     ErrTransportMultipart     = fmt.Errorf("%w: multipart assembly failed", ErrTransport)
@@ -143,8 +196,9 @@ var (
 
 - ErrResponseDecode marks a response body that could not be decoded.
 - ErrResponseNoData marks a response missing its expected data.
+- ErrResponseStatusTemporary marks a provider status eligible for a bounded polling retry.
 - ErrResponseStatus marks a non\-2xx provider API response.
-- ErrResponseServer marks a provider server message extracted from an error response's documented body shape; the extracted text is the sentinel's quoted context, carried for the renderer to surface.
+- ErrResponseServer marks a provider server message extracted from an error response's documented body shape; the extracted text is the ProviderError message, retained separately for the renderer.
 - ErrResponseGen marks a provider\-reported generation failure.
 - ErrResponseNoSample marks a ready response that lacks a sample.
 - ErrResponseUnknown marks an unrecognized poll status.
@@ -161,14 +215,15 @@ var (
 
 ```go
 var (
-    ErrResponseDecode   = fmt.Errorf("%w: decode failed", ErrResponse)
-    ErrResponseNoData   = fmt.Errorf("%w: no data", ErrResponse)
-    ErrResponseStatus   = fmt.Errorf("%w: error status", ErrResponse)
-    ErrResponseServer   = fmt.Errorf("%w: server message", ErrResponse)
-    ErrResponseGen      = fmt.Errorf("%w: generation failed", ErrResponse)
-    ErrResponseNoSample = fmt.Errorf("%w: no sample in the ready result", ErrResponse)
-    ErrResponseUnknown  = fmt.Errorf("%w: unexpected status", ErrResponse)
-    ErrResponseNoJobID  = fmt.Errorf("%w: no job id in the start response", ErrResponse)
+    ErrResponseDecode          = fmt.Errorf("%w: decode failed", ErrResponse)
+    ErrResponseNoData          = fmt.Errorf("%w: no data", ErrResponse)
+    ErrResponseStatus          = fmt.Errorf("%w: error status", ErrResponse)
+    ErrResponseStatusTemporary = fmt.Errorf("%w: temporary", ErrResponseStatus)
+    ErrResponseServer          = fmt.Errorf("%w: server message", ErrResponse)
+    ErrResponseGen             = fmt.Errorf("%w: generation failed", ErrResponse)
+    ErrResponseNoSample        = fmt.Errorf("%w: no sample in the ready result", ErrResponse)
+    ErrResponseUnknown         = fmt.Errorf("%w: unexpected status", ErrResponse)
+    ErrResponseNoJobID         = fmt.Errorf("%w: no job id in the start response", ErrResponse)
 
     ErrResponseCodeMissing          = fmt.Errorf("%w: envelope code missing", ErrResponseNoData)
     ErrResponseCodeInvalid          = fmt.Errorf("%w: envelope code invalid", ErrResponseDecode)
@@ -187,6 +242,8 @@ var (
 - ErrInputMediaNotFound marks a missing input\-media path.
 - ErrInputMediaRead marks a failed input\-media read.
 - ErrInputMediaMIME marks an unsupported input\-media MIME type.
+- ErrInputMediaSource marks an invalid source path or URL.
+- ErrInputMediaTime marks an invalid frame time or incompatible frame selection.
 - ErrInputMediaEmpty marks empty input media.
 - ErrInputMediaSize marks a reference\-image size that is not a WxH value.
 - ErrInputMediaDecode marks a failed reference\-image decode.
@@ -223,18 +280,22 @@ var (
 - ErrOutputFileHome marks a failed home\-directory lookup.
 - ErrOutputFileMkdir marks a failed output\-directory creation.
 - ErrOutputFileEmpty marks an empty artifact set.
+- ErrOutputFileRead marks a failed read of downloaded or saved media.
 - ErrOutputFileWrite marks a failed artifact write.
 - ErrOutputFileClose marks a failed file close.
 - ErrOutputFileCreate marks a failed exclusive file create.
+- ErrOutputFileRemove marks a failed removal of an owned temporary file.
 
 ```go
 var (
     ErrOutputFileHome   = fmt.Errorf("%w: home directory lookup failed", ErrOutputFile)
     ErrOutputFileMkdir  = fmt.Errorf("%w: directory creation failed", ErrOutputFile)
     ErrOutputFileEmpty  = fmt.Errorf("%w: no artifacts to write", ErrOutputFile)
+    ErrOutputFileRead   = fmt.Errorf("%w: read failed", ErrOutputFile)
     ErrOutputFileWrite  = fmt.Errorf("%w: write failed", ErrOutputFile)
     ErrOutputFileClose  = fmt.Errorf("%w: close failed", ErrOutputFile)
     ErrOutputFileCreate = fmt.Errorf("%w: create failed", ErrOutputFile)
+    ErrOutputFileRemove = fmt.Errorf("%w: remove failed", ErrOutputFile)
 )
 ```
 
@@ -313,6 +374,36 @@ var (
 )
 ```
 
+<a name="ErrReuseSyntax"></a>Experimental generation\-record and reuse failures.
+
+- ErrReuseSyntax rejects an incomplete key/value selection.
+- ErrReuseProvider rejects identifiers unsupported by the selected provider.
+- ErrRecordRead retains the cause of a failed record read.
+- ErrRecordInvalid rejects malformed or unsupported record documents.
+- ErrReuseVideoURI rejects a missing or unusable original Google reference.
+- ErrReuseInputMedia rejects simultaneous reuse and input media.
+- ErrReuseVideoModel rejects incompatible extension models or source settings.
+- ErrReuseVideoMultiple rejects an ambiguous retained video selection.
+
+```go
+var (
+    ErrReuseSyntax   = fmt.Errorf("%w: Reuse requires IDENTIFIER=VALUE", ErrCLI)
+    ErrReuseProvider = fmt.Errorf("%w: Reuse is not supported by the selected provider", ErrCLI)
+    //lint:ignore ST1005 Preserve the owner's approved user-facing wording.
+    ErrRecordRead = errors.New("Generation record could not be read")
+    //lint:ignore ST1005 Preserve the owner's approved user-facing wording.
+    ErrRecordInvalid = errors.New("Generation record is invalid or uses an unsupported schema version")
+    //lint:ignore ST1005 Preserve the owner's approved user-facing wording.
+    ErrReuseVideoURI = errors.New("Veo extension requires an original Google video URI")
+    //lint:ignore ST1005 Preserve the owner's approved user-facing wording.
+    ErrReuseInputMedia = errors.New("Veo extension cannot be combined with input media")
+    //lint:ignore ST1005 Preserve the owner's approved user-facing wording.
+    ErrReuseVideoModel = errors.New("Veo extension requires a compatible Veo model and a 720p source")
+    //lint:ignore ST1005 Preserve the owner's approved user-facing wording.
+    ErrReuseVideoMultiple = errors.New("This record contains multiple videos; supply the chosen URI directly")
+)
+```
+
 <a name="ErrUserConfigRead"></a>User\-config sentinels:
 
 - ErrUserConfigRead marks a config file that exists but could not be read.
@@ -347,12 +438,6 @@ var (
 )
 ```
 
-<a name="ErrUserConfig"></a>ErrUserConfig is the category root for user config file faults. A fault in this category never stops the run: internal/output renders it as a warning and the run continues on the remaining configuration sources.
-
-```go
-var ErrUserConfig = errors.New("user config")
-```
-
 <a name="Excerpt"></a>
 ## func [Excerpt](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/excerpt.go#L7>)
 
@@ -361,5 +446,255 @@ func Excerpt(encodedData []byte) string
 ```
 
 Excerpt returns a bounded prefix of encoded data for diagnostic messages.
+
+<a name="FileError"></a>
+## func [FileError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/file.go#L30>)
+
+```go
+func FileError(operation, path string, classification, cause error) *os.PathError
+```
+
+FileError retains the affected path, operation classification, and original cause in a standard filesystem error that callers can inspect with errors.As.
+
+<a name="ConfigError"></a>
+## type [ConfigError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/config.go#L15-L21>)
+
+ConfigError identifies a configuration source, its owner or setting, and the specific problem. Cause preserves its classification and original error.
+
+- Path: the configuration source path
+- Provider: the provider that owns the faulty configuration
+- Setting: the rejected user setting key
+- Problem: the specific configuration explanation
+- Cause: the classification and original error
+
+```go
+type ConfigError struct {
+    Path     string
+    Provider string
+    Setting  string
+    Problem  string
+    Cause    error
+}
+```
+
+<a name="ConfigError.Error"></a>
+### func \(\*ConfigError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/config.go#L24>)
+
+```go
+func (failure *ConfigError) Error() string
+```
+
+Error returns the complete configuration diagnostic.
+
+<a name="ConfigError.Unwrap"></a>
+### func \(\*ConfigError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/config.go#L45>)
+
+```go
+func (failure *ConfigError) Unwrap() error
+```
+
+Unwrap retains the configuration classification and original cause.
+
+<a name="CredentialError"></a>
+## type [CredentialError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/credential.go#L9-L12>)
+
+CredentialError names the environment variable and optional provider entry under api\-keys that can supply a missing credential. It never holds a secret.
+
+- EnvVar: the credential environment\-variable name
+- ProviderID: the optional provider key under api\-keys
+
+```go
+type CredentialError struct {
+    EnvVar     string
+    ProviderID string
+}
+```
+
+<a name="CredentialError.Error"></a>
+### func \(\*CredentialError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/credential.go#L15>)
+
+```go
+func (failure *CredentialError) Error() string
+```
+
+Error returns the available credential\-setting locations.
+
+<a name="CredentialError.Unwrap"></a>
+### func \(\*CredentialError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/credential.go#L24>)
+
+```go
+func (*CredentialError) Unwrap() error
+```
+
+Unwrap identifies a missing credential.
+
+<a name="MediaError"></a>
+## type [MediaError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/media.go#L10-L14>)
+
+MediaError identifies an input source or a specific media problem without requiring the renderer to recover either from a formatted diagnostic.
+
+- Source: the failed input path or URL
+- Problem: the media\-specific explanation
+- Cause: the classification and original error
+
+```go
+type MediaError struct {
+    Source  string
+    Problem string
+    Cause   error
+}
+```
+
+<a name="MediaError.Error"></a>
+### func \(\*MediaError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/media.go#L17>)
+
+```go
+func (failure *MediaError) Error() string
+```
+
+Error returns the source and media diagnostic with its original cause.
+
+<a name="MediaError.Unwrap"></a>
+### func \(\*MediaError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/media.go#L31>)
+
+```go
+func (failure *MediaError) Unwrap() error
+```
+
+Unwrap retains the media classification and original cause.
+
+<a name="ModelError"></a>
+## type [ModelError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/model.go#L8-L11>)
+
+ModelError retains the model specifier that could not be resolved.
+
+- Specifier: the unresolved model input
+- Cause: the resolution failure classification
+
+```go
+type ModelError struct {
+    Specifier string
+    Cause     error
+}
+```
+
+<a name="ModelError.Error"></a>
+### func \(\*ModelError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/model.go#L14>)
+
+```go
+func (failure *ModelError) Error() string
+```
+
+Error returns the rejected model specifier and its classification.
+
+<a name="ModelError.Unwrap"></a>
+### func \(\*ModelError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/model.go#L19>)
+
+```go
+func (failure *ModelError) Unwrap() error
+```
+
+Unwrap retains the model resolution classification.
+
+<a name="PollError"></a>
+## type [PollError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/poll.go#L10-L14>)
+
+PollError identifies the existing remote resource whose observation failed. Model and Resource remain available to ordinary output independently of transport diagnostics in Cause.
+
+- Model: the model associated with the remote job
+- Resource: the existing job identifier or polling URL
+- Cause: the polling failure classification and original error
+
+```go
+type PollError struct {
+    Model    string
+    Resource string
+    Cause    error
+}
+```
+
+<a name="PollError.Error"></a>
+### func \(\*PollError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/poll.go#L17>)
+
+```go
+func (failure *PollError) Error() string
+```
+
+Error returns the operation identity and its classified cause.
+
+<a name="PollError.Unwrap"></a>
+### func \(\*PollError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/poll.go#L22>)
+
+```go
+func (failure *PollError) Unwrap() error
+```
+
+Unwrap preserves the timeout, response, or transport cause.
+
+<a name="ProviderError"></a>
+## type [ProviderError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/provider.go#L9-L12>)
+
+ProviderError carries the provider's explanation independently of outer request labels and other failures in the same error chain.
+
+- Message: the provider\-supplied failure explanation
+- Cause: the response failure classification and original error
+
+```go
+type ProviderError struct {
+    Message string
+    Cause   error
+}
+```
+
+<a name="ProviderError.Error"></a>
+### func \(\*ProviderError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/provider.go#L15>)
+
+```go
+func (failure *ProviderError) Error() string
+```
+
+Error returns the provider's explanation and classified cause.
+
+<a name="ProviderError.Unwrap"></a>
+### func \(\*ProviderError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/provider.go#L20>)
+
+```go
+func (failure *ProviderError) Unwrap() error
+```
+
+Unwrap retains the response classification and original cause.
+
+<a name="UsageError"></a>
+## type [UsageError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/usage.go#L9-L12>)
+
+UsageError retains an actionable command\-line explanation and its cause. Text is product copy supplied by the command that rejected the input.
+
+- Text: the command explanation to display
+- Cause: the usage classification and original error
+
+```go
+type UsageError struct {
+    Text  string
+    Cause error
+}
+```
+
+<a name="UsageError.Error"></a>
+### func \(\*UsageError\) [Error](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/usage.go#L15>)
+
+```go
+func (failure *UsageError) Error() string
+```
+
+Error returns the command explanation and diagnostic cause.
+
+<a name="UsageError.Unwrap"></a>
+### func \(\*UsageError\) [Unwrap](<https://github.com/shdeen/bildomat-dev/blob/main/internal/errs/usage.go#L18>)
+
+```go
+func (failure *UsageError) Unwrap() error
+```
+
+Unwrap retains the usage classification and original parser failure.
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

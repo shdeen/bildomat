@@ -6,97 +6,67 @@
 import "github.com/shdeen/bildomat/internal/output"
 ```
 
-Package output renders terminal and catalog information and writes generated artifacts and sidecars.
+Package output renders terminal messages, command results, and sidecars.
 
 ## Index
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func ApplyResultsFlags\(resultsFilePath string, printFilename bool\) error](<#ApplyResultsFlags>)
-- [func CloseResultsFile\(debugMode bool\) error](<#CloseResultsFile>)
-- [func ConfirmOneWordPrompt\(prompt string\) \(canceled bool, err error\)](<#ConfirmOneWordPrompt>)
-- [func DashedFlagNames\(flagNames \[\]string, valueHint string\) string](<#DashedFlagNames>)
-- [func DiscardResults\(\)](<#DiscardResults>)
 - [func ElapsedText\(elapsed time.Duration\) string](<#ElapsedText>)
-- [func ErrorMessage\(err error, providerDisplayName, modelName string\) string](<#ErrorMessage>)
-- [func ExpandHome\(path string\) \(string, error\)](<#ExpandHome>)
-- [func FileSizeText\(byteCount int64\) string](<#FileSizeText>)
 - [func FlagEntry\(flagNames \[\]string, valueHint, detailText string\) string](<#FlagEntry>)
-- [func FlagSupportNote\(param parameters.FlagType, provModelPairs \[\]core.ProvModelPair\) string](<#FlagSupportNote>)
-- [func FlagValueHint\(longName string, paramFlags \[\]parameters.ParamFlag\) string](<#FlagValueHint>)
-- [func HelpTips\(prov \*core.Provider\) \(string, error\)](<#HelpTips>)
+- [func FlagSupportNote\(param params.FlagType, provModelPairs \[\]catalog.ProvModelPair\) string](<#FlagSupportNote>)
+- [func FlagValueHint\(longName string, paramFlags \[\]params.Flag, flagHints map\[string\]string\) string](<#FlagValueHint>)
+- [func GenerationStatusText\(frame rune, mediaKind media.Kind, elapsed time.Duration, styled bool\) string](<#GenerationStatusText>)
+- [func HelpTips\(prov \*catalog.Provider, styled bool\) \(string, error\)](<#HelpTips>)
 - [func IndentText\(steps int, text string\) string](<#IndentText>)
-- [func ListingPage\(provModelPairs \[\]core.ProvModelPair, printImage, printVideo, withModels, includeAliases bool\) core.Catalog](<#ListingPage>)
-- [func ModelInfoPage\(provModelPair \*core.ProvModelPair, paramFlags \[\]parameters.ParamFlag\) core.Catalog](<#ModelInfoPage>)
-- [func NoticeTexts\(paramFlags \[\]parameters.ParamFlag, paramChanges \[\]parameters.ParamChange\) \[\]string](<#NoticeTexts>)
-- [func PrintAmbiguity\(modelSpecifier string, modelMatches \[\]core.ProvModelPair\)](<#PrintAmbiguity>)
-- [func PrintChanges\(paramFlags \[\]parameters.ParamFlag, chs \[\]parameters.ParamChange\)](<#PrintChanges>)
-- [func PrintError\(err error, providerDisplayName, modelName string, debugMode bool\)](<#PrintError>)
-- [func PrintFailure\(err error, providerDisplayName, modelName string, debugMode, jsonOutput bool\) error](<#PrintFailure>)
-- [func PrintGenerationCompleted\(elapsedText string\)](<#PrintGenerationCompleted>)
-- [func PrintGenerationOutcome\(outcome \*GenerationOutcome, startedAt time.Time, providerDisplayName, modelName string, err error, debugMode bool\) error](<#PrintGenerationOutcome>)
-- [func PrintJSON\(value any\) error](<#PrintJSON>)
-- [func PrintListing\(page core.Catalog, providersSelected, modelsSelected, jsonOutput bool\) error](<#PrintListing>)
-- [func PrintModelInfo\(provModelPair \*core.ProvModelPair, paramFlags \[\]parameters.ParamFlag\)](<#PrintModelInfo>)
-- [func PrintModels\(document core.Catalog\)](<#PrintModels>)
-- [func PrintProviderIdentities\(document core.Catalog\)](<#PrintProviderIdentities>)
-- [func PrintProviderInfo\(prov \*core.Provider, paramFlags \[\]parameters.ParamFlag, printImage, printVideo bool\)](<#PrintProviderInfo>)
-- [func PrintProviders\(document core.Catalog\)](<#PrintProviders>)
-- [func PrintRunDetails\(providerDisplayName, modelName string\)](<#PrintRunDetails>)
-- [func PrintSavedFile\(savedFile SavedFile\)](<#PrintSavedFile>)
-- [func PrintStdout\(text string\)](<#PrintStdout>)
-- [func PrintUsageError\(err error, debugMode bool\)](<#PrintUsageError>)
-- [func PrintUserConfigWarning\(fault error\)](<#PrintUserConfigWarning>)
-- [func ProviderInfoPage\(prov \*core.Provider, paramFlags \[\]parameters.ParamFlag, printImage, printVideo bool\) core.Catalog](<#ProviderInfoPage>)
-- [func RawErrorChain\(err error\) string](<#RawErrorChain>)
-- [func RenderSidecar\(prompt, modelID string, paramFlags \[\]parameters.ParamFlag, adjusted parameters.Params, inputMedia \[\]media.Input, thoughts \[\]string\) \[\]byte](<#RenderSidecar>)
-- [func ReportSavedFiles\(savedFiles \[\]SavedFile, outcome \*GenerationOutcome, printFilename bool\)](<#ReportSavedFiles>)
-- [func RepromptModel\(\) \(reply string, asked bool, err error\)](<#RepromptModel>)
-- [func ResolveOutputDir\(userInputDirPath string\) \(string, error\)](<#ResolveOutputDir>)
-- [func RestoreResults\(\) error](<#RestoreResults>)
-- [func SanitizeFilename\(text string\) string](<#SanitizeFilename>)
-- [func SaveResults\(path string\) error](<#SaveResults>)
-- [func TerminalDisplay\(\) bool](<#TerminalDisplay>)
-- [func UserErrorText\(err error, providerDisplayName, modelName string, debugMode bool\) string](<#UserErrorText>)
+- [func NoticeTexts\(paramFlags \[\]params.Flag, paramChanges \[\]params.Adjustment, flagNames map\[params.FlagType\]string\) \[\]string](<#NoticeTexts>)
+- [func PrintAmbiguity\(destination io.Writer, modelSpecifier string, modelMatches \[\]catalog.ProvModelPair, styled bool\) error](<#PrintAmbiguity>)
+- [func PrintError\(destination io.Writer, err error, providerDisplayName, modelName string, debugMode, styled bool\) error](<#PrintError>)
+- [func PrintGenerationCompleted\(destination io.Writer, elapsedText string\) error](<#PrintGenerationCompleted>)
+- [func PrintJSON\(destination io.Writer, value any\) error](<#PrintJSON>)
+- [func PrintListing\(destination io.Writer, page CatalogPage, providersSelected, modelsSelected, jsonOutput bool\) error](<#PrintListing>)
+- [func PrintModelInfo\(destination io.Writer, provModelPair \*catalog.ProvModelPair, paramFlags \[\]params.Flag, styled bool\) error](<#PrintModelInfo>)
+- [func PrintProviderInfo\(destination io.Writer, prov \*catalog.Provider, pairs \[\]catalog.ProvModelPair, paramFlags \[\]params.Flag, mediaFilterFlags map\[media.Kind\]string, styled bool\) error](<#PrintProviderInfo>)
+- [func PrintReprompt\(destination io.Writer, styled bool\) error](<#PrintReprompt>)
+- [func PrintRunDetails\(destination io.Writer, providerDisplayName, modelName string\) error](<#PrintRunDetails>)
+- [func PrintSavedFile\(destination io.Writer, savedFile SavedFile, styled bool\) error](<#PrintSavedFile>)
+- [func PrintSingleWordPromptConfirmation\(destination io.Writer, prompt string, styled bool\) error](<#PrintSingleWordPromptConfirmation>)
+- [func PrintTemplate\(destination io.Writer, name, source string, data any, functions template.FuncMap\) error](<#PrintTemplate>)
+- [func PrintUsageError\(destination io.Writer, err error, debugMode, styled bool\) error](<#PrintUsageError>)
+- [func PrintUserConfigWarning\(destination io.Writer, fault error, styled bool\) error](<#PrintUserConfigWarning>)
+- [func RenderSidecar\(prompt, modelID string, paramFlags \[\]params.Flag, adjusted params.Values, inputMedia \[\]media.Input, thoughts \[\]string\) \[\]byte](<#RenderSidecar>)
 - [func WrapDetails\(steps int, detailText string\) string](<#WrapDetails>)
+- [func WriteText\(destination io.Writer, format string, values ...any\) error](<#WriteText>)
 - [func accentValue\(value string, style pageStyle\) string](<#accentValue>)
 - [func accentValues\(values \[\]string, separator string, style pageStyle\) string](<#accentValues>)
-- [func accentedPrefix\(prefixWord string\) string](<#accentedPrefix>)
-- [func acrossTokensExample\(providerID string, model \*core.Model\) string](<#acrossTokensExample>)
-- [func aliasExample\(models \[\]core.Model\) \(term, alias string\)](<#aliasExample>)
+- [func accentedPrefix\(prefixWord string, styled bool\) string](<#accentedPrefix>)
+- [func acrossTokensExample\(providerID string, model \*catalog.Model\) string](<#acrossTokensExample>)
+- [func aliasExample\(models \[\]catalog.Model\) \(term, alias string\)](<#aliasExample>)
 - [func aliasWord\(aliases \[\]string\) string](<#aliasWord>)
-- [func alternationExample\(providerID string, models \[\]core.Model\) string](<#alternationExample>)
-- [func anyPartExample\(models \[\]core.Model\) string](<#anyPartExample>)
-- [func artifactName\(stem string, artifacts \[\]core.Artifact, i int\) string](<#artifactName>)
-- [func artifactPath\(dir, stem string, artifacts \[\]core.Artifact, i int\) string](<#artifactPath>)
+- [func alternationExample\(providerID string, models \[\]catalog.Model\) string](<#alternationExample>)
+- [func anyPartExample\(models \[\]catalog.Model\) string](<#anyPartExample>)
 - [func boundPhrase\(rangeForm, maximumForm, minimumForm string, minVal, maxVal any, hasMin, hasMax bool\) string](<#boundPhrase>)
-- [func carriesQuotedDetail\(err error\) bool](<#carriesQuotedDetail>)
-- [func catalogMediaCounts\(models \[\]core.Model\) string](<#catalogMediaCounts>)
-- [func chainDetail\(err, sentinel error\) string](<#chainDetail>)
-- [func claimFreeName\(dir, name, ext string\) \(\*os.File, string, error\)](<#claimFreeName>)
-- [func cleanupTempFiles\(artifacts \[\]core.Artifact, from int\)](<#cleanupTempFiles>)
-- [func compareModelIDs\(firstModel, secondModel core.Model\) int](<#compareModelIDs>)
+- [func catalogMediaCounts\(models \[\]catalog.Model\) string](<#catalogMediaCounts>)
+- [func compareModelIDs\(firstModel, secondModel modelRecord\) int](<#compareModelIDs>)
 - [func compareVendorCounts\(first, second vendorCount\) int](<#compareVendorCounts>)
 - [func configWarningMessage\(fault error\) string](<#configWarningMessage>)
-- [func constraintPhrases\(paramFlag \*parameters.ParamFlag, paramCfg \*parameters.Param, style pageStyle\) \[\]string](<#constraintPhrases>)
+- [func constraintPhrases\(paramFlag \*params.Flag, paramCfg \*params.Definition, style pageStyle\) \[\]string](<#constraintPhrases>)
 - [func credentialNotice\(err error, providerDisplayName string\) string](<#credentialNotice>)
 - [func dashedFlagName\(flagName string\) string](<#dashedFlagName>)
-- [func deepDetail\(err, sentinel error\) string](<#deepDetail>)
-- [func defaultStem\(mediaKind media.Kind\) string](<#defaultStem>)
-- [func detailedModel\(model \*core.Model\) core.Model](<#detailedModel>)
+- [func dashedFlagNames\(flagNames \[\]string, valueHint string\) string](<#dashedFlagNames>)
 - [func documentTimestamp\(moment time.Time\) string](<#documentTimestamp>)
 - [func encodeJSON\(value any\) \(\[\]byte, error\)](<#encodeJSON>)
-- [func errorPrefix\(\) string](<#errorPrefix>)
-- [func exampleKeys\(providerID string, models \[\]core.Model\) \[\]string](<#exampleKeys>)
+- [func errorMessage\(err error, providerDisplayName, modelName string\) string](<#errorMessage>)
+- [func errorPrefix\(styled bool\) string](<#errorPrefix>)
+- [func escapeForTerminal\(text string\) string](<#escapeForTerminal>)
+- [func exampleKeys\(providerID string, models \[\]catalog.Model\) \[\]string](<#exampleKeys>)
 - [func exampleTerm\(token string\) bool](<#exampleTerm>)
-- [func fileExists\(path string\) bool](<#fileExists>)
-- [func fileIsTTY\(stream \*os.File\) bool](<#fileIsTTY>)
-- [func flagGuidanceLines\(paramFlag \*parameters.ParamFlag, opening string, style pageStyle\) \[\]string](<#flagGuidanceLines>)
+- [func fileSizeText\(byteCount int64\) string](<#fileSizeText>)
+- [func flagGuidanceLines\(paramFlag \*params.Flag, opening string, style pageStyle\) \[\]string](<#flagGuidanceLines>)
 - [func flowPhrases\(phrases \[\]string, separator string, width int\) \[\]string](<#flowPhrases>)
-- [func formatNotice\(paramFlags \[\]parameters.ParamFlag, paramChange \*parameters.ParamChange\) string](<#formatNotice>)
+- [func formatNotice\(paramFlags \[\]params.Flag, paramChange \*params.Adjustment, flagNames map\[params.FlagType\]string\) string](<#formatNotice>)
 - [func generationStatus\(runErr error, outcomeStatus string\) string](<#generationStatus>)
-- [func groupLines\(introduced introducedGroup, paramFlag \*parameters.ParamFlag, style pageStyle\) \[\]string](<#groupLines>)
-- [func hasDestinationClash\(dir, stem string, artifacts \[\]core.Artifact, writesSidecar bool\) bool](<#hasDestinationClash>)
+- [func groupLines\(introduced introducedGroup, paramFlag \*params.Flag, style pageStyle\) \[\]string](<#groupLines>)
 - [func headedLines\(heading string, details \[\]string, style pageStyle\) \[\]string](<#headedLines>)
 - [func indentTo\(column int, text string\) string](<#indentTo>)
 - [func innermostMessage\(err error\) string](<#innermostMessage>)
@@ -105,119 +75,103 @@ Package output renders terminal and catalog information and writes generated art
 - [func joinNames\(names \[\]string, pairForm, lastForm string\) string](<#joinNames>)
 - [func joinQuotedMediaSources\(inputMedia \[\]media.Input\) string](<#joinQuotedMediaSources>)
 - [func keyMissingStatement\(err error\) string](<#keyMissingStatement>)
-- [func keywordExample\(model \*core.Model\) string](<#keywordExample>)
+- [func keywordExample\(model \*catalog.Model\) string](<#keywordExample>)
 - [func leadingGroupIndex\(groups \[\]declarationGroup\) int](<#leadingGroupIndex>)
-- [func listedProviders\(provModelPairs \[\]core.ProvModelPair\) \[\]core.Provider](<#listedProviders>)
-- [func modelListingLines\(providers \[\]core.Provider\) \[\]string](<#modelListingLines>)
-- [func modelNotice\(identifier string, aliases \[\]string\) string](<#modelNotice>)
+- [func listedProviders\(provModelPairs \[\]catalog.ProvModelPair\) \[\]catalog.Provider](<#listedProviders>)
+- [func modelListingLines\(providers \[\]providerRecord\) \[\]string](<#modelListingLines>)
 - [func modelResolveNotice\(err error\) string](<#modelResolveNotice>)
-- [func modelRosterText\(model \*core.Model\) \[\]string](<#modelRosterText>)
-- [func modelsOfMedia\(models \[\]core.Model, mediaKind media.Kind\) \[\]core.Model](<#modelsOfMedia>)
+- [func modelRosterText\(model \*catalog.Model\) \[\]string](<#modelRosterText>)
+- [func modelRowText\(identifier string, aliases \[\]string\) string](<#modelRowText>)
+- [func modelsOfMedia\(models \[\]catalog.Model, mediaKind media.Kind\) \[\]catalog.Model](<#modelsOfMedia>)
 - [func nameTokens\(modelID string\) \[\]string](<#nameTokens>)
 - [func needsEscaping\(text string\) bool](<#needsEscaping>)
-- [func noticeFlagValues\(paramFlags \[\]parameters.ParamFlag, paramChange \*parameters.ParamChange\) \(flagName, usedValue string\)](<#noticeFlagValues>)
-- [func oneNotice\(text string\) string](<#oneNotice>)
-- [func openExclusive\(path string\) \(\*os.File, error\)](<#openExclusive>)
-- [func opensAnyID\(models \[\]core.Model, term string\) bool](<#opensAnyID>)
-- [func optionHeading\(paramFlag \*parameters.ParamFlag\) string](<#optionHeading>)
-- [func outermostDetail\(fault error\) string](<#outermostDetail>)
+- [func noticeFlagValues\(paramFlags \[\]params.Flag, paramChange \*params.Adjustment, flagNames map\[params.FlagType\]string\) \(flagName, usedValue string\)](<#noticeFlagValues>)
+- [func opensAnyID\(models \[\]catalog.Model, term string\) bool](<#opensAnyID>)
+- [func operationNotice\(err error, providerDisplayName, modelName string\) string](<#operationNotice>)
+- [func optionHeading\(paramFlag \*params.Flag\) string](<#optionHeading>)
+- [func outputFailureNotices\(err error\) \(\[\]string, error\)](<#outputFailureNotices>)
 - [func padText\(text string, width int\) string](<#padText>)
 - [func pageLayoutFuncs\(\) template.FuncMap](<#pageLayoutFuncs>)
-- [func parsePages\(\) \(map\[Page\]\*template.Template, error\)](<#parsePages>)
+- [func parsePages\(\) \(map\[pageName\]\*template.Template, error\)](<#parsePages>)
 - [func plainUsageText\(err error\) string](<#plainUsageText>)
-- [func preferInnerTokens\(models \[\]core.Model\) \[\]core.Model](<#preferInnerTokens>)
-- [func printOneWordConfirmation\(prompt string\)](<#printOneWordConfirmation>)
-- [func printReprompt\(\)](<#printReprompt>)
-- [func printResultsTextf\(format string, args ...any\)](<#printResultsTextf>)
-- [func printStyledSavedFile\(savedFile SavedFile\)](<#printStyledSavedFile>)
-- [func promptStyleValues\(\) \(steel, clay, reset string\)](<#promptStyleValues>)
+- [func preferInnerTokens\(models \[\]catalog.Model\) \[\]catalog.Model](<#preferInnerTokens>)
+- [func promptStyleValues\(styled bool\) \(steel, clay, reset string\)](<#promptStyleValues>)
 - [func provConfigNotice\(err error, providerDisplayName string\) string](<#provConfigNotice>)
-- [func provConfigOwner\(detail, providerDisplayName string\) string](<#provConfigOwner>)
-- [func providerDisplay\(providerDisplayName string\) string](<#providerDisplay>)
 - [func providerFailureNotice\(err error, providerDisplayName, modelName string\) string](<#providerFailureNotice>)
-- [func providerName\(providerDisplayName string\) string](<#providerName>)
-- [func quotedDetail\(chainText string\) string](<#quotedDetail>)
-- [func quotedUsageText\(err error\) string](<#quotedUsageText>)
-- [func randomModel\(models \[\]core.Model\) \*core.Model](<#randomModel>)
-- [func rangeBound\(dataType parameters.DataType, bound float64\) string](<#rangeBound>)
-- [func readReply\(\) \(string, error\)](<#readReply>)
-- [func recordResultsFailure\(err error\)](<#recordResultsFailure>)
-- [func referencedFlags\(models \[\]core.Model, paramFlags \[\]parameters.ParamFlag\) \[\]parameters.ParamFlag](<#referencedFlags>)
-- [func removeFailedWrite\(dstPath string, writeErr error\) error](<#removeFailedWrite>)
-- [func renderPage\(name Page, data any\) \(string, error\)](<#renderPage>)
-- [func requirementSentence\(paramCfg \*parameters.Param, style pageStyle\) string](<#requirementSentence>)
-- [func resolveStem\(dir, requestedStem string, mediaKind media.Kind, artifacts \[\]core.Artifact, writesSidecar bool\) \(stem string, file \*os.File, err error\)](<#resolveStem>)
-- [func resultsDest\(\) io.Writer](<#resultsDest>)
-- [func resultsDestName\(\) string](<#resultsDestName>)
-- [func sameDeclaration\(first, second \*parameters.Param\) bool](<#sameDeclaration>)
-- [func sameSizeBounds\(first, second \*parameters.SizeBounds\) bool](<#sameSizeBounds>)
-- [func scopeNote\(models \[\]core.Model, groups \[\]declarationGroup\) string](<#scopeNote>)
-- [func sectionOptions\(models \[\]core.Model, paramFlags \[\]parameters.ParamFlag, style pageStyle\) \[\]\[\]string](<#sectionOptions>)
-- [func selectedMediaOrder\(printImage, printVideo bool\) \[\]media.Kind](<#selectedMediaOrder>)
+- [func randomModel\(models \[\]catalog.Model\) \*catalog.Model](<#randomModel>)
+- [func rangeBound\(dataType params.DataType, bound float64\) string](<#rangeBound>)
+- [func rawErrorChain\(err error\) string](<#rawErrorChain>)
+- [func referencedFlags\(models \[\]modelRecord, paramFlags \[\]params.Flag\) \[\]params.Flag](<#referencedFlags>)
+- [func renderPage\(name pageName, data any\) \(string, error\)](<#renderPage>)
+- [func requirementSentence\(paramCfg \*params.Definition, style pageStyle\) string](<#requirementSentence>)
+- [func sameDeclaration\(first, second \*params.Definition\) bool](<#sameDeclaration>)
+- [func sameSizeBounds\(first, second \*params.SizeBounds\) bool](<#sameSizeBounds>)
+- [func scopeNote\(models \[\]catalog.Model, groups \[\]declarationGroup\) string](<#scopeNote>)
+- [func sectionOptions\(models \[\]catalog.Model, paramFlags \[\]params.Flag, style pageStyle\) \[\]\[\]string](<#sectionOptions>)
 - [func serverMessage\(err error\) string](<#serverMessage>)
-- [func sharedFlagNames\(models \[\]core.Model, paramFlags \[\]parameters.ParamFlag\) \[\]string](<#sharedFlagNames>)
+- [func sharedFlagNames\(models \[\]catalog.Model, paramFlags \[\]params.Flag\) \[\]string](<#sharedFlagNames>)
 - [func shellArgument\(pattern string\) string](<#shellArgument>)
-- [func sizeBoundsNotice\(bounds parameters.SizeBounds\) string](<#sizeBoundsNotice>)
-- [func stderrIsTTY\(\) bool](<#stderrIsTTY>)
-- [func suffixedName\(name string, suffixNumber int\) string](<#suffixedName>)
+- [func sizeBoundsNotice\(bounds params.SizeBounds\) string](<#sizeBoundsNotice>)
 - [func textWidth\(text string\) int](<#textWidth>)
-- [func uniqueStem\(dir, stem string, artifacts \[\]core.Artifact, writesSidecar bool\) string](<#uniqueStem>)
 - [func usageErrorText\(err error, debugMode bool\) string](<#usageErrorText>)
+- [func userErrorText\(err error, providerDisplayName, modelName string, debugMode bool\) string](<#userErrorText>)
 - [func wrapParagraph\(steps int, paragraphText string\) string](<#wrapParagraph>)
 - [func wrapSentences\(sentences \[\]string\) \[\]string](<#wrapSentences>)
 - [func wrapWide\(flowedLine string, width int\) \[\]string](<#wrapWide>)
 - [func wrapWords\(text string, width int\) \[\]string](<#wrapWords>)
-- [func writePage\(name Page, data any\)](<#writePage>)
+- [func writePage\(destination io.Writer, name pageName, data any\) error](<#writePage>)
 - [type Adjustment](<#Adjustment>)
-  - [func AdjustmentRecords\(paramFlags \[\]parameters.ParamFlag, paramChanges \[\]parameters.ParamChange\) \[\]Adjustment](<#AdjustmentRecords>)
+  - [func AdjustmentRecords\(paramFlags \[\]params.Flag, paramChanges \[\]params.Adjustment, flagNames map\[params.FlagType\]string\) \[\]Adjustment](<#AdjustmentRecords>)
+- [type CatalogPage](<#CatalogPage>)
+  - [func ListingPage\(pairs \[\]catalog.ProvModelPair, withModels, includeAliases bool\) CatalogPage](<#ListingPage>)
+  - [func ModelInfoPage\(pair \*catalog.ProvModelPair, paramFlags \[\]params.Flag\) CatalogPage](<#ModelInfoPage>)
+  - [func ProviderInfoPage\(prov \*catalog.Provider, pairs \[\]catalog.ProvModelPair, paramFlags \[\]params.Flag\) CatalogPage](<#ProviderInfoPage>)
 - [type FailureOutcome](<#FailureOutcome>)
   - [func NewFailureOutcome\(err error, providerDisplayName, modelName string, debugMode, usageError bool\) FailureOutcome](<#NewFailureOutcome>)
 - [type GenerationOutcome](<#GenerationOutcome>)
   - [func NewGenerationOutcome\(startedAt time.Time, prompt string, flags map\[string\]any\) \*GenerationOutcome](<#NewGenerationOutcome>)
-- [type Page](<#Page>)
+  - [func \(outcome \*GenerationOutcome\) Complete\(startedAt time.Time, providerDisplayName, modelName string, generationErr error, debugMode bool\)](<#GenerationOutcome.Complete>)
 - [type SavedFile](<#SavedFile>)
-  - [func WriteArtifacts\(dir, requestedStem string, mediaKind media.Kind, artifacts \[\]core.Artifact, writesSidecar bool\) \(string, \[\]SavedFile, error\)](<#WriteArtifacts>)
-  - [func WriteSidecar\(dir, stem string, content \[\]byte\) \(SavedFile, error\)](<#WriteSidecar>)
-  - [func commitFile\(file \*os.File, dstPath string, data \[\]byte\) \(SavedFile, error\)](<#commitFile>)
-  - [func copyTempFile\(file \*os.File, dstPath, srcPath string\) \(SavedFile, error\)](<#copyTempFile>)
-  - [func writeArtifact\(dir, name string, artifact core.Artifact\) \(SavedFile, error\)](<#writeArtifact>)
-  - [func writeFile\(dir, name, ext string, data \[\]byte\) \(SavedFile, error\)](<#writeFile>)
-  - [func writeToReservedFile\(file \*os.File, dstPath string, artifact core.Artifact\) \(SavedFile, error\)](<#writeToReservedFile>)
-- [type Spinner](<#Spinner>)
-  - [func StartSpinner\(mediaKind media.Kind\) \*Spinner](<#StartSpinner>)
-  - [func \(s \*Spinner\) Finish\(\) time.Duration](<#Spinner.Finish>)
-  - [func \(s \*Spinner\) animate\(\)](<#Spinner.animate>)
-  - [func \(s \*Spinner\) render\(\)](<#Spinner.render>)
 - [type apiKeySettings](<#apiKeySettings>)
 - [type compactUsageData](<#compactUsageData>)
 - [type declarationGroup](<#declarationGroup>)
-  - [func declarationGroups\(models \[\]core.Model, flagID parameters.FlagType\) \[\]declarationGroup](<#declarationGroups>)
+  - [func declarationGroups\(models \[\]catalog.Model, flagID params.FlagType\) \[\]declarationGroup](<#declarationGroups>)
 - [type helpTipsPage](<#helpTipsPage>)
 - [type introducedGroup](<#introducedGroup>)
   - [func introducedGroups\(groups \[\]declarationGroup\) \[\]introducedGroup](<#introducedGroups>)
 - [type modelCardPage](<#modelCardPage>)
-  - [func modelCardData\(provModelPair \*core.ProvModelPair, paramFlags \[\]parameters.ParamFlag, style pageStyle\) modelCardPage](<#modelCardData>)
+  - [func modelCardData\(provModelPair \*catalog.ProvModelPair, paramFlags \[\]params.Flag, style pageStyle\) modelCardPage](<#modelCardData>)
+- [type modelRecord](<#modelRecord>)
+  - [func detailedModel\(model \*catalog.Model\) modelRecord](<#detailedModel>)
+  - [func modelIdentity\(model \*catalog.Model, includeAliases bool\) modelRecord](<#modelIdentity>)
 - [type pageFooter](<#pageFooter>)
-  - [func footerData\(providerID string, shown \[\]core.Model\) pageFooter](<#footerData>)
+  - [func footerData\(providerID string, shown \[\]catalog.Model\) pageFooter](<#footerData>)
+- [type pageName](<#pageName>)
 - [type pageStyle](<#pageStyle>)
-  - [func pageStyleValues\(\) pageStyle](<#pageStyleValues>)
+  - [func pageStyleValues\(styled bool\) pageStyle](<#pageStyleValues>)
+- [type parameterRecord](<#parameterRecord>)
+- [type providerHeader](<#providerHeader>)
+  - [func providerHeaderData\(prov \*catalog.Provider, style pageStyle\) providerHeader](<#providerHeaderData>)
 - [type providerPage](<#providerPage>)
-  - [func providerPageData\(prov \*core.Provider, paramFlags \[\]parameters.ParamFlag, printImage, printVideo bool, style pageStyle\) providerPage](<#providerPageData>)
+  - [func providerPageData\(prov \*catalog.Provider, models \[\]catalog.Model, paramFlags \[\]params.Flag, style pageStyle\) providerPage](<#providerPageData>)
+- [type providerRecord](<#providerRecord>)
+  - [func providerIdentity\(prov \*catalog.Provider\) providerRecord](<#providerIdentity>)
+  - [func \(provider \*providerRecord\) ModelsForMedia\(mediaKind media.Kind\) \[\]modelRecord](<#providerRecord.ModelsForMedia>)
 - [type providerSection](<#providerSection>)
-  - [func providerSectionData\(mediaKind media.Kind, models \[\]core.Model, paramFlags \[\]parameters.ParamFlag, style pageStyle\) providerSection](<#providerSectionData>)
+  - [func providerSectionData\(mediaKind media.Kind, models \[\]catalog.Model, paramFlags \[\]params.Flag, style pageStyle\) providerSection](<#providerSectionData>)
 - [type summaryMediaLines](<#summaryMediaLines>)
 - [type summaryPage](<#summaryPage>)
-  - [func summaryData\(prov \*core.Provider, paramFlags \[\]parameters.ParamFlag, printImage, printVideo bool, style pageStyle\) summaryPage](<#summaryData>)
+  - [func summaryData\(prov \*catalog.Provider, models \[\]catalog.Model, paramFlags \[\]params.Flag, style pageStyle, mediaFilterFlags map\[media.Kind\]string\) summaryPage](<#summaryData>)
 - [type usageExamples](<#usageExamples>)
-  - [func drawUsageExamples\(providerID string, models \[\]core.Model\) usageExamples](<#drawUsageExamples>)
+  - [func drawUsageExamples\(providerID string, models \[\]catalog.Model\) usageExamples](<#drawUsageExamples>)
 - [type vendorCount](<#vendorCount>)
-  - [func vendorCounts\(models \[\]core.Model\) \[\]vendorCount](<#vendorCounts>)
+  - [func vendorCounts\(models \[\]catalog.Model\) \[\]vendorCount](<#vendorCounts>)
 - [type vendorExample](<#vendorExample>)
 
 
 ## Constants
 
-<a name="keywordLength"></a>The measures and separators of the examples. A key's tokens are split on the key separator and a name's tokens on the dash, both from core.
+<a name="keywordLength"></a>The measures and separators of the examples. A key's tokens are split on the key separator and a name's tokens on the dash.
 
 - keywordLength: the characters of a token the keyword example takes
 - minTermLength: the shortest token a pattern example draws
@@ -233,44 +187,30 @@ const (
 )
 ```
 
-<a name="PageWidth"></a>The layout measures of the rendered pages. Section labels sit flush left and each nested level steps in by one indent.
+<a name="pageWidth"></a>The layout measures of the rendered pages. Section labels sit flush left and each nested level steps in by one indent.
 
-- PageWidth: the column at which page text wraps
-- IndentWidth: the number of spaces in one indentation step
-
-```go
-const (
-    PageWidth   = 80
-    IndentWidth = 4
-)
-```
-
-<a name="valueHintPath"></a>The value words of the flags the command layer declares directly; the model flag's value word is the model word itself.
-
-- valueHintPath: the flags that take a path
-- valueHintTerm: the search command's exclusion flag
+- pageWidth: the column at which page text wraps
+- indentWidth: the number of spaces in one indentation step
 
 ```go
 const (
-    valueHintPath = "path"
-    valueHintTerm = "term"
+    pageWidth   = 80
+    indentWidth = 4
 )
 ```
 
-<a name="infoContentWidth"></a>The pages' layout measures, counted from the left margin.
+<a name="infoLabelWidth"></a>The pages' layout measures, counted from the left margin.
 
-- infoContentWidth: the page column that wrapped and flowed content stays within
 - infoLabelWidth: the identity block's label field on the provider pages
 - infoCardLabelWidth: the identity block's label field on the model card
 - infoFlagWidth: an option's flag field, so its details start at the column after it
 - infoIDWidth: a roster model's ID field, so aliases start at the column after it
-- infoIntroColumn: a group's intro line, above the details column
+- infoIntroColumn: the indentation of a model\-group introduction
 - infoVendorWidth: the summary's vendor field
 - infoVendorCountWidth: the summary's right\-aligned vendor count
 
 ```go
 const (
-    infoContentWidth     = 80
     infoLabelWidth       = 10
     infoCardLabelWidth   = 16
     infoFlagWidth        = 32
@@ -281,12 +221,15 @@ const (
 )
 ```
 
-<a name="infoDetailsWidth"></a>The widths the columns leave for their content.
+<a name="infoDetailsWidth"></a>The widths available after the option labels.
+
+- infoDetailsWidth: the space for parameter descriptions
+- infoIntroWidth: the space for model\-group introductions
 
 ```go
 const (
-    infoDetailsWidth = infoContentWidth - infoFlagWidth
-    infoIntroWidth   = infoContentWidth - infoIntroColumn
+    infoDetailsWidth = pageWidth - infoFlagWidth
+    infoIntroWidth   = pageWidth - infoIntroColumn
 )
 ```
 
@@ -302,17 +245,17 @@ const (
 )
 ```
 
-<a name="StatusCompleted"></a>The status vocabulary of the JSON outcomes, shared with the run boundary.
+<a name="statusCompleted"></a>Status values used by JSON generation outcomes.
 
-- StatusCompleted: the run produced its artifacts
+- statusCompleted: the run produced its artifacts
 - StatusCanceled: the user canceled the run
-- StatusFailed: the run stopped on a failure
+- statusFailed: the run stopped on a failure
 
 ```go
 const (
-    StatusCompleted = "completed"
+    statusCompleted = "completed"
     StatusCanceled  = "canceled"
-    StatusFailed    = core.WordFailed
+    statusFailed    = "failed"
 )
 ```
 
@@ -321,7 +264,6 @@ const (
 - PageFuncIndent: the indentation function
 - PageFuncWrap: the paragraph\-wrapping function
 - pageFuncPad: the column\-padding function the info pages call
-- pageFuncMediaModels: the models of one medium, which the nested listing calls
 - pageFuncModelRow: a model's listing row, which the nested listing calls
 - pageFuncModelListingLines: the fully qualified model listings, which the flat directory calls
 
@@ -330,13 +272,12 @@ const (
     PageFuncIndent            = "indent"
     PageFuncWrap              = "wrap"
     pageFuncPad               = "pad"
-    pageFuncMediaModels       = "mediaModels"
     pageFuncModelRow          = "modelRow"
     pageFuncModelListingLines = "modelListingLines"
 )
 ```
 
-<a name="sizeUnitScale"></a>The file\-size units. The scale between adjacent units is a choice, not a property of bytes, so it is declared once and the unit sizes derive from it.
+<a name="sizeUnitScale"></a>Decimal units used in saved\-file reports.
 
 - sizeUnitScale: the factor between adjacent units
 - bytesPerKB: the bytes in one kilobyte
@@ -352,36 +293,25 @@ const (
 )
 ```
 
-<a name="ansiDim"></a>
+<a name="ansiDim"></a>Terminal styling sequences, omitted by callers for plain output.
+
+- ansiDim: faint text
+- ansiClay: the accent for parameter values and saved paths
+- ansiSteelBlue: the accent for headings and prompts
+- ansiErrorAccent: the error\-prefix accent
+- ansiReset: the default text rendition
 
 ```go
 const (
-    // ansiDim renders the following text in the terminal's faint shade, which
-    // stays legible on light and dark backgrounds.
     ansiDim = "\x1b[2m"
 
-    // ansiClay renders the following text in the clay accent color: 256-color
-    // palette entry 173, a terracotta legible on light and dark backgrounds.
-    // The interactive prompts carry it on their values; the saved-file report
-    // carries it on the path.
     ansiClay = "\x1b[38;5;173m"
 
-    // ansiSteelBlue renders the following text in the muted steel-blue accent:
-    // 256-color palette entry 67, the clay accent's complementary cool color.
-    // The interactive prompts carry it on their sentences.
     ansiSteelBlue = "\x1b[38;5;67m"
 
-    // ansiErrorAccent renders the error prefix in a muted red: 256-color
-    // palette entry 167, softer than pure red and legible on light and dark
-    // backgrounds.
     ansiErrorAccent = "\x1b[38;5;167m"
 
-    // ansiReset restores the terminal's default rendition.
     ansiReset = "\x1b[0m"
-
-    // ansiEraseStatus returns the cursor to the start of the status line and
-    // erases the line's remainder.
-    ansiEraseStatus = "\r\x1b[K"
 )
 ```
 
@@ -465,10 +395,11 @@ const (
     NotUsedBy                  = "Not used by %s."
     OnlyForModels              = "This option is available only for models %s."
     OutPathDisplayName         = "Output path"
+    OutputCleanupFailed        = "We could not remove the temporary file %q."
+    OutputReadFailed           = "We could not read the generated media file %q."
     OutputWriteFailed          = "We could not write the output to %q. Check the directory's permissions and free space."
-    PageRenderFailed           = "the embedded page copy could not be rendered: %s"
-    PartialFileRemains         = "%s (a partial file remains; its removal failed)"
     PixelRange                 = "total pixels (width x height): %d-%d"
+    PollIdentity               = "Model: %s; operation: %s."
     ProviderConfigBroken       = "The %s provider configuration is malformed."
     ProviderConfigBrokenDetail = "The %s provider configuration is malformed. (%s)"
     ProviderFallbackAsName     = "unknown provider"
@@ -494,16 +425,10 @@ const (
 )
 ```
 
-<a name="cancelReplyExpression"></a>cancelReplyExpression matches the trimmed replies that cancel the one\-word confirmation: n or N, alone or followed by a lowercase o.
-
-```go
-const cancelReplyExpression = `^[nN]o?$`
-```
-
 <a name="candidateIndent"></a>candidateIndent is the indentation of each candidate key under the disambiguation heading.
 
 ```go
-const candidateIndent = core.Space + core.Space
+const candidateIndent = "  "
 ```
 
 <a name="compactUsageTemplateName"></a>compactUsageTemplateName names the parsed compact\-usage template.
@@ -512,46 +437,22 @@ const candidateIndent = core.Space + core.Space
 const compactUsageTemplateName = "compact usage"
 ```
 
-<a name="fallbackFailureOutcome"></a>fallbackFailureOutcome is the failure outcome written when the encoder itself fails, spelled out because nothing else can be encoded at that point.
+<a name="fallbackFailureOutcome"></a>fallbackFailureOutcome is the literal result used if encoding the failure document also fails.
 
 ```go
 const fallbackFailureOutcome = `{"status":"failed","errors":[]}`
 ```
 
-<a name="firstSuffixNumber"></a>firstSuffixNumber is the first two\-digit suffix a taken name receives.
-
-```go
-const firstSuffixNumber = 2
-```
-
-<a name="frameInterval"></a>frameInterval is the delay between spinner frame advances.
-
-```go
-const frameInterval = 100 * time.Millisecond
-```
-
 <a name="frontMatterFence"></a>frontMatterFence is the line that opens and closes the front matter and separates one thought from the next.
 
 ```go
-const frontMatterFence = core.Dash + core.Dash + core.Dash
-```
-
-<a name="genStemPrefix"></a>genStemPrefix opens the filename stem used when no stem is requested; the medium of the run completes it, as in bild\-image and bild\-video.
-
-```go
-const genStemPrefix = "bild"
+const frontMatterFence = "---"
 ```
 
 <a name="itemJoiner"></a>itemJoiner is the separator and the space placed between the items of a list.
 
 ```go
-const itemJoiner = ListSeparator + core.Space
-```
-
-<a name="spinnerFrameRunes"></a>spinnerFrameRunes spells the braille animation frames in display order.
-
-```go
-const spinnerFrameRunes = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+const itemJoiner = ListSeparator + " "
 ```
 
 <a name="tenthsPerMinute"></a>tenthsPerMinute is the number of tenths of a second in one minute; the counter measures elapsed time in tenths and divides it into minutes.
@@ -568,50 +469,10 @@ const terminalSequenceExpression = "\x1b\\[[0-9;]*m"
 
 ## Variables
 
-<a name="resultsWriter"></a>The results destination:
-
-- resultsWriter: where results output goes, nil for standard output
-- resultsFile: the open results file while SaveResults is active
-- errResultsWrite: the first failed results\-file write, held for RestoreResults
-
-```go
-var (
-    resultsWriter   io.Writer
-    resultsFile     *os.File
-    errResultsWrite error
-)
-```
-
-<a name="cancelReplyPattern"></a>cancelReplyPattern is cancelReplyExpression compiled once at startup.
-
-```go
-var cancelReplyPattern = regexp.MustCompile(cancelReplyExpression)
-```
-
-<a name="compactUsageTemplate"></a>
+<a name="compactUsageTemplate"></a>compactUsageTemplate holds the parsed usage page; compactUsageTemplateErr retains a parse failure.
 
 ```go
 var compactUsageTemplate, compactUsageTemplateErr = template.New(compactUsageTemplateName).Parse(tmpl.CompactUsageText)
-```
-
-<a name="flagHints"></a>flagHints maps the long name of each flag that the command layer declares directly to the word naming its value. Parameter flags carry their own hints in their enumeration records.
-
-```go
-var flagHints = map[string]string{
-    core.RunFlagModel:       core.WordModel,
-    core.RunFlagOutputPath:  valueHintPath,
-    core.RunFlagSaveResults: valueHintPath,
-    core.FilterFlagExclude:  valueHintTerm,
-}
-```
-
-<a name="mediaFilterFlags"></a>mediaFilterFlags maps each medium to the long name of the flag that selects it.
-
-```go
-var mediaFilterFlags = map[media.Kind]string{
-    media.Image: core.FilterFlagImage,
-    media.Video: core.FilterFlagVideo,
-}
 ```
 
 <a name="mediaLabels"></a>mediaLabels maps each medium to the word the details pages show for it.
@@ -626,7 +487,7 @@ var mediaLabels = map[media.Kind]string{
 <a name="pageSources"></a>pageSources maps each page name to the embedded template text it renders.
 
 ```go
-var pageSources = map[Page]string{
+var pageSources = map[pageName]string{
     pageProviderInfo:    tmpl.ProviderInfoText,
     pageProviderSummary: tmpl.ProviderSummaryText,
     pageModelInfo:       tmpl.ModelInfoText,
@@ -637,24 +498,10 @@ var pageSources = map[Page]string{
 }
 ```
 
-<a name="pageTemplates"></a>pageTemplates holds every page template, parsed once at startup, and pageParseErr holds the first parse failure where the embedded copy is malformed.
+<a name="pageTemplates"></a>pageTemplates contains the embedded templates parsed at startup. pageParseErr records the first parse failure if any template is malformed.
 
 ```go
 var pageTemplates, pageParseErr = parsePages()
-```
-
-<a name="runSurfaceFlagNames"></a>runSurfaceFlagNames maps each run\-surface flag ID to its display name.
-
-```go
-var runSurfaceFlagNames = map[parameters.FlagType]string{
-    core.RunFlagOutputPath: OutPathDisplayName,
-}
-```
-
-<a name="spinnerFrames"></a>spinnerFrames holds the animation frames as runes.
-
-```go
-var spinnerFrames = []rune(spinnerFrameRunes)
 ```
 
 <a name="terminalSequence"></a>terminalSequence is terminalSequenceExpression compiled once at startup.
@@ -663,476 +510,278 @@ var spinnerFrames = []rune(spinnerFrameRunes)
 var terminalSequence = regexp.MustCompile(terminalSequenceExpression)
 ```
 
-<a name="ApplyResultsFlags"></a>
-## func [ApplyResultsFlags](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L165>)
-
-```go
-func ApplyResultsFlags(resultsFilePath string, printFilename bool) error
-```
-
-ApplyResultsFlags takes the \-\-save\-results path and the \-\-print\-filename selection and applies them: it opens the results file that receives the regular results output, or discards that output when only filename printing is selected. It returns the results file open failure.
-
-<a name="CloseResultsFile"></a>
-## func [CloseResultsFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L181>)
-
-```go
-func CloseResultsFile(debugMode bool) error
-```
-
-CloseResultsFile restores the results output to standard output and closes the results file when one is open. A results write or close failure prints on standard error and is returned, so it forces the operational exit status on a run that would otherwise succeed.
-
-<a name="ConfirmOneWordPrompt"></a>
-## func [ConfirmOneWordPrompt](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L33>)
-
-```go
-func ConfirmOneWordPrompt(prompt string) (canceled bool, err error)
-```
-
-ConfirmOneWordPrompt takes a generation prompt. When standard input is a terminal and the prompt is exactly one whitespace\-delimited word, it asks on standard error whether to submit the prompt and reads the reply; a trimmed n, N, no, or No cancels the run, and every other reply continues it. Otherwise it asks nothing and reports no cancellation. It returns the read failure.
-
-<a name="DashedFlagNames"></a>
-## func [DashedFlagNames](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L46>)
-
-```go
-func DashedFlagNames(flagNames []string, valueHint string) string
-```
-
-DashedFlagNames takes a flag's names and the word that names its value, and returns them as one comma\-separated heading. Every name carries a dash prefix, the aliases come first and the long name last, and the heading ends with the value word in angle brackets where the flag accepts a value.
-
-<a name="DiscardResults"></a>
-## func [DiscardResults](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L59>)
-
-```go
-func DiscardResults()
-```
-
-DiscardResults routes the regular results output to nowhere.
-
 <a name="ElapsedText"></a>
-## func [ElapsedText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L123>)
+## func [ElapsedText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L33>)
 
 ```go
 func ElapsedText(elapsed time.Duration) string
 ```
 
-ElapsedText takes an elapsed duration and returns its counter form: truncated one\-decimal seconds \(\`23.6s\`\), prefixed by minutes from one minute on \(\`1m 23.6s\`\) and by hours from one hour on \(\`1h 2m 12.3s\`\). A negative duration renders as zero.
-
-<a name="ErrorMessage"></a>
-## func [ErrorMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L241>)
-
-```go
-func ErrorMessage(err error, providerDisplayName, modelName string) string
-```
-
-ErrorMessage takes an error and the resolved provider and model names and returns the failure's user message with terminal control characters escaped. Each classified condition resolves its copy\-catalog entry, naming the specific offending value the chain carries; an error with no recognized classification returns its innermost message. A nil error returns an empty string.
-
-<a name="ExpandHome"></a>
-## func [ExpandHome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L33>)
-
-```go
-func ExpandHome(path string) (string, error)
-```
-
-ExpandHome takes a path and returns it with a leading tilde expanded to the user's home directory. It returns the path unchanged when no expansion is needed and an error when the home directory is unavailable.
-
-<a name="FileSizeText"></a>
-## func [FileSizeText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L145>)
-
-```go
-func FileSizeText(byteCount int64) string
-```
-
-FileSizeText takes a byte count and returns its human\-friendly form: bytes under 1000, and otherwise 1000\-based KB, MB, or GB with one decimal place. A negative count renders as zero.
+ElapsedText formats elapsed time as seconds with one decimal place, truncating fractional tenths. It adds minutes at one minute and hours at one hour, as in 23.6s, 1m 23.6s, and 1h 2m 12.3s. Negative durations render as zero.
 
 <a name="FlagEntry"></a>
-## func [FlagEntry](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L141>)
+## func [FlagEntry](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L100>)
 
 ```go
 func FlagEntry(flagNames []string, valueHint, detailText string) string
 ```
 
-FlagEntry takes a flag's names, the word naming its value, and its detail text, and returns that flag's help page entry: the dashed names and value word on the first line, with the wrapped details beneath.
+FlagEntry formats a flag heading followed by its wrapped, indented description.
 
 <a name="FlagSupportNote"></a>
-## func [FlagSupportNote](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L57>)
+## func [FlagSupportNote](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L36>)
 
 ```go
-func FlagSupportNote(param parameters.FlagType, provModelPairs []core.ProvModelPair) string
+func FlagSupportNote(param params.FlagType, provModelPairs []catalog.ProvModelPair) string
 ```
 
-FlagSupportNote takes a parameter name and provider\-model pairs and returns the providers that support the parameter for each media type that uses it. It returns an empty string when every provider with models of those media types fully supports the parameter and marks partial provider support as "select models".
+FlagSupportNote names providers that support the flag, marking partial support as "select models". It considers only media kinds for which some model declares the flag. If every model in those media kinds supports it, the note is empty.
 
 <a name="FlagValueHint"></a>
-## func [FlagValueHint](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L123>)
+## func [FlagValueHint](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L84>)
 
 ```go
-func FlagValueHint(longName string, paramFlags []parameters.ParamFlag) string
+func FlagValueHint(longName string, paramFlags []params.Flag, flagHints map[string]string) string
 ```
 
-FlagValueHint takes a flag's long name and the parameter enumeration, and returns the word naming that flag's value: the hint on the matching parameter record, then the hint declared for a directly declared flag, and otherwise the long name itself.
+FlagValueHint returns the parameter hint when present. Otherwise, it returns the command flag hint, or the long flag name if neither hint exists.
+
+<a name="GenerationStatusText"></a>
+## func [GenerationStatusText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L79>)
+
+```go
+func GenerationStatusText(frame rune, mediaKind media.Kind, elapsed time.Duration, styled bool) string
+```
+
+GenerationStatusText formats one status frame with the requested styling. It performs no cursor movement or animation.
 
 <a name="HelpTips"></a>
-## func [HelpTips](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/helptips.go#L28>)
+## func [HelpTips](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/helptips.go#L19>)
 
 ```go
-func HelpTips(prov *core.Provider) (string, error)
+func HelpTips(prov *catalog.Provider, styled bool) (string, error)
 ```
 
-HelpTips takes the provider whose models the examples draw from and returns the tips section of the general help page: the fully qualified model form and the info and search examples. It returns the template failure where the embedded copy is malformed.
+HelpTips renders general\-help examples drawn from the supplied provider's models.
 
 <a name="IndentText"></a>
-## func [IndentText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L36>)
+## func [IndentText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L19>)
 
 ```go
 func IndentText(steps int, text string) string
 ```
 
-IndentText takes a number of indentation steps and a block of text, and returns that text with every line indented by the given number of steps.
-
-<a name="ListingPage"></a>
-## func [ListingPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L24>)
-
-```go
-func ListingPage(provModelPairs []core.ProvModelPair, printImage, printVideo, withModels, includeAliases bool) core.Catalog
-```
-
-ListingPage takes provider\-model pairs, the media selections, and whether the listing includes models, and returns the catalog reduced to the pairs of the selected media. Providers sort alphabetically by display name, ignoring case, with aggregators last. Their models sort by identifier and carry no params and include aliases only when requested. A listing selecting nothing carries an empty providers array.
-
-<a name="ModelInfoPage"></a>
-## func [ModelInfoPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L87>)
-
-```go
-func ModelInfoPage(provModelPair *core.ProvModelPair, paramFlags []parameters.ParamFlag) core.Catalog
-```
-
-ModelInfoPage takes a provider\-model pair and the flag records and returns the catalog reduced to that one model: its provider's identity, the model carrying its params, and the flag records those params reference.
+IndentText indents every line by the requested number of indentation steps.
 
 <a name="NoticeTexts"></a>
-## func [NoticeTexts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L104>)
+## func [NoticeTexts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L110>)
 
 ```go
-func NoticeTexts(paramFlags []parameters.ParamFlag, paramChanges []parameters.ParamChange) []string
+func NoticeTexts(paramFlags []params.Flag, paramChanges []params.Adjustment, flagNames map[params.FlagType]string) []string
 ```
 
-NoticeTexts takes the parameter\-flag definitions and parameter\-change records and returns each record's regular user\-facing notice text for JSON result notices.
+NoticeTexts formats parameter changes as user\-facing notice strings.
 
 <a name="PrintAmbiguity"></a>
-## func [PrintAmbiguity](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L159>)
+## func [PrintAmbiguity](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L127>)
 
 ```go
-func PrintAmbiguity(modelSpecifier string, modelMatches []core.ProvModelPair)
+func PrintAmbiguity(destination io.Writer, modelSpecifier string, modelMatches []catalog.ProvModelPair, styled bool) error
 ```
 
-PrintAmbiguity takes a model specifier and provider\-model candidates and writes the candidate listing to standard error: the heading sentence, then one indented candidate key per line, in the clay accent on a terminal.
-
-<a name="PrintChanges"></a>
-## func [PrintChanges](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/param.go#L25>)
-
-```go
-func PrintChanges(paramFlags []parameters.ParamFlag, chs []parameters.ParamChange)
-```
-
-PrintChanges takes the parameter\-flag definitions and parameter changes and writes one formatted notice for each change to standard error.
+PrintAmbiguity writes the ambiguous specifier and its fully qualified candidates to the selected diagnostic destination.
 
 <a name="PrintError"></a>
-## func [PrintError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L104>)
+## func [PrintError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L82>)
 
 ```go
-func PrintError(err error, providerDisplayName, modelName string, debugMode bool)
+func PrintError(destination io.Writer, err error, providerDisplayName, modelName string, debugMode, styled bool) error
 ```
 
-PrintError takes an error, the resolved provider and model names, and the raw\-error selection, and writes the failure to standard error: the mapped user\-appropriate message behind the error prefix, the unprefixed cancellation report for a canceled run, or the unprefixed raw diagnostic chain under the raw\-error selection.
-
-<a name="PrintFailure"></a>
-## func [PrintFailure](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L482>)
-
-```go
-func PrintFailure(err error, providerDisplayName, modelName string, debugMode, jsonOutput bool) error
-```
-
-PrintFailure takes a failed command's error, the resolved provider display name and model name \(empty when nothing resolved\), and the \-\-debug and \-\-json selections, and prints the failure: the failure outcome in JSON under \-\-json, otherwise the compact usage page for a usage error or the error message. It returns the error the command should return: the JSON print failure when printing failed, otherwise the error printed.
+PrintError writes a mapped failure, cancellation notice, or raw diagnostic chain to the selected diagnostic destination and returns any delivery failure.
 
 <a name="PrintGenerationCompleted"></a>
-## func [PrintGenerationCompleted](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L164>)
+## func [PrintGenerationCompleted](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L73>)
 
 ```go
-func PrintGenerationCompleted(elapsedText string)
+func PrintGenerationCompleted(destination io.Writer, elapsedText string) error
 ```
 
-PrintGenerationCompleted writes the terminal completion report carrying the counter's final elapsed text to the results destination.
-
-<a name="PrintGenerationOutcome"></a>
-## func [PrintGenerationOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L176>)
-
-```go
-func PrintGenerationOutcome(outcome *GenerationOutcome, startedAt time.Time, providerDisplayName, modelName string, err error, debugMode bool) error
-```
-
-PrintGenerationOutcome takes the generation outcome, its start time, the resolved provider display name and model name \(empty when resolution did not happen\), the generation's error, and the \-\-debug selection, completes the outcome with its duration, status, and error text, and prints it as JSON. It returns the error the exit code is computed from: the JSON print failure when printing failed, otherwise the generation's error.
+PrintGenerationCompleted writes the completion message with the supplied elapsed time and returns any write failure.
 
 <a name="PrintJSON"></a>
-## func [PrintJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L127>)
+## func [PrintJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L134>)
 
 ```go
-func PrintJSON(value any) error
+func PrintJSON(destination io.Writer, value any) error
 ```
 
-PrintJSON takes an outcome or an info page and writes it as exactly one indented JSON value to the results destination, with angle brackets and ampersands written as they are rather than as escape sequences. A serialization defect is replaced with one valid JSON error value.
+PrintJSON writes one JSON document to destination, indenting successfully encoded values. If encoding fails, it writes a failure document and returns the original encoding error. A write failure is returned together with any encoding error.
 
 <a name="PrintListing"></a>
-## func [PrintListing](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L169>)
+## func [PrintListing](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L145>)
 
 ```go
-func PrintListing(page core.Catalog, providersSelected, modelsSelected, jsonOutput bool) error
+func PrintListing(destination io.Writer, page CatalogPage, providersSelected, modelsSelected, jsonOutput bool) error
 ```
 
-PrintListing takes a listing page, the \-\-providers and \-\-models selections as the inclusive pair the command resolved, and the \-\-json selection, and prints the listing form the selections choose: the nested listing, the providers only, or the flat model directory, as a JSON info page or as text. It returns the JSON print failure.
+PrintListing writes the selected provider/model listing as text or JSON. It returns template, encoding, and delivery failures to the command.
 
 <a name="PrintModelInfo"></a>
-## func [PrintModelInfo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L209>)
+## func [PrintModelInfo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L199>)
 
 ```go
-func PrintModelInfo(provModelPair *core.ProvModelPair, paramFlags []parameters.ParamFlag)
+func PrintModelInfo(destination io.Writer, provModelPair *catalog.ProvModelPair, paramFlags []params.Flag, styled bool) error
 ```
 
-PrintModelInfo takes a provider\-model pair and the parameter enumeration, and writes the model card to standard output: the model's identity block and one option per parameter it declares, in the enumeration's order.
-
-<a name="PrintModels"></a>
-## func [PrintModels](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L33>)
-
-```go
-func PrintModels(document core.Catalog)
-```
-
-PrintModels writes fully qualified model keys with any included aliases, in the catalog's provider and model order.
-
-<a name="PrintProviderIdentities"></a>
-## func [PrintProviderIdentities](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L27>)
-
-```go
-func PrintProviderIdentities(document core.Catalog)
-```
-
-PrintProviderIdentities takes a reduced catalog and writes one line per provider, carrying its display name and identifier, to standard output.
+PrintModelInfo writes the model card with the requested terminal styling. Template and delivery failures are returned to the command.
 
 <a name="PrintProviderInfo"></a>
-## func [PrintProviderInfo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L217>)
+## func [PrintProviderInfo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L205>)
 
 ```go
-func PrintProviderInfo(prov *core.Provider, paramFlags []parameters.ParamFlag, printImage, printVideo bool)
+func PrintProviderInfo(destination io.Writer, prov *catalog.Provider, pairs []catalog.ProvModelPair, paramFlags []params.Flag, mediaFilterFlags map[media.Kind]string, styled bool) error
 ```
 
-PrintProviderInfo takes a provider, the parameter enumeration, and the media selections, and writes the provider's details page to standard output: the aggregator summary for a provider marked as an aggregator, and otherwise the standard provider page.
+PrintProviderInfo writes the selected provider's detailed page or aggregator summary. It returns template and delivery failures to the command.
 
-<a name="PrintProviders"></a>
-## func [PrintProviders](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L21>)
+<a name="PrintReprompt"></a>
+## func [PrintReprompt](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L14>)
 
 ```go
-func PrintProviders(document core.Catalog)
+func PrintReprompt(destination io.Writer, styled bool) error
 ```
 
-PrintProviders takes a reduced catalog and writes its providers with their models by medium to standard output.
+PrintReprompt renders the replacement\-model question with the selected styling.
 
 <a name="PrintRunDetails"></a>
-## func [PrintRunDetails](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L18>)
+## func [PrintRunDetails](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L16>)
 
 ```go
-func PrintRunDetails(providerDisplayName, modelName string)
+func PrintRunDetails(destination io.Writer, providerDisplayName, modelName string) error
 ```
 
-PrintRunDetails takes a provider display name and model name and writes the run header — the resolved provider and model identities — to the results destination. The prompt is not echoed: it reaches the run unchanged and repeats only in the JSON document and the sidecar.
+PrintRunDetails writes the provider and model headers to destination.
 
 <a name="PrintSavedFile"></a>
-## func [PrintSavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L303>)
+## func [PrintSavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L7>)
 
 ```go
-func PrintSavedFile(savedFile SavedFile)
+func PrintSavedFile(destination io.Writer, savedFile SavedFile, styled bool) error
 ```
 
-PrintSavedFile writes one saved\-file report to the results destination: styled, with the path in the clay accent and the dimmed size, on the terminal display, and otherwise the plain report line.
+PrintSavedFile writes one completed file's path and size to destination. Styled output uses a human\-readable size; plain output reports the byte count.
 
-<a name="PrintStdout"></a>
-## func [PrintStdout](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L142>)
+<a name="PrintSingleWordPromptConfirmation"></a>
+## func [PrintSingleWordPromptConfirmation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L7>)
 
 ```go
-func PrintStdout(text string)
+func PrintSingleWordPromptConfirmation(destination io.Writer, prompt string, styled bool) error
 ```
 
-PrintStdout writes one line to the process's standard output, regardless of the results destination. A process without a standard output discards the line.
+PrintSingleWordPromptConfirmation renders the confirmation using the selected diagnostic styling and returns any failure to deliver it.
+
+<a name="PrintTemplate"></a>
+## func [PrintTemplate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L130>)
+
+```go
+func PrintTemplate(destination io.Writer, name, source string, data any, functions template.FuncMap) error
+```
+
+PrintTemplate renders a command\-supplied template with its required functions and data, and writes only a fully rendered page. Every failure is classified.
 
 <a name="PrintUsageError"></a>
-## func [PrintUsageError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L85>)
+## func [PrintUsageError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L59>)
 
 ```go
-func PrintUsageError(err error, debugMode bool)
+func PrintUsageError(destination io.Writer, err error, debugMode, styled bool) error
 ```
 
-PrintUsageError takes an invalid\-command\-line error and writes its message, carrying the error prefix, with the compact usage page to standard error.
+PrintUsageError writes the diagnostic and compact usage. If template rendering fails, it writes the diagnostic alone and returns the rendering error together with any write failure.
 
 <a name="PrintUserConfigWarning"></a>
-## func [PrintUserConfigWarning](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L124>)
+## func [PrintUserConfigWarning](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L96>)
 
 ```go
-func PrintUserConfigWarning(fault error)
+func PrintUserConfigWarning(destination io.Writer, fault error, styled bool) error
 ```
 
-PrintUserConfigWarning takes a classified user\-config fault and writes its user\-facing message to standard error behind the warning prefix, naming the specific value the fault's chain carries. It writes to standard error in every output mode; a warning never enters the JSON result document.
-
-<a name="ProviderInfoPage"></a>
-## func [ProviderInfoPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L72>)
-
-```go
-func ProviderInfoPage(prov *core.Provider, paramFlags []parameters.ParamFlag, printImage, printVideo bool) core.Catalog
-```
-
-ProviderInfoPage takes a provider, the flag records, and the media selections, and returns the catalog reduced to that provider: its identity, its models of the selected media in config order carrying their params, and the flag records those params reference.
-
-<a name="RawErrorChain"></a>
-## func [RawErrorChain](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L227>)
-
-```go
-func RawErrorChain(err error) string
-```
-
-RawErrorChain takes an error and returns its complete chain as one string, quoting text that contains control or replacement runes. It returns an empty string for a nil error.
+PrintUserConfigWarning writes a styled or plain configuration warning to destination and returns any write failure.
 
 <a name="RenderSidecar"></a>
-## func [RenderSidecar](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/sidecar.go#L21>)
+## func [RenderSidecar](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/sidecar.go#L19>)
 
 ```go
-func RenderSidecar(prompt, modelID string, paramFlags []parameters.ParamFlag, adjusted parameters.Params, inputMedia []media.Input, thoughts []string) []byte
+func RenderSidecar(prompt, modelID string, paramFlags []params.Flag, adjusted params.Values, inputMedia []media.Input, thoughts []string) []byte
 ```
 
-RenderSidecar takes run details, adjusted parameters, input media, and thoughts and returns sidecar Markdown. The front matter includes the current UTC timestamp, in the JSON document's form, and each present parameter in definition order.
-
-<a name="ReportSavedFiles"></a>
-## func [ReportSavedFiles](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L379>)
-
-```go
-func ReportSavedFiles(savedFiles []SavedFile, outcome *GenerationOutcome, printFilename bool)
-```
-
-ReportSavedFiles takes completed saved\-file facts, the generation outcome \(nil outside \-\-json\), and the \-\-print\-filename selection, and reports the files: into the outcome, or otherwise as saved\-file reports to the results destination, plus one absolute path line on stdout per file when filename printing is selected.
-
-<a name="RepromptModel"></a>
-## func [RepromptModel](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L60>)
-
-```go
-func RepromptModel() (reply string, asked bool, err error)
-```
-
-RepromptModel asks on standard error for a replacement model input and reads the reply, when standard input is a terminal. It returns the trimmed reply with asked true; an empty reply with asked false when standard input is not a terminal, so nothing was asked; or the read failure.
-
-<a name="ResolveOutputDir"></a>
-## func [ResolveOutputDir](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L50>)
-
-```go
-func ResolveOutputDir(userInputDirPath string) (string, error)
-```
-
-ResolveOutputDir takes an output\-directory path, expands a leading tilde, resolves a relative path against the working directory, and returns the resulting absolute path. It creates the directory and missing parents and returns an error if expansion, resolution, or creation fails.
-
-<a name="RestoreResults"></a>
-## func [RestoreResults](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L67>)
-
-```go
-func RestoreResults() error
-```
-
-RestoreResults routes the regular results output back to standard output and closes the results file when one is open. It returns the run's first recorded results\-file write failure, or the close failure, classified as an output\-file error.
-
-<a name="SanitizeFilename"></a>
-## func [SanitizeFilename](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L70>)
-
-```go
-func SanitizeFilename(text string) string
-```
-
-SanitizeFilename takes filename text and returns it with slashes and control characters replaced by hyphens.
-
-<a name="SaveResults"></a>
-## func [SaveResults](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L34>)
-
-```go
-func SaveResults(path string) error
-```
-
-SaveResults opens the file that is to receive the regular results output — expanding a leading tilde, creating missing parent directories, and truncating an existing file at the path — and routes the regular results output to it. It returns an error when expansion, directory creation, or the open fails.
-
-<a name="TerminalDisplay"></a>
-## func [TerminalDisplay](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L96>)
-
-```go
-func TerminalDisplay() bool
-```
-
-TerminalDisplay reports whether the animated terminal display applies: regular results output goes to standard output, and standard output is a terminal.
-
-<a name="UserErrorText"></a>
-## func [UserErrorText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L172>)
-
-```go
-func UserErrorText(err error, providerDisplayName, modelName string, debugMode bool) string
-```
-
-UserErrorText takes an error, the resolved provider and model names, and the raw\-error selection and returns the selected user\-facing or raw diagnostic text.
+RenderSidecar returns Markdown with the prompt, model ID, current UTC timestamp, and nonempty parameters in flag\-record order. It records the supplied input\-media sources under input\-media and places thought chunks after the front matter, separated by fences.
 
 <a name="WrapDetails"></a>
-## func [WrapDetails](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L79>)
+## func [WrapDetails](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L57>)
 
 ```go
 func WrapDetails(steps int, detailText string) string
 ```
 
-WrapDetails takes a block of detail text and the number of indentation steps to lay it out at, and returns it wrapped to the page width. It preserves the blank line between paragraphs and drops any paragraph that holds no words.
+WrapDetails wraps and indents paragraphs to the page width, separated by blank lines.
+
+<a name="WriteText"></a>
+## func [WriteText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/write.go#L13>)
+
+```go
+func WriteText(destination io.Writer, format string, values ...any) error
+```
+
+WriteText writes formatted text to the supplied destination. Incomplete writes retain their original cause and output\-write classification, including short writes.
 
 <a name="accentValue"></a>
-## func [accentValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L736>)
+## func [accentValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L650>)
 
 ```go
 func accentValue(value string, style pageStyle) string
 ```
 
-accentValue takes one value and the page style and returns the value in the style's value accent.
+accentValue surrounds a value with the selected accent and reset codes.
 
 <a name="accentValues"></a>
-## func [accentValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L743>)
+## func [accentValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L655>)
 
 ```go
 func accentValues(values []string, separator string, style pageStyle) string
 ```
 
-accentValues takes values, their separator, and the page style, and returns the values joined by the separator, each in the value accent and the separator plain.
+accentValues joins accented values with an unstyled separator.
 
 <a name="accentedPrefix"></a>
-## func [accentedPrefix](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L43>)
+## func [accentedPrefix](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L40>)
 
 ```go
-func accentedPrefix(prefixWord string) string
+func accentedPrefix(prefixWord string, styled bool) string
 ```
 
-accentedPrefix returns the given prefix word with its trailing space: in the muted red accent when standard error is a terminal, and plain otherwise.
+accentedPrefix adds the selected diagnostic accent and the separating space.
 
 <a name="acrossTokensExample"></a>
-## func [acrossTokensExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L205>)
+## func [acrossTokensExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L192>)
 
 ```go
-func acrossTokensExample(providerID string, model *core.Model) string
+func acrossTokensExample(providerID string, model *catalog.Model) string
 ```
 
-acrossTokensExample takes a provider ID and a model and returns a pattern spanning two consecutive slash\-delimited tokens of the model's fully qualified key: the last hyphen\-delimited token of the first and the first hyphen\-delimited token of the second, over the key's last slash, each escaped so that it matches itself literally.
+acrossTokensExample returns an escaped search pattern spanning the last slash in a model key. It joins the neighboring name tokens, or returns empty text if either token is absent.
 
 <a name="aliasExample"></a>
-## func [aliasExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L131>)
+## func [aliasExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L118>)
 
 ```go
-func aliasExample(models []core.Model) (term, alias string)
+func aliasExample(models []catalog.Model) (term, alias string)
 ```
 
-aliasExample takes models and returns a term some alias begins with — the first hyphen\-delimited token of an alias chosen at random — and that alias; empty strings when no model declares an alias.
+aliasExample selects a random alias and returns its first hyphen\-delimited token followed by the full alias. It returns two empty strings when no aliases exist.
 
 <a name="aliasWord"></a>
-## func [aliasWord](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L156>)
+## func [aliasWord](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L135>)
 
 ```go
 func aliasWord(aliases []string) string
@@ -1141,133 +790,79 @@ func aliasWord(aliases []string) string
 aliasWord returns the singular or plural alias label for an alias count.
 
 <a name="alternationExample"></a>
-## func [alternationExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L153>)
+## func [alternationExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L137>)
 
 ```go
-func alternationExample(providerID string, models []core.Model) string
+func alternationExample(providerID string, models []catalog.Model) string
 ```
 
-alternationExample takes a provider ID and models and returns a pattern of two distinct hyphen\-delimited tokens of the models' IDs joined by a bar, digits\-only and short tokens excluded, chosen at random; when fewer than two such tokens exist, the provider ID and a random model's ID. Each term is escaped so that it matches itself literally.
+alternationExample joins two random eligible model\-name tokens with a regex alternation. With fewer than two tokens, it uses the provider ID and a random model ID. All terms are escaped.
 
 <a name="anyPartExample"></a>
-## func [anyPartExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L179>)
+## func [anyPartExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L161>)
 
 ```go
-func anyPartExample(models []core.Model) string
+func anyPartExample(models []catalog.Model) string
 ```
 
-anyPartExample takes models and returns a hyphen\-delimited token found inside a model's ID — never its first token, never digits only or short, and never the opening of any model's ID — chosen at random; when none exists, a random model's ID without its first character. The term is escaped so that it matches itself literally.
-
-<a name="artifactName"></a>
-## func [artifactName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L286>)
-
-```go
-func artifactName(stem string, artifacts []core.Artifact, i int) string
-```
-
-artifactName takes a stem, artifact collection, and index and returns that artifact's filename without its extension: the bare stem for a single artifact, and the stem with the artifact's index for a batch.
-
-<a name="artifactPath"></a>
-## func [artifactPath](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L296>)
-
-```go
-func artifactPath(dir, stem string, artifacts []core.Artifact, i int) string
-```
-
-artifactPath takes a directory, stem, artifact collection, and index and returns the destination path for that artifact.
+anyPartExample returns an escaped token from inside a model ID that prefixes no model ID. If no token qualifies, it removes the first rune of a random ID and escapes the remainder; an ID shorter than two runes produces no text.
 
 <a name="boundPhrase"></a>
-## func [boundPhrase](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L70>)
+## func [boundPhrase](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L61>)
 
 ```go
 func boundPhrase(rangeForm, maximumForm, minimumForm string, minVal, maxVal any, hasMin, hasMax bool) string
 ```
 
-boundPhrase takes the forms for a two\-bound range, a lone maximum, and a lone minimum, the two bounds, and whether each is declared, and returns the phrase stating the declared bounds, or an empty string when neither is.
-
-<a name="carriesQuotedDetail"></a>
-## func [carriesQuotedDetail](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L185>)
-
-```go
-func carriesQuotedDetail(err error) bool
-```
-
-carriesQuotedDetail takes a usage error and reports whether its leading quoted context is the whole user\-facing message: the parse failure's own text, the help\-or\-version combination message, the flags\-before\-command message, the no\-default\-model message, and the search command's missing\-term and empty\-term messages.
+boundPhrase formats the declared minimum, maximum, or range. It returns empty text when neither bound is declared.
 
 <a name="catalogMediaCounts"></a>
-## func [catalogMediaCounts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L393>)
+## func [catalogMediaCounts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L343>)
 
 ```go
-func catalogMediaCounts(models []core.Model) string
+func catalogMediaCounts(models []catalog.Model) string
 ```
 
-catalogMediaCounts takes a provider's models and returns its model counts per medium, omitting a medium with no model.
-
-<a name="chainDetail"></a>
-## func [chainDetail](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L427>)
-
-```go
-func chainDetail(err, sentinel error) string
-```
-
-chainDetail takes an error and sentinel and returns the deepest quoted context from a matching error layer, escaped for the terminal. It returns an empty string when no matching context exists.
-
-<a name="claimFreeName"></a>
-## func [claimFreeName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L251>)
-
-```go
-func claimFreeName(dir, name, ext string) (*os.File, string, error)
-```
-
-claimFreeName takes a directory, a filename without its extension, and the extension, and creates the file exclusively under that name, or under the first free two\-digit suffixed variant beginning at 02 when the name is taken. It returns the open file and its path, or an error when a create fails for a reason other than a taken name.
-
-<a name="cleanupTempFiles"></a>
-## func [cleanupTempFiles](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L143>)
-
-```go
-func cleanupTempFiles(artifacts []core.Artifact, from int)
-```
-
-cleanupTempFiles takes artifacts and a starting index and attempts to remove each temporary source from that index through the end of the collection.
+catalogMediaCounts formats the number of image and video models, omitting any medium with no models.
 
 <a name="compareModelIDs"></a>
-## func [compareModelIDs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L64>)
+## func [compareModelIDs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L113>)
 
 ```go
-func compareModelIDs(firstModel, secondModel core.Model) int
+func compareModelIDs(firstModel, secondModel modelRecord) int
 ```
 
-compareModelIDs orders model identifiers alphabetically.
+compareModelIDs orders displayed model identifiers alphabetically.
 
 <a name="compareVendorCounts"></a>
-## func [compareVendorCounts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L775>)
+## func [compareVendorCounts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L685>)
 
 ```go
 func compareVendorCounts(first, second vendorCount) int
 ```
 
-compareVendorCounts orders two vendor counts by count descending and then vendor ascending, for the summary's vendor list.
+compareVendorCounts orders vendors by descending model count, then ascending name.
 
 <a name="configWarningMessage"></a>
-## func [configWarningMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L132>)
+## func [configWarningMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L102>)
 
 ```go
 func configWarningMessage(fault error) string
 ```
 
-configWarningMessage takes a classified user\-config fault and returns its user\-facing message: each classified condition resolves its copy\-catalog entry, naming the config file path and the offending value the chain carries.
+configWarningMessage formats a configuration warning using the path, setting, or provider from a ConfigError, including through wrapped and joined errors.
 
 <a name="constraintPhrases"></a>
-## func [constraintPhrases](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L29>)
+## func [constraintPhrases](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L21>)
 
 ```go
-func constraintPhrases(paramFlag *parameters.ParamFlag, paramCfg *parameters.Param, style pageStyle) []string
+func constraintPhrases(paramFlag *params.Flag, paramCfg *params.Definition, style pageStyle) []string
 ```
 
-constraintPhrases takes a parameter definition, its configuration, and the page style, and returns one phrase per declared constraint in the catalog's forms, each value in the style's value accent \(none for the plain style\).
+constraintPhrases formats each declared parameter constraint using the selected value styling.
 
 <a name="credentialNotice"></a>
-## func [credentialNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L276>)
+## func [credentialNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L288>)
 
 ```go
 func credentialNotice(err error, providerDisplayName string) string
@@ -1276,803 +871,625 @@ func credentialNotice(err error, providerDisplayName string) string
 credentialNotice takes a missing\-credential error and provider display name and returns guidance for setting the API key.
 
 <a name="dashedFlagName"></a>
-## func [dashedFlagName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L68>)
+## func [dashedFlagName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L48>)
 
 ```go
 func dashedFlagName(flagName string) string
 ```
 
-dashedFlagName takes one of a flag's names and returns it with a dash prefix: a single dash for a one\-character name, and a double dash for a longer name.
+dashedFlagName prefixes a one\-byte name with one dash and longer names with two.
 
-<a name="deepDetail"></a>
-## func [deepDetail](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L433>)
-
-```go
-func deepDetail(err, sentinel error) string
-```
-
-deepDetail takes an error and sentinel and returns the deepest quoted context among error layers that match the sentinel.
-
-<a name="defaultStem"></a>
-## func [defaultStem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L26>)
+<a name="dashedFlagNames"></a>
+## func [dashedFlagNames](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L27>)
 
 ```go
-func defaultStem(mediaKind media.Kind) string
+func dashedFlagNames(flagNames []string, valueHint string) string
 ```
 
-defaultStem takes the medium of the run and returns the filename stem used when no stem is requested.
-
-<a name="detailedModel"></a>
-## func [detailedModel](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L96>)
-
-```go
-func detailedModel(model *core.Model) core.Model
-```
-
-detailedModel returns the model as an info page carries it: its params without their provider request keys.
+dashedFlagNames formats aliases before the long flag name, with their dash prefixes. A nonempty value hint follows the names in angle brackets.
 
 <a name="documentTimestamp"></a>
-## func [documentTimestamp](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L79>)
+## func [documentTimestamp](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L89>)
 
 ```go
 func documentTimestamp(moment time.Time) string
 ```
 
-documentTimestamp takes a time and returns it as the timestamp the JSON document and the sidecar front matter carry: UTC, in RFC 3339 form with fractional seconds.
+documentTimestamp returns a UTC timestamp in RFC 3339 format with available fractional seconds.
 
 <a name="encodeJSON"></a>
-## func [encodeJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L156>)
+## func [encodeJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L154>)
 
 ```go
 func encodeJSON(value any) ([]byte, error)
 ```
 
-encodeJSON takes an outcome or an info page and returns it as one indented JSON value ending in a newline, without the HTML escaping of angle brackets and ampersands that the encoder applies by default, or the serialization error.
+encodeJSON returns indented JSON followed by a newline, without HTML escaping.
+
+<a name="errorMessage"></a>
+## func [errorMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L182>)
+
+```go
+func errorMessage(err error, providerDisplayName, modelName string) string
+```
+
+errorMessage renders the principal failure and every affected output path. Typed details survive nested and joined errors; control characters are escaped. A nil error returns an empty string.
 
 <a name="errorPrefix"></a>
-## func [errorPrefix](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L36>)
+## func [errorPrefix](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L35>)
 
 ```go
-func errorPrefix() string
+func errorPrefix(styled bool) string
 ```
 
-errorPrefix returns the error\-message prefix: the word Error in the muted red accent when standard error is a terminal, and plain otherwise.
+errorPrefix returns the ordinary error prefix with the selected styling.
+
+<a name="escapeForTerminal"></a>
+## func [escapeForTerminal](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L31>)
+
+```go
+func escapeForTerminal(text string) string
+```
+
+escapeForTerminal quotes text containing a control or replacement rune.
 
 <a name="exampleKeys"></a>
-## func [exampleKeys](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L103>)
+## func [exampleKeys](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L92>)
 
 ```go
-func exampleKeys(providerID string, models []core.Model) []string
+func exampleKeys(providerID string, models []catalog.Model) []string
 ```
 
-exampleKeys takes a provider ID and models and returns one fully qualified key per medium with a model, image first, each model chosen at random.
+exampleKeys returns a random fully qualified model key per medium, images before videos.
 
 <a name="exampleTerm"></a>
-## func [exampleTerm](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L231>)
+## func [exampleTerm](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L215>)
 
 ```go
 func exampleTerm(token string) bool
 ```
 
-exampleTerm takes a token and reports whether a pattern example may draw it: at least the minimum length and not digits and dots alone.
+exampleTerm accepts tokens of at least minTermLength runes that are not solely digits and dots.
 
-<a name="fileExists"></a>
-## func [fileExists](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L368>)
-
-```go
-func fileExists(path string) bool
-```
-
-fileExists reports whether a file, directory, or symbolic link occupies a path.
-
-<a name="fileIsTTY"></a>
-## func [fileIsTTY](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L70>)
+<a name="fileSizeText"></a>
+## func [fileSizeText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L54>)
 
 ```go
-func fileIsTTY(stream *os.File) bool
+func fileSizeText(byteCount int64) string
 ```
 
-fileIsTTY takes a standard stream and reports whether it is a character device. A failed stat, and an absent stream, report false.
+fileSizeText takes a byte count and returns its human\-friendly form: bytes under 1000, and otherwise 1000\-based KB, MB, or GB with one decimal place. A negative count renders as zero.
 
 <a name="flagGuidanceLines"></a>
-## func [flagGuidanceLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L702>)
+## func [flagGuidanceLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L620>)
 
 ```go
-func flagGuidanceLines(paramFlag *parameters.ParamFlag, opening string, style pageStyle) []string
+func flagGuidanceLines(paramFlag *params.Flag, opening string, style pageStyle) []string
 ```
 
-flagGuidanceLines takes a flag record, the sentence opening its description \(empty for none\), and the page style, and returns the record's help\-page guidance wrapped within the details column: the opened description, the comment where declared, and the examples sentence where the record declares example values, each example in the value accent.
+flagGuidanceLines wraps a flag's description, optional comment, and example values. A nonempty opening precedes the description.
 
 <a name="flowPhrases"></a>
-## func [flowPhrases](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L49>)
+## func [flowPhrases](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L38>)
 
 ```go
 func flowPhrases(phrases []string, separator string, width int) []string
 ```
 
-flowPhrases takes phrases, the separator that joins them, and a width, and returns the phrases flowed greedily into lines within the width, breaking between phrases; a phrase wider than the width fills a line alone, wrapped on its own spaces, and a single term wider than the width overruns alone. No phrases return no lines.
+flowPhrases joins phrases within the requested width, wrapping long phrases at spaces. An indivisible term may exceed the width; empty input returns no lines.
 
 <a name="formatNotice"></a>
-## func [formatNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/param.go#L36>)
+## func [formatNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/param.go#L11>)
 
 ```go
-func formatNotice(paramFlags []parameters.ParamFlag, paramChange *parameters.ParamChange) string
+func formatNotice(paramFlags []params.Flag, paramChange *params.Adjustment, flagNames map[params.FlagType]string) string
 ```
 
-formatNotice takes the parameter\-flag definitions and a parameter change and returns the change's notice: its classification's catalog form carrying the flag's user\-facing name, with a string\-typed used value in single quotes and a non\-string one bare. The capped and raised limits render from the record's constrained value, which is the bound itself.
+formatNotice renders an adjustment notice using the user\-facing flag name. Adjusted numeric values remain unquoted; string values are quoted where the message permits.
 
 <a name="generationStatus"></a>
-## func [generationStatus](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L195>)
+## func [generationStatus](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L181>)
 
 ```go
 func generationStatus(runErr error, outcomeStatus string) string
 ```
 
-generationStatus takes the run's error and the generation outcome's current status and returns the status the completed outcome carries: canceled for a canceled run, failed for any other error, and otherwise the current status, or completed when none was set.
+generationStatus returns canceled or failed for an error. Otherwise it preserves an existing status or supplies completed.
 
 <a name="groupLines"></a>
-## func [groupLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L671>)
+## func [groupLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L592>)
 
 ```go
-func groupLines(introduced introducedGroup, paramFlag *parameters.ParamFlag, style pageStyle) []string
+func groupLines(introduced introducedGroup, paramFlag *params.Flag, style pageStyle) []string
 ```
 
-groupLines takes an introduced group, its flag record, and the page style, and returns the group's lines: a blank line, the intro wrapped from the intro column, then the group's classification sentence opening its first constraint sentence and the remaining constraint sentences at the details column.
-
-<a name="hasDestinationClash"></a>
-## func [hasDestinationClash](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L357>)
-
-```go
-func hasDestinationClash(dir, stem string, artifacts []core.Artifact, writesSidecar bool) bool
-```
-
-hasDestinationClash reports whether any exact path the run will write already exists.
+groupLines formats a model group's introduction and constraint details after a blank line.
 
 <a name="headedLines"></a>
-## func [headedLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L645>)
+## func [headedLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L570>)
 
 ```go
 func headedLines(heading string, details []string, style pageStyle) []string
 ```
 
-headedLines takes an option heading, the detail lines beneath it, and the page style, and returns the option's lines: the heading, in the steel\-blue accent, in the flag field with the first detail beside it, or alone when the heading fills the field, then the remaining details at the details column.
+headedLines aligns option details beside a styled heading. A heading that fills the column stands alone above its details.
 
 <a name="indentTo"></a>
-## func [indentTo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L40>)
+## func [indentTo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L32>)
 
 ```go
 func indentTo(column int, text string) string
 ```
 
-indentTo takes a column and text and returns the text preceded by that many spaces.
+indentTo prefixes text with the requested number of spaces.
 
 <a name="innermostMessage"></a>
-## func [innermostMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L400>)
+## func [innermostMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L433>)
 
 ```go
 func innermostMessage(err error) string
 ```
 
-innermostMessage returns an unclassified error's innermost message: the deepest cause's own text, escaped for the terminal — the most specific information the chain holds, without the wrapping layers the raw\-error selection exists for.
+innermostMessage returns the deepest cause's text escaped for the terminal. For joined errors it follows the last cause.
 
 <a name="inputMediaNotice"></a>
-## func [inputMediaNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L304>)
+## func [inputMediaNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L308>)
 
 ```go
 func inputMediaNotice(err error) string
 ```
 
-inputMediaNotice takes an input\-media error and returns its classified message, naming the exact path or source the chain carries. A frame\-timing failure and an unsendable\-input failure surface their specific statement — the deepest detail — verbatim.
+inputMediaNotice renders the exact media source or actionable media problem.
 
 <a name="isTokenSeparator"></a>
-## func [isTokenSeparator](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L225>)
+## func [isTokenSeparator](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L210>)
 
 ```go
 func isTokenSeparator(r rune) bool
 ```
 
-isTokenSeparator takes a rune and reports whether it separates the tokens of a model ID: a slash or a hyphen.
+isTokenSeparator reports whether a rune is a slash or hyphen.
 
 <a name="joinNames"></a>
-## func [joinNames](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L558>)
+## func [joinNames](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L493>)
 
 ```go
 func joinNames(names []string, pairForm, lastForm string) string
 ```
 
-joinNames takes names and the catalog's pair and last forms, and returns the names as an English list: one alone, two in the pair form, and more separated up to the last two, which take the last form.
+joinNames formats names as an English list using the supplied two\-name and final\-name forms.
 
 <a name="joinQuotedMediaSources"></a>
-## func [joinQuotedMediaSources](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L24>)
+## func [joinQuotedMediaSources](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L21>)
 
 ```go
 func joinQuotedMediaSources(inputMedia []media.Input) string
 ```
 
-joinQuotedMediaSources takes input media and returns their quoted sources separated by commas.
+joinQuotedMediaSources returns quoted input sources separated by commas.
 
 <a name="keyMissingStatement"></a>
-## func [keyMissingStatement](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L288>)
+## func [keyMissingStatement](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L299>)
 
 ```go
 func keyMissingStatement(err error) string
 ```
 
-keyMissingStatement returns the deepest credential\-setting context wrapping the missing\-key sentinel, without outer request context. A bare sentinel returns a generic statement.
+keyMissingStatement returns the first CredentialError message found through wrapped or joined causes, escaped for the terminal. If none exists, it returns APIKeyNotSet.
 
 <a name="keywordExample"></a>
-## func [keywordExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L117>)
+## func [keywordExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L105>)
 
 ```go
-func keywordExample(model *core.Model) string
+func keywordExample(model *catalog.Model) string
 ```
 
-keywordExample takes a model and returns the opening characters of the last slash\-delimited token of its ID, the whole token when it is shorter.
+keywordExample returns up to keywordLength runes from the last slash\-delimited model ID token.
 
 <a name="leadingGroupIndex"></a>
-## func [leadingGroupIndex](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L508>)
+## func [leadingGroupIndex](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L448>)
 
 ```go
 func leadingGroupIndex(groups []declarationGroup) int
 ```
 
-leadingGroupIndex takes declaration groups and returns the index of the one holding more models than any other, or \-1 when the largest groups tie.
+leadingGroupIndex returns the uniquely largest group's index, or \-1 for a tie or no groups.
 
 <a name="listedProviders"></a>
-## func [listedProviders](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L112>)
+## func [listedProviders](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L93>)
 
 ```go
-func listedProviders(provModelPairs []core.ProvModelPair) []core.Provider
+func listedProviders(provModelPairs []catalog.ProvModelPair) []catalog.Provider
 ```
 
 listedProviders takes provider\-model pairs and returns each provider once in first\-occurrence order.
 
 <a name="modelListingLines"></a>
-## func [modelListingLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L39>)
+## func [modelListingLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L19>)
 
 ```go
-func modelListingLines(providers []core.Provider) []string
+func modelListingLines(providers []providerRecord) []string
 ```
 
 modelListingLines returns fully qualified model keys with any included aliases in the supplied order; the flat directory template calls it.
 
-<a name="modelNotice"></a>
-## func [modelNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L147>)
-
-```go
-func modelNotice(identifier string, aliases []string) string
-```
-
-modelNotice takes the identifier a listing shows for a model and the model's aliases, and returns the listing entry: the identifier with any aliases in the alias clause.
-
 <a name="modelResolveNotice"></a>
-## func [modelResolveNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L333>)
+## func [modelResolveNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L348>)
 
 ```go
 func modelResolveNotice(err error) string
 ```
 
-modelResolveNotice takes a model\-resolution error and returns a notice for its classified failure, naming the user's model input when the chain carries it.
+modelResolveNotice identifies the unresolved model from its structured error.
 
 <a name="modelRosterText"></a>
-## func [modelRosterText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L413>)
+## func [modelRosterText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L361>)
 
 ```go
-func modelRosterText(model *core.Model) []string
+func modelRosterText(model *catalog.Model) []string
 ```
 
-modelRosterText takes a model and returns its roster text on the provider page: its bare ID in the ID column with its aliases beside it, flowed within the page width and continued at the alias column, or, for an ID filling the column, the ID alone with every alias line at the alias column.
+modelRosterText formats a model ID and its aliases within the roster columns. Aliases continue on indented lines when they exceed the available width.
+
+<a name="modelRowText"></a>
+## func [modelRowText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L126>)
+
+```go
+func modelRowText(identifier string, aliases []string) string
+```
+
+modelRowText formats a model identifier with its aliases, or returns the identifier alone when there are no aliases.
 
 <a name="modelsOfMedia"></a>
-## func [modelsOfMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L132>)
+## func [modelsOfMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/list.go#L112>)
 
 ```go
-func modelsOfMedia(models []core.Model, mediaKind media.Kind) []core.Model
+func modelsOfMedia(models []catalog.Model, mediaKind media.Kind) []catalog.Model
 ```
 
-modelsOfMedia takes models and media and returns the matching models in input order; the nested listing template calls it per medium.
+modelsOfMedia returns models of the requested medium in input order.
 
 <a name="nameTokens"></a>
-## func [nameTokens](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L219>)
+## func [nameTokens](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L205>)
 
 ```go
 func nameTokens(modelID string) []string
 ```
 
-nameTokens takes a model ID and returns its tokens split on every slash and hyphen, empty tokens dropped.
+nameTokens splits a model ID at slashes and hyphens, dropping empty tokens.
 
 <a name="needsEscaping"></a>
-## func [needsEscaping](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L61>)
+## func [needsEscaping](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L40>)
 
 ```go
 func needsEscaping(text string) bool
 ```
 
-needsEscaping takes text and reports whether it contains a control rune or replacement rune.
+needsEscaping reports whether text contains a control or replacement rune.
 
 <a name="noticeFlagValues"></a>
-## func [noticeFlagValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/param.go#L66>)
+## func [noticeFlagValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/param.go#L36>)
 
 ```go
-func noticeFlagValues(paramFlags []parameters.ParamFlag, paramChange *parameters.ParamChange) (flagName, usedValue string)
+func noticeFlagValues(paramFlags []params.Flag, paramChange *params.Adjustment, flagNames map[params.FlagType]string) (flagName, usedValue string)
 ```
 
-noticeFlagValues takes the parameter\-flag definitions and a parameter change and returns the change's user\-facing flag name and its display\-ready used value: single\-quoted for a string\-typed parameter and bare otherwise. A record outside the definitions — a run\-surface flag — takes its display name from the run\-surface table, or its raw flag ID as the visible floor, and its values render as strings.
-
-<a name="oneNotice"></a>
-## func [oneNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L52>)
-
-```go
-func oneNotice(text string) string
-```
-
-oneNotice takes text and returns it unchanged unless it contains a control or replacement rune, in which case it returns a quoted form.
-
-<a name="openExclusive"></a>
-## func [openExclusive](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L272>)
-
-```go
-func openExclusive(path string) (*os.File, error)
-```
-
-openExclusive takes a path and creates the file at it, failing when anything already occupies the path.
+noticeFlagValues returns a flag's display name and formatted used value. Flags absent from paramFlags use the supplied name map or their identifier, with quoted values.
 
 <a name="opensAnyID"></a>
-## func [opensAnyID](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L237>)
+## func [opensAnyID](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L220>)
 
 ```go
-func opensAnyID(models []core.Model, term string) bool
+func opensAnyID(models []catalog.Model, term string) bool
 ```
 
-opensAnyID takes models and a term and reports whether any model's ID begins with the term.
+opensAnyID reports whether any model ID starts with the supplied term.
+
+<a name="operationNotice"></a>
+## func [operationNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L203>)
+
+```go
+func operationNotice(err error, providerDisplayName, modelName string) string
+```
+
+operationNotice selects the principal operation's explanation without allowing a later output cleanup failure to hide it.
 
 <a name="optionHeading"></a>
-## func [optionHeading](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L636>)
+## func [optionHeading](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L564>)
 
 ```go
-func optionHeading(paramFlag *parameters.ParamFlag) string
+func optionHeading(paramFlag *params.Flag) string
 ```
 
-optionHeading takes a flag record and returns the option heading: the flag's dashed short and long forms with its value hint, as the help page heads the flag.
+optionHeading formats a parameter's short and long flags with its value hint.
 
-<a name="outermostDetail"></a>
-## func [outermostDetail](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L148>)
+<a name="outputFailureNotices"></a>
+## func [outputFailureNotices](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L234>)
 
 ```go
-func outermostDetail(fault error) string
+func outputFailureNotices(err error) ([]string, error)
 ```
 
-outermostDetail takes an error and returns its outermost quoted context, escaped for the terminal: the layer the two\-value user\-config faults carry the config file's path on.
+outputFailureNotices traverses joined causes and reports each output path once. It retains a separate operation cause for the ordinary fallback message. Filesystem errors from input media do not become output failures.
 
 <a name="padText"></a>
-## func [padText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L30>)
+## func [padText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L23>)
 
 ```go
 func padText(text string, width int) string
 ```
 
-padText takes text and a column width and returns the text padded with spaces to the width, or followed by one space when it fills the width, so what follows always starts after a gap.
+padText pads text to the requested width, leaving at least one trailing space.
 
 <a name="pageLayoutFuncs"></a>
-## func [pageLayoutFuncs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L98>)
+## func [pageLayoutFuncs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L87>)
 
 ```go
 func pageLayoutFuncs() template.FuncMap
 ```
 
-pageLayoutFuncs returns the functions the page templates call, so a template controls its own indentation, wrapping, column padding, and the selection and the models it lists.
+pageLayoutFuncs returns the formatting functions available to page templates.
 
 <a name="parsePages"></a>
-## func [parsePages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L63>)
+## func [parsePages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L56>)
 
 ```go
-func parsePages() (map[Page]*template.Template, error)
+func parsePages() (map[pageName]*template.Template, error)
 ```
 
 parsePages parses every embedded page template and returns them by name, or the first parse failure.
 
 <a name="plainUsageText"></a>
-## func [plainUsageText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L218>)
+## func [plainUsageText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L163>)
 
 ```go
 func plainUsageText(err error) string
 ```
 
-plainUsageText takes a usage error and returns its chain text without the CLI category prefix.
+plainUsageText removes the CLI category prefix from an escaped usage diagnostic.
 
 <a name="preferInnerTokens"></a>
-## func [preferInnerTokens](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L85>)
+## func [preferInnerTokens](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L75>)
 
 ```go
-func preferInnerTokens(models []core.Model) []core.Model
+func preferInnerTokens(models []catalog.Model) []catalog.Model
 ```
 
-preferInnerTokens takes models and returns those whose bare ID holds a slash, or all of them when none does, so an example can illustrate an inner token wherever the catalog has one.
-
-<a name="printOneWordConfirmation"></a>
-## func [printOneWordConfirmation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L50>)
-
-```go
-func printOneWordConfirmation(prompt string)
-```
-
-printOneWordConfirmation takes a one\-word prompt and asks on standard error whether it should be submitted.
-
-<a name="printReprompt"></a>
-## func [printReprompt](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L76>)
-
-```go
-func printReprompt()
-```
-
-printReprompt writes the model disambiguation prompt to standard error.
-
-<a name="printResultsTextf"></a>
-## func [printResultsTextf](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L133>)
-
-```go
-func printResultsTextf(format string, args ...any)
-```
-
-printResultsTextf takes a result's catalog form and its values, writes the formatted result to the active destination on its own line, and records a failed results\-file write.
-
-<a name="printStyledSavedFile"></a>
-## func [printStyledSavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L171>)
-
-```go
-func printStyledSavedFile(savedFile SavedFile)
-```
-
-printStyledSavedFile writes one terminal saved\-file report to the results destination: the path in the clay accent color and the dimmed human\-friendly size.
+preferInnerTokens selects models whose IDs contain a slash, or returns all models if none do.
 
 <a name="promptStyleValues"></a>
-## func [promptStyleValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L55>)
+## func [promptStyleValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L49>)
 
 ```go
-func promptStyleValues() (steel, clay, reset string)
+func promptStyleValues(styled bool) (steel, clay, reset string)
 ```
 
-promptStyleValues returns the interactive prompts' styling codes: the steel\-blue accent for the prompt sentences, the clay accent for the values, and the reset, each empty off a terminal so the same catalog entries render plain.
+promptStyleValues returns the requested prompt accents, or empty strings.
 
 <a name="provConfigNotice"></a>
-## func [provConfigNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L349>)
+## func [provConfigNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L363>)
 
 ```go
 func provConfigNotice(err error, providerDisplayName string) string
 ```
 
-provConfigNotice takes a provider\-configuration error and display name and returns a notice that identifies the configuration owner, carrying the chain's specific fault when one is present.
-
-<a name="provConfigOwner"></a>
-## func [provConfigOwner](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L35>)
-
-```go
-func provConfigOwner(detail, providerDisplayName string) string
-```
-
-provConfigOwner takes error detail and a provider display name and returns the name from a leading JSON filename, the display name, or the leading detail token.
-
-<a name="providerDisplay"></a>
-## func [providerDisplay](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L73>)
-
-```go
-func providerDisplay(providerDisplayName string) string
-```
-
-providerDisplay takes a provider display name and returns it, or the in\-sentence fallback when the name is empty.
+provConfigNotice identifies the provider with invalid configuration and includes its configuration path and problem description when available.
 
 <a name="providerFailureNotice"></a>
-## func [providerFailureNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L366>)
+## func [providerFailureNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L393>)
 
 ```go
 func providerFailureNotice(err error, providerDisplayName, modelName string) string
 ```
 
-providerFailureNotice takes a transport or response error with the resolved provider and model names and returns the classified failure's message. An error carrying an extracted server message renders the server\-error formula; a response with no extractable message renders the generic unusable\-response message; transport failures keep their timeout and unreachable messages.
-
-<a name="providerName"></a>
-## func [providerName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/output.go#L83>)
-
-```go
-func providerName(providerDisplayName string) string
-```
-
-providerName takes a provider display name and returns it, or the name\-form fallback when the name is empty.
-
-<a name="quotedDetail"></a>
-## func [quotedDetail](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L462>)
-
-```go
-func quotedDetail(chainText string) string
-```
-
-quotedDetail takes error\-chain text and returns its leading Go\-quoted value without quotes. It returns an empty string when the text has no valid quoted prefix.
-
-<a name="quotedUsageText"></a>
-## func [quotedUsageText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L208>)
-
-```go
-func quotedUsageText(err error) string
-```
-
-quotedUsageText takes a usage error whose leading quoted context is its user\-facing message and returns that message, or the plain usage text when the error carries no quoted context.
+providerFailureNotice formats a timeout, connection failure, or unusable provider response. A classified server explanation includes the resolved provider and model names.
 
 <a name="randomModel"></a>
-## func [randomModel](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L77>)
+## func [randomModel](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L69>)
 
 ```go
-func randomModel(models []core.Model) *core.Model
+func randomModel(models []catalog.Model) *catalog.Model
 ```
 
-randomModel takes models and returns one of them at random.
+randomModel returns a randomly selected model from a nonempty slice.
 
 <a name="rangeBound"></a>
-## func [rangeBound](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L59>)
+## func [rangeBound](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L51>)
 
 ```go
-func rangeBound(dataType parameters.DataType, bound float64) string
+func rangeBound(dataType params.DataType, bound float64) string
 ```
 
-rangeBound takes a data type and numeric bound and returns the bound in the data type's display form.
+rangeBound formats a numeric limit using the parameter's declared data type.
 
-<a name="readReply"></a>
-## func [readReply](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/prompt.go#L86>)
+<a name="rawErrorChain"></a>
+## func [rawErrorChain](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L172>)
 
 ```go
-func readReply() (string, error)
+func rawErrorChain(err error) string
 ```
 
-readReply reads one line from standard input, one byte at a time so that nothing past the line is consumed, and returns it trimmed. A stream that closes before the newline returns what was read. A failed read returns the process read error.
-
-<a name="recordResultsFailure"></a>
-## func [recordResultsFailure](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L153>)
-
-```go
-func recordResultsFailure(err error)
-```
-
-recordResultsFailure holds the first failed results\-file write for the run\-boundary restore. Failures outside an active results file are not recorded, preserving the existing tolerance of interrupted standard output.
+rawErrorChain takes an error and returns its complete chain as one string, quoting text that contains control or replacement runes. It returns an empty string for a nil error.
 
 <a name="referencedFlags"></a>
-## func [referencedFlags](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L109>)
+## func [referencedFlags](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L184>)
 
 ```go
-func referencedFlags(models []core.Model, paramFlags []parameters.ParamFlag) []parameters.ParamFlag
+func referencedFlags(models []modelRecord, paramFlags []params.Flag) []params.Flag
 ```
 
-referencedFlags takes models and the flag records and returns the records the models' params reference, once each, in the records' order.
-
-<a name="removeFailedWrite"></a>
-## func [removeFailedWrite](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L213>)
-
-```go
-func removeFailedWrite(dstPath string, writeErr error) error
-```
-
-removeFailedWrite takes a destination path and write error, removes the partial destination, and returns a classified error that includes any removal failure.
+referencedFlags copies referenced flag records in their original order.
 
 <a name="renderPage"></a>
-## func [renderPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L111>)
+## func [renderPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L99>)
 
 ```go
-func renderPage(name Page, data any) (string, error)
+func renderPage(name pageName, data any) (string, error)
 ```
 
-renderPage takes a page name and its data, and returns the rendered page. It returns the template failure where the embedded copy is malformed.
+renderPage renders the named template, returning an error for unknown pages or template parsing and execution failures.
 
 <a name="requirementSentence"></a>
-## func [requirementSentence](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L715>)
+## func [requirementSentence](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L631>)
 
 ```go
-func requirementSentence(paramCfg *parameters.Param, style pageStyle) string
+func requirementSentence(paramCfg *params.Definition, style pageStyle) string
 ```
 
-requirementSentence takes a declaration and the page style and returns the Required classification as a sentence, in the clay accent with the sentence end, for a required parameter. An optional parameter is the default and carries no classification, so the sentence is empty.
-
-<a name="resolveStem"></a>
-## func [resolveStem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L319>)
-
-```go
-func resolveStem(dir, requestedStem string, mediaKind media.Kind, artifacts []core.Artifact, writesSidecar bool) (stem string, file *os.File, err error)
-```
-
-resolveStem takes a directory, requested stem, the medium of the run, artifacts, and whether the run will write a sidecar, and returns an available stem with an open file for the first artifact: the requested stem, or the medium's default stem when none was requested, taken bare when free and otherwise under the first free suffix. It creates that file exclusively and returns an error when the path cannot be created for a reason other than a name conflict.
-
-<a name="resultsDest"></a>
-## func [resultsDest](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L104>)
-
-```go
-func resultsDest() io.Writer
-```
-
-resultsDest returns the active destination for regular results output. The default destination reads the process's standard output at call time rather than reading it once at startup; a process without a standard output discards the output.
-
-<a name="resultsDestName"></a>
-## func [resultsDestName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/results.go#L118>)
-
-```go
-func resultsDestName() string
-```
-
-resultsDestName returns the name of the active results destination: the results file while one is open, otherwise the process's standard output.
+requirementSentence returns the styled requirement label, or empty text for an optional parameter.
 
 <a name="sameDeclaration"></a>
-## func [sameDeclaration](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L608>)
+## func [sameDeclaration](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L539>)
 
 ```go
-func sameDeclaration(first, second *parameters.Param) bool
+func sameDeclaration(first, second *params.Definition) bool
 ```
 
-sameDeclaration takes two parameter declarations and reports whether they state the same constraints: allowed values, range bounds, repeat maximum, size bounds, rule description, and requirement. A model's expanded comment does not count.
+sameDeclaration compares display constraints, requirements, and rule descriptions. Provider parameter names and model\-specific comments do not affect equality.
 
 <a name="sameSizeBounds"></a>
-## func [sameSizeBounds](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L625>)
+## func [sameSizeBounds](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L555>)
 
 ```go
-func sameSizeBounds(first, second *parameters.SizeBounds) bool
+func sameSizeBounds(first, second *params.SizeBounds) bool
 ```
 
-sameSizeBounds takes two optional size bounds and reports whether both are absent or both state the same bounds.
+sameSizeBounds reports whether two optional size constraints are both absent or equal.
 
 <a name="scopeNote"></a>
-## func [scopeNote](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L533>)
+## func [scopeNote](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L470>)
 
 ```go
-func scopeNote(models []core.Model, groups []declarationGroup) string
+func scopeNote(models []catalog.Model, groups []declarationGroup) string
 ```
 
-scopeNote takes the models of a medium and the declaration groups of one flag, and returns the sentence naming the shorter list when not every model declares the flag: the models not declaring it when they are fewer than the declaring ones, otherwise the models declaring it; an empty string when every model declares it.
+scopeNote describes partial flag support using the shorter model list. Ties name supporting models; universal support needs no note.
 
 <a name="sectionOptions"></a>
-## func [sectionOptions](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L440>)
+## func [sectionOptions](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L384>)
 
 ```go
-func sectionOptions(models []core.Model, paramFlags []parameters.ParamFlag, style pageStyle) [][]string
+func sectionOptions(models []catalog.Model, paramFlags []params.Flag, style pageStyle) [][]string
 ```
 
-sectionOptions takes the models of one medium, the parameter enumeration, and the page style, and returns one option per flag at least one model declares, in the enumeration's order: a single option where the declaring models declare the flag alike, and otherwise the heading over the flag's description, comment, and examples, then one introduced group per declaration; either form ends with the scope note when models of the medium lack the flag.
-
-<a name="selectedMediaOrder"></a>
-## func [selectedMediaOrder](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L377>)
-
-```go
-func selectedMediaOrder(printImage, printVideo bool) []media.Kind
-```
-
-selectedMediaOrder takes the media selections and returns the selected media in page order, image before video.
+sectionOptions returns options in flag\-record order and groups differing model constraints. When some models lack an option, its scope note names either the supporting models or the models that lack it, whichever list is shorter.
 
 <a name="serverMessage"></a>
-## func [serverMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L388>)
+## func [serverMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L423>)
 
 ```go
 func serverMessage(err error) string
 ```
 
-serverMessage returns the provider server text an error chain carries: the extracted server\-message context, or a provider\-reported generation diagnostic, escaped for the terminal. It returns an empty string when the chain carries neither.
+serverMessage returns the provider's explanation from any matching cause.
 
 <a name="sharedFlagNames"></a>
-## func [sharedFlagNames](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L786>)
+## func [sharedFlagNames](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L694>)
 
 ```go
-func sharedFlagNames(models []core.Model, paramFlags []parameters.ParamFlag) []string
+func sharedFlagNames(models []catalog.Model, paramFlags []params.Flag) []string
 ```
 
-sharedFlagNames takes the models of one medium and the parameter enumeration, and returns the dashed long name of every flag any of the models declares, in the enumeration's order.
+sharedFlagNames returns each flag declared by at least one model, in flag declaration order.
 
 <a name="shellArgument"></a>
-## func [shellArgument](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L288>)
+## func [shellArgument](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L271>)
 
 ```go
 func shellArgument(pattern string) string
 ```
 
-shellArgument takes a pattern and returns it as the argument a shell passes through unchanged: bare when it holds no escape, and otherwise within single quotes.
+shellArgument encloses patterns containing backslashes in single quotes.
 
 <a name="sizeBoundsNotice"></a>
-## func [sizeBoundsNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L84>)
+## func [sizeBoundsNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/constraints.go#L75>)
 
 ```go
-func sizeBoundsNotice(bounds parameters.SizeBounds) string
+func sizeBoundsNotice(bounds params.SizeBounds) string
 ```
 
 sizeBoundsNotice takes size constraints and returns a notice containing each positive bound.
 
-<a name="stderrIsTTY"></a>
-## func [stderrIsTTY](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L64>)
-
-```go
-func stderrIsTTY() bool
-```
-
-stderrIsTTY reports whether standard error is a character device.
-
-<a name="suffixedName"></a>
-## func [suffixedName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L279>)
-
-```go
-func suffixedName(name string, suffixNumber int) string
-```
-
-suffixedName takes a filename stem and a suffix number and returns the stem with the two\-digit suffix appended.
-
 <a name="textWidth"></a>
-## func [textWidth](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L23>)
+## func [textWidth](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L18>)
 
 ```go
 func textWidth(text string) int
 ```
 
-textWidth takes text and returns the number of columns it occupies, one per rune, terminal style sequences occupying none.
-
-<a name="uniqueStem"></a>
-## func [uniqueStem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L343>)
-
-```go
-func uniqueStem(dir, stem string, artifacts []core.Artifact, writesSidecar bool) string
-```
-
-uniqueStem takes a directory, requested stem, and files the run will write. It returns the requested stem when every destination is available or the first available two\-digit variant beginning at 02.
+textWidth counts runes after removing terminal style sequences, treating each remaining rune as one column.
 
 <a name="usageErrorText"></a>
-## func [usageErrorText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L193>)
+## func [usageErrorText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L150>)
 
 ```go
 func usageErrorText(err error, debugMode bool) string
 ```
 
-usageErrorText takes an error and raw\-error selection and returns the error text that precedes compact usage guidance.
+usageErrorText returns the usage explanation or the complete debug diagnostic.
+
+<a name="userErrorText"></a>
+## func [userErrorText](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L141>)
+
+```go
+func userErrorText(err error, providerDisplayName, modelName string, debugMode bool) string
+```
+
+userErrorText selects the user\-facing explanation or full diagnostic chain.
 
 <a name="wrapParagraph"></a>
-## func [wrapParagraph](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L96>)
+## func [wrapParagraph](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/help.go#L71>)
 
 ```go
 func wrapParagraph(steps int, paragraphText string) string
 ```
 
-wrapParagraph takes one paragraph and the number of indentation steps to lay it out at, and returns it broken to the page width and indented to that level, with every run of whitespace collapsed to a single space. A paragraph holding no words returns an empty string, and a term wider than the margin overruns it rather than being split.
+wrapParagraph wraps and indents one paragraph, collapsing whitespace. Indivisible terms may exceed the available width; empty paragraphs return no text.
 
 <a name="wrapSentences"></a>
-## func [wrapSentences](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L725>)
+## func [wrapSentences](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L640>)
 
 ```go
 func wrapSentences(sentences []string) []string
 ```
 
-wrapSentences takes sentences and returns them wrapped within the details column, each sentence starting a line; an empty sentence yields no line.
+wrapSentences wraps each nonempty sentence separately within the details column.
 
 <a name="wrapWide"></a>
-## func [wrapWide](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L75>)
+## func [wrapWide](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L63>)
 
 ```go
 func wrapWide(flowedLine string, width int) []string
 ```
 
-wrapWide takes one flowed line and the width, and returns the line as it is when it fits or holds a single term, and otherwise wrapped on its spaces.
+wrapWide wraps text at spaces only when it exceeds the requested width.
 
 <a name="wrapWords"></a>
-## func [wrapWords](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L87>)
+## func [wrapWords](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/layout.go#L73>)
 
 ```go
 func wrapWords(text string, width int) []string
 ```
 
-wrapWords takes text and a width and returns the text wrapped on its spaces within the width, every run of whitespace collapsed to one space; a word wider than the width overruns alone. Text holding no words returns no lines.
+wrapWords collapses whitespace and wraps words within the requested width. An indivisible word may exceed the width; whitespace\-only input returns no lines.
 
 <a name="writePage"></a>
-## func [writePage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L135>)
+## func [writePage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L119>)
 
 ```go
-func writePage(name Page, data any)
+func writePage(destination io.Writer, name pageName, data any) error
 ```
 
-writePage takes a page name and its data, and writes the rendered page to standard output.
-
-A template failure is a defect in this program's own embedded copy, not in the user's input, so writePage reports it on standard error rather than printing a half\-built page.
+writePage renders the named page completely before writing it to destination. Parse, execution, and delivery failures reach the command unchanged.
 
 <a name="Adjustment"></a>
-## type [Adjustment](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L44-L49>)
+## type [Adjustment](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L46-L51>)
 
 Adjustment is one user\-facing flag adjustment made before provider submission.
+
+- Flag: the permanent parameter flag identifier
+- Submitted, Used: the original and adjusted values in display form
+- Notice: the rendered explanation of the change
 
 ```go
 type Adjustment struct {
@@ -2084,18 +1501,63 @@ type Adjustment struct {
 ```
 
 <a name="AdjustmentRecords"></a>
-### func [AdjustmentRecords](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L86>)
+### func [AdjustmentRecords](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L94>)
 
 ```go
-func AdjustmentRecords(paramFlags []parameters.ParamFlag, paramChanges []parameters.ParamChange) []Adjustment
+func AdjustmentRecords(paramFlags []params.Flag, paramChanges []params.Adjustment, flagNames map[params.FlagType]string) []Adjustment
 ```
 
-AdjustmentRecords takes the parameter\-flag definitions and parameter\-change records and returns the records' user\-facing JSON representation without provider parameter names.
+AdjustmentRecords formats parameter changes as user\-facing JSON adjustment records.
+
+<a name="CatalogPage"></a>
+## type [CatalogPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L17-L20>)
+
+CatalogPage contains the providers, models, and parameter descriptions selected for a listing or information document. Its values are independent of the catalog. Empty listings retain an empty providers array; unneeded flag records are omitted.
+
+- Providers: the selected provider and model descriptions
+- Flags: the flag definitions referenced by information pages
+
+```go
+type CatalogPage struct {
+    Providers []providerRecord `json:"providers"`
+    Flags     []params.Flag    `json:"flags,omitempty"`
+}
+```
+
+<a name="ListingPage"></a>
+### func [ListingPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L86>)
+
+```go
+func ListingPage(pairs []catalog.ProvModelPair, withModels, includeAliases bool) CatalogPage
+```
+
+ListingPage describes already selected provider/model pairs. Providers sort by display name, ignoring case, with aggregators last; models sort by identifier. Models and aliases appear only when requested. Listings never include parameters.
+
+<a name="ModelInfoPage"></a>
+### func [ModelInfoPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L129>)
+
+```go
+func ModelInfoPage(pair *catalog.ProvModelPair, paramFlags []params.Flag) CatalogPage
+```
+
+ModelInfoPage describes one provider/model pair and its referenced parameter flags.
+
+<a name="ProviderInfoPage"></a>
+### func [ProviderInfoPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L119>)
+
+```go
+func ProviderInfoPage(prov *catalog.Provider, pairs []catalog.ProvModelPair, paramFlags []params.Flag) CatalogPage
+```
+
+ProviderInfoPage describes a provider and its already selected models in input order, followed by the referenced parameter flags in their declaration order.
 
 <a name="FailureOutcome"></a>
-## type [FailureOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L31-L34>)
+## type [FailureOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L33-L36>)
 
 FailureOutcome is the JSON result for a command that failed before producing a more specific outcome.
+
+- Status: the failed command status
+- Errors: the rendered command failure messages
 
 ```go
 type FailureOutcome struct {
@@ -2105,18 +1567,29 @@ type FailureOutcome struct {
 ```
 
 <a name="NewFailureOutcome"></a>
-### func [NewFailureOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L114>)
+### func [NewFailureOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L120>)
 
 ```go
 func NewFailureOutcome(err error, providerDisplayName, modelName string, debugMode, usageError bool) FailureOutcome
 ```
 
-NewFailureOutcome takes a command error and returns its user\-facing JSON error result.
+NewFailureOutcome returns the failure document for a command or usage error.
 
 <a name="GenerationOutcome"></a>
-## type [GenerationOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L52-L64>)
+## type [GenerationOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L64-L76>)
 
 GenerationOutcome is the complete user\-facing JSON result of one generation request.
+
+- Timestamp: the UTC start time in RFC 3339 format
+- DurationMS: the elapsed run time in milliseconds
+- Status: the completed, canceled, or failed result
+- Provider, Model: the selected catalog identifiers
+- Prompt: the submitted prompt
+- Flags: the submitted values keyed by permanent flag identifier
+- Adjustments: the changes made before submission
+- Artifacts: the successfully saved files
+- Notices: the rendered warnings and adjustment explanations
+- Errors: the rendered run failure messages
 
 ```go
 type GenerationOutcome struct {
@@ -2135,178 +1608,34 @@ type GenerationOutcome struct {
 ```
 
 <a name="NewGenerationOutcome"></a>
-### func [NewGenerationOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L68>)
+### func [NewGenerationOutcome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L80>)
 
 ```go
 func NewGenerationOutcome(startedAt time.Time, prompt string, flags map[string]any) *GenerationOutcome
 ```
 
-NewGenerationOutcome takes a start time, prompt, and submitted flags and returns the initial JSON generation result.
+NewGenerationOutcome initializes a generation result with a UTC start time. The result retains the supplied flag map without copying it.
 
-<a name="Page"></a>
-## type [Page](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L28>)
-
-Page names the templates this package renders. Each name indexes one parsed template in pageTemplates.
-
-- pageProviderInfo: the standard provider page
-- pageProviderSummary: the aggregator summary
-- pageModelInfo: the model card
-- pageHelpTips: the tips section of the general help page
-- pageListNested: the default listing of providers with their models
-- pageListProviders: the providers\-only listing
-- pageListModels: the flat model directory
+<a name="GenerationOutcome.Complete"></a>
+### func \(\*GenerationOutcome\) [Complete](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L170>)
 
 ```go
-type Page string
+func (outcome *GenerationOutcome) Complete(startedAt time.Time, providerDisplayName, modelName string, generationErr error, debugMode bool)
 ```
 
-<a name="pageProviderInfo"></a>The page names, one per template.
-
-```go
-const (
-    pageProviderInfo    Page = "provider-info"
-    pageProviderSummary Page = "provider-summary"
-    pageModelInfo       Page = "model-info"
-    pageHelpTips        Page = "help-tips"
-    pageListNested      Page = "list-nested"
-    pageListProviders   Page = "list-providers"
-    pageListModels      Page = "list-models"
-)
-```
+Complete records the elapsed time and final status, and appends a formatted generation error when one is present.
 
 <a name="SavedFile"></a>
-## type [SavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L38-L41>)
+## type [SavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/json.go#L40>)
 
 SavedFile is one file written by a generation, in the same user\-facing terms as the regular Saved line.
 
 ```go
-type SavedFile struct {
-    Path  string `json:"path"`
-    Bytes int64  `json:"bytes"`
-}
+type SavedFile = artifact.SavedFile
 ```
-
-<a name="WriteArtifacts"></a>
-### func [WriteArtifacts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L96>)
-
-```go
-func WriteArtifacts(dir, requestedStem string, mediaKind media.Kind, artifacts []core.Artifact, writesSidecar bool) (string, []SavedFile, error)
-```
-
-WriteArtifacts takes a directory, requested stem, the medium of the run, artifacts, and whether the run will write a sidecar. It writes the files under one collision\-free stem and returns the stem with a fact for each completed file. It returns an error when no artifacts are supplied or a file operation fails; the facts of the files completed before the failure come back with the error, and those files stay on disk. Every file\-backed artifact's temporary source is removed.
-
-Every file is claimed with an exclusive create at the moment it is written, so no write replaces a file that exists. A name taken between the stem resolution and a later artifact is saved under the first free suffixed name, which its fact reports.
-
-<a name="WriteSidecar"></a>
-### func [WriteSidecar](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L137>)
-
-```go
-func WriteSidecar(dir, stem string, content []byte) (SavedFile, error)
-```
-
-WriteSidecar takes a directory, stem, and content and writes the content to a Markdown file beside the artifacts, claimed exclusively so it never replaces an existing file. It returns the saved\-file fact, or an error when the file cannot be written.
-
-<a name="commitFile"></a>
-### func [commitFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L164>)
-
-```go
-func commitFile(file *os.File, dstPath string, data []byte) (SavedFile, error)
-```
-
-commitFile writes and closes an open destination file and returns the saved\-file fact.
-
-<a name="copyTempFile"></a>
-### func [copyTempFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L182>)
-
-```go
-func copyTempFile(file *os.File, dstPath, srcPath string) (SavedFile, error)
-```
-
-copyTempFile takes an open destination file, its path, and a temporary source path, copies the source into the destination, closes it, and removes the source. It removes the partial destination after a failed copy and returns an error for any failed file operation.
-
-<a name="writeArtifact"></a>
-### func [writeArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L226>)
-
-```go
-func writeArtifact(dir, name string, artifact core.Artifact) (SavedFile, error)
-```
-
-writeArtifact takes a directory, the artifact's filename without its extension, and the artifact, claims the first free destination exclusively, writes the artifact into it, and returns the saved\-file fact.
-
-<a name="writeFile"></a>
-### func [writeFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L238>)
-
-```go
-func writeFile(dir, name, ext string, data []byte) (SavedFile, error)
-```
-
-writeFile takes a directory, a filename without its extension, the extension, and the content, claims the first free destination exclusively, and returns the saved\-file fact after a successful write.
-
-<a name="writeToReservedFile"></a>
-### func [writeToReservedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/disk.go#L155>)
-
-```go
-func writeToReservedFile(file *os.File, dstPath string, artifact core.Artifact) (SavedFile, error)
-```
-
-writeToReservedFile takes a reserved destination file, its path, and an artifact, writes the artifact's content into the file, and returns the saved\-file fact. An artifact held in memory is written directly; one held in a temporary file is copied in, and the temporary file is then removed.
-
-<a name="Spinner"></a>
-## type [Spinner](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L46-L55>)
-
-Spinner renders the terminal generation status line — a braille frame, the word Generating, the medium of the run, and a dimmed elapsed counter — animated until Finish.
-
-```go
-type Spinner struct {
-    startedAt    time.Time
-    ticker       *time.Ticker
-    done         chan struct{}
-    animated     chan struct{}
-    media        media.Kind
-    frameIndex   int
-    finished     bool
-    finalElapsed time.Duration
-}
-```
-
-<a name="StartSpinner"></a>
-### func [StartSpinner](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L60>)
-
-```go
-func StartSpinner(mediaKind media.Kind) *Spinner
-```
-
-StartSpinner takes the medium of the run, renders the first status\-line frame on the results destination immediately, begins the animation, and returns the running Spinner.
-
-<a name="Spinner.Finish"></a>
-### func \(\*Spinner\) [Finish](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L79>)
-
-```go
-func (s *Spinner) Finish() time.Duration
-```
-
-Finish stops the animation, erases the status line, and returns the counter's final elapsed duration. A repeated call returns the first call's duration without further writes.
-
-<a name="Spinner.animate"></a>
-### func \(\*Spinner\) [animate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L97>)
-
-```go
-func (s *Spinner) animate()
-```
-
-animate advances and renders the status line on every frame tick until the finish signal arrives.
-
-<a name="Spinner.render"></a>
-### func \(\*Spinner\) [render](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/progress.go#L113>)
-
-```go
-func (s *Spinner) render()
-```
-
-render writes one status\-line frame, returning the cursor to the line start so each frame replaces the previous one.
 
 <a name="apiKeySettings"></a>
-## type [apiKeySettings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L78-L81>)
+## type [apiKeySettings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L69-L72>)
 
 apiKeySettings identifies the environment variable and the provider key under api\-keys in the user's config file.
 
@@ -2323,7 +1652,10 @@ type apiKeySettings struct {
 <a name="compactUsageData"></a>
 ## type [compactUsageData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L29-L32>)
 
+compactUsageData supplies the diagnostic prefix and explanation to the usage template.
 
+- Prefix: the selected error prefix and styling
+- Error: the user\-facing explanation or debug diagnostic
 
 ```go
 type compactUsageData struct {
@@ -2333,7 +1665,7 @@ type compactUsageData struct {
 ```
 
 <a name="declarationGroup"></a>
-## type [declarationGroup](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L193-L196>)
+## type [declarationGroup](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L184-L187>)
 
 declarationGroup holds the models declaring one flag the same way.
 
@@ -2342,28 +1674,28 @@ declarationGroup holds the models declaring one flag the same way.
 
 ```go
 type declarationGroup struct {
-    declaration parameters.Param
+    declaration params.Definition
     modelIDs    []string
 }
 ```
 
 <a name="declarationGroups"></a>
-### func [declarationGroups](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L574>)
+### func [declarationGroups](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L507>)
 
 ```go
-func declarationGroups(models []core.Model, flagID parameters.FlagType) []declarationGroup
+func declarationGroups(models []catalog.Model, flagID params.FlagType) []declarationGroup
 ```
 
-declarationGroups takes models and a flag and returns one group per distinct declaration of the flag among the models declaring it, in the models' first\-occurrence order; no group when no model declares it.
+declarationGroups groups models with identical flag constraints in first\-occurrence order.
 
 <a name="helpTipsPage"></a>
-## type [helpTipsPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/helptips.go#L16-L22>)
+## type [helpTipsPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/helptips.go#L10-L16>)
 
-helpTipsPage carries the data the tips section of the general help page names.
+helpTipsPage contains the heading, provider ID, examples, and styling for general\-help tips.
 
 - Heading: the heading that opens the section
 - ID: the catalog identifier of the provider the examples draw from
-- Dim, Reset: the dim shade and the reset the template styles the rule with
+- Dim, Reset: ANSI codes for dimming the rule and restoring normal text
 - Footer: the examples, drawn from the provider's models
 
 ```go
@@ -2377,7 +1709,7 @@ type helpTipsPage struct {
 ```
 
 <a name="introducedGroup"></a>
-## type [introducedGroup](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L480-L483>)
+## type [introducedGroup](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L423-L426>)
 
 introducedGroup pairs a declaration group with the intro line that opens it on the page.
 
@@ -2392,16 +1724,16 @@ type introducedGroup struct {
 ```
 
 <a name="introducedGroups"></a>
-### func [introducedGroups](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L489>)
+### func [introducedGroups](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L430>)
 
 ```go
 func introducedGroups(groups []declarationGroup) []introducedGroup
 ```
 
-introducedGroups takes the declaration groups of one flag and returns them with their intros in page order: the group holding more models than any other first, in the remainder form, then the rest in their given order, each naming its models; groups tied for the largest are all named.
+introducedGroups places a uniquely largest model group first with a remainder heading. Other groups retain their order and name their models; tied largest groups are also named.
 
 <a name="modelCardPage"></a>
-## type [modelCardPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L96-L111>)
+## type [modelCardPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L87-L102>)
 
 modelCardPage carries the model card's data.
 
@@ -2415,8 +1747,8 @@ modelCardPage carries the model card's data.
 - ProviderName, ProviderID: the provider's display name and catalog identifier
 - Credentials: the environment variable and user\-config key for the API key
 - LabelWidth: the column the template pads the labels to
-- Dim, Reset: the dim shade and the reset the template styles the column header and rule with
-- Options: one option per declared parameter, each its lines from the page indent
+- Dim, Reset: ANSI codes for dimmed column headers and rules, and for restoring normal text
+- Options: rendered lines for each declared parameter option
 
 ```go
 type modelCardPage struct {
@@ -2438,24 +1770,70 @@ type modelCardPage struct {
 ```
 
 <a name="modelCardData"></a>
-### func [modelCardData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L240>)
+### func [modelCardData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L228>)
 
 ```go
-func modelCardData(provModelPair *core.ProvModelPair, paramFlags []parameters.ParamFlag, style pageStyle) modelCardPage
+func modelCardData(provModelPair *catalog.ProvModelPair, paramFlags []params.Flag, style pageStyle) modelCardPage
 ```
 
-modelCardData takes a provider\-model pair, the parameter enumeration, and the page style, and returns the model card's page data.
+modelCardData prepares a model card with its identity and declared parameter details.
+
+<a name="modelRecord"></a>
+## type [modelRecord](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L50-L60>)
+
+modelRecord contains a displayed model's identity and optional parameter descriptions.
+
+- ID, Name: the catalog identifier and published model name
+- Description: the catalog description
+- Media: the generated medium
+- Family: the related model family
+- Aliases: the included model selection aliases
+- PromptIgnored: whether the model disregards the prompt
+- DocsURL: the model documentation URL
+- Params: the accepted parameter descriptions
+
+```go
+type modelRecord struct {
+    ID            string            `json:"id"`
+    Name          string            `json:"name"`
+    Description   string            `json:"description,omitempty"`
+    Media         media.Kind        `json:"media"`
+    Family        string            `json:"family,omitempty"`
+    Aliases       []string          `json:"aliases,omitempty"`
+    PromptIgnored bool              `json:"promptIgnored,omitempty"`
+    DocsURL       string            `json:"docsURL,omitempty"`
+    Params        []parameterRecord `json:"params,omitempty"`
+}
+```
+
+<a name="detailedModel"></a>
+### func [detailedModel](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L160>)
+
+```go
+func detailedModel(model *catalog.Model) modelRecord
+```
+
+detailedModel adds independent parameter descriptions to the displayed identity.
+
+<a name="modelIdentity"></a>
+### func [modelIdentity](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L146>)
+
+```go
+func modelIdentity(model *catalog.Model, includeAliases bool) modelRecord
+```
+
+modelIdentity prepares the displayed model fields and an independent alias list.
 
 <a name="pageFooter"></a>
-## type [pageFooter](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L253-L259>)
+## type [pageFooter](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L237-L243>)
 
-pageFooter carries the data the footer's template text names.
+pageFooter contains examples and explanatory sentences for the footer template.
 
 - Examples: the usage examples drawn from the page's models
 - AnyPartArgument: the any\-part term as a shell argument: bare, or single\-quoted when it carries escapes
 - KeysSentence: the examples sentence naming the example keys, wrapped
 - MatchSentence: the sentence naming what the keyword examples match, wrapped
-- VendorExamples: per selected medium on the summary, the media filter and the top vendor
+- VendorExamples: the media filter and highest\-count vendor for each selected medium
 
 ```go
 type pageFooter struct {
@@ -2468,18 +1846,49 @@ type pageFooter struct {
 ```
 
 <a name="footerData"></a>
-### func [footerData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L265>)
+### func [footerData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L246>)
 
 ```go
-func footerData(providerID string, shown []core.Model) pageFooter
+func footerData(providerID string, shown []catalog.Model) pageFooter
 ```
 
-footerData takes a provider ID and the models a page shows, and returns the footer's data: the examples, the sentence naming the example keys, and the sentence naming what the keyword examples match, each wrapped within the page width.
+footerData prepares model and search examples with explanatory text wrapped to the page width.
+
+<a name="pageName"></a>
+## type [pageName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/page.go#L22>)
+
+pageName names the templates this package renders. Each name indexes one parsed template in pageTemplates.
+
+- pageProviderInfo: the standard provider page
+- pageProviderSummary: the aggregator summary
+- pageModelInfo: the model card
+- pageHelpTips: the tips section of the general help page
+- pageListNested: the default listing of providers with their models
+- pageListProviders: the providers\-only listing
+- pageListModels: the flat model directory
+
+```go
+type pageName string
+```
+
+<a name="pageProviderInfo"></a>The page names, one per template.
+
+```go
+const (
+    pageProviderInfo    pageName = "provider-info"
+    pageProviderSummary pageName = "provider-summary"
+    pageModelInfo       pageName = "model-info"
+    pageHelpTips        pageName = "help-tips"
+    pageListNested      pageName = "list-nested"
+    pageListProviders   pageName = "list-providers"
+    pageListModels      pageName = "list-models"
+)
+```
 
 <a name="pageStyle"></a>
-## type [pageStyle](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L67-L72>)
+## type [pageStyle](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L58-L63>)
 
-pageStyle holds the styling codes an info page renders with, each empty off a terminal so the page renders plain.
+pageStyle contains the ANSI codes used by an info page. Empty codes produce plain text.
 
 - steel: the steel\-blue accent, on option headings
 - clay: the clay accent, on the required classification and on values
@@ -2496,31 +1905,58 @@ type pageStyle struct {
 ```
 
 <a name="pageStyleValues"></a>
-### func [pageStyleValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L230>)
+### func [pageStyleValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L219>)
 
 ```go
-func pageStyleValues() pageStyle
+func pageStyleValues(styled bool) pageStyle
 ```
 
-pageStyleValues returns the info pages' styling codes: the two accents and the dim shade when standard output is a terminal, and otherwise empty codes so the pages render plain.
+pageStyleValues returns the selected info\-page colors, or empty strings for plain text.
 
-<a name="providerPage"></a>
-## type [providerPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L123-L135>)
+<a name="parameterRecord"></a>
+## type [parameterRecord](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L71-L81>)
 
-providerPage carries the standard provider page's data.
+parameterRecord describes an accepted parameter without its provider request key.
 
-- Name: the provider's display name
-- ID: the provider's catalog identifier
-- DocsURL: the provider's documentation address, empty when it declares none
-- Credentials: the environment variable and user\-config key for the API key
-- CatalogMedia: the model counts per medium
-- ModelCount: the provider's model count
-- LabelWidth, IDWidth: the columns the template pads to
-- Dim, Reset: the dim shade and the reset the template styles the column headers and rules with
-- Sections: one section per selected medium the provider declares a model for
+- FlagID: the permanent parameter flag identifier
+- Required: whether the parameter is required
+- AllowedValues: the accepted values, when constrained to a set
+- MinValue, MaxValue: the optional inclusive numeric limits
+- MaxMultiple: the maximum number of repeated values
+- CustomSize: the constraints on custom image dimensions
+- RuleDescription: the explanation of a conditional parameter rule
+- ModelInfoComment: the extra parameter guidance on the model information page
 
 ```go
-type providerPage struct {
+type parameterRecord struct {
+    FlagID           params.FlagType          `json:"flagID"`
+    Required         bool                     `json:"required,omitempty"`
+    AllowedValues    []string                 `json:"allowedValues,omitempty"`
+    MinValue         params.Nullable[float64] `json:"minValue,omitzero"`
+    MaxValue         params.Nullable[float64] `json:"maxValue,omitzero"`
+    MaxMultiple      int                      `json:"maxMultiple,omitempty"`
+    CustomSize       *params.SizeBounds       `json:"customSize,omitempty"`
+    RuleDescription  string                   `json:"ruleDescription,omitempty"`
+    ModelInfoComment string                   `json:"modelInfoComment,omitempty"`
+}
+```
+
+<a name="providerHeader"></a>
+## type [providerHeader](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L114-L125>)
+
+providerHeader contains the identity, credential guidance, and catalog totals shared by detailed provider pages and aggregator summaries.
+
+- Name, ID: the published name and catalog identifier
+- DocsURL: the provider documentation URL
+- Credentials: the supported credential settings
+- CatalogMedia: the generated media labels
+- ModelCount: the number of models before display filtering
+- LabelWidth: the padded width of identity labels
+- Aggregator: whether to describe models by vendor
+- Dim, Reset: the terminal styling sequences, empty for plain output
+
+```go
+type providerHeader struct {
     Name         string
     ID           string
     DocsURL      string
@@ -2528,32 +1964,102 @@ type providerPage struct {
     CatalogMedia string
     ModelCount   int
     LabelWidth   int
-    IDWidth      int
+    Aggregator   bool
     Dim          string
     Reset        string
-    Sections     []providerSection
+}
+```
+
+<a name="providerHeaderData"></a>
+### func [providerHeaderData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L331>)
+
+```go
+func providerHeaderData(prov *catalog.Provider, style pageStyle) providerHeader
+```
+
+providerHeaderData prepares the common identity and full\-catalog totals.
+
+<a name="providerPage"></a>
+## type [providerPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L131-L136>)
+
+providerPage contains a common header and the selected model and option sections.
+
+- providerHeader: the shared identity and catalog totals
+- IDWidth: the model identifier column width
+- Sections: the selected models and options grouped by medium
+
+```go
+type providerPage struct {
+    providerHeader
+
+    IDWidth  int
+    Sections []providerSection
 }
 ```
 
 <a name="providerPageData"></a>
-### func [providerPageData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L279>)
+### func [providerPageData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L266>)
 
 ```go
-func providerPageData(prov *core.Provider, paramFlags []parameters.ParamFlag, printImage, printVideo bool, style pageStyle) providerPage
+func providerPageData(prov *catalog.Provider, models []catalog.Model, paramFlags []params.Flag, style pageStyle) providerPage
 ```
 
-providerPageData takes a provider, the parameter enumeration, the media selections, and the page style, and returns the standard provider page's data.
+providerPageData prepares the standard provider page from its selected models, parameter declarations, and page style.
+
+<a name="providerRecord"></a>
+## type [providerRecord](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L30-L39>)
+
+providerRecord contains public identity and selected models, without request settings.
+
+- ID, DisplayName: the catalog identifier and published provider name
+- APIKeyEnvVar: the environment variable that supplies the credential
+- APIKeyConfigKey: the credential key in the user configuration
+- Aggregator: whether the provider serves models from multiple vendors
+- DefaultModel: the provider default model identifier
+- DocsURL: the provider documentation URL
+- Models: the selected model descriptions
+
+```go
+type providerRecord struct {
+    ID              string        `json:"id"`
+    DisplayName     string        `json:"displayName"`
+    APIKeyEnvVar    string        `json:"apiKeyEnvVar"`
+    APIKeyConfigKey string        `json:"apiKeyConfigKey,omitempty"`
+    Aggregator      bool          `json:"aggregator,omitempty"`
+    DefaultModel    string        `json:"defaultModel,omitempty"`
+    DocsURL         string        `json:"docsURL,omitempty"`
+    Models          []modelRecord `json:"models,omitempty"`
+}
+```
+
+<a name="providerIdentity"></a>
+### func [providerIdentity](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L137>)
+
+```go
+func providerIdentity(prov *catalog.Provider) providerRecord
+```
+
+providerIdentity prepares public provider identity, including its user\-config key.
+
+<a name="providerRecord.ModelsForMedia"></a>
+### func \(\*providerRecord\) [ModelsForMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/catalog.go#L208>)
+
+```go
+func (provider *providerRecord) ModelsForMedia(mediaKind media.Kind) []modelRecord
+```
+
+ModelsForMedia returns the listed models of the requested medium in their existing order.
 
 <a name="providerSection"></a>
-## type [providerSection](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L151-L157>)
+## type [providerSection](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L152-L158>)
 
 providerSection carries one medium's part of the standard provider page.
 
 - Media: the medium the section covers
 - ModelCount: the section's model count
 - HasAliases: whether any model of the section declares aliases
-- Roster: the section's models, each its ID with its aliases, from the page indent
-- Options: the section's options, each its lines from the page indent
+- Roster: rendered model IDs and aliases for the section
+- Options: rendered lines for each option in the section
 
 ```go
 type providerSection struct {
@@ -2566,21 +2072,21 @@ type providerSection struct {
 ```
 
 <a name="providerSectionData"></a>
-### func [providerSectionData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L308>)
+### func [providerSectionData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L282>)
 
 ```go
-func providerSectionData(mediaKind media.Kind, models []core.Model, paramFlags []parameters.ParamFlag, style pageStyle) providerSection
+func providerSectionData(mediaKind media.Kind, models []catalog.Model, paramFlags []params.Flag, style pageStyle) providerSection
 ```
 
-providerSectionData takes a medium, the provider's models of that medium, the parameter enumeration, and the page style, and returns the medium's section: the model roster and the options.
+providerSectionData prepares one medium's model roster and option descriptions.
 
 <a name="summaryMediaLines"></a>
-## type [summaryMediaLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L185-L188>)
+## type [summaryMediaLines](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L176-L179>)
 
 summaryMediaLines carries one medium's lines on the summary.
 
 - Media: the medium
-- Lines: the lines
+- Lines: the rendered vendor counts or shared parameter labels
 
 ```go
 type summaryMediaLines struct {
@@ -2590,48 +2096,38 @@ type summaryMediaLines struct {
 ```
 
 <a name="summaryPage"></a>
-## type [summaryPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L167-L180>)
+## type [summaryPage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L165-L171>)
 
-summaryPage carries the aggregator summary's data.
+summaryPage contains a common provider header and the selected aggregator summary.
 
-- Name, ID, DocsURL, Credentials: as on the provider page
-- LabelWidth: the columns the template pads to
-- Dim, Reset: the dim shade and the reset the template styles the rules with
-- CatalogMedia, ModelCount: as on the provider page
-- Vendors: per selected medium, the vendor counts
-- SharedFlags: per selected medium, the dashed flag names flowed into lines
-- Footer: the footer's examples, drawn from the models the summary covers
+- providerHeader: the shared identity and catalog totals
+- Vendors: the vendor counts grouped by medium
+- SharedFlags: flags declared by at least one selected model, grouped by medium
+- Footer: the model and search examples
 
 ```go
 type summaryPage struct {
-    Name         string
-    ID           string
-    DocsURL      string
-    Credentials  apiKeySettings
-    CatalogMedia string
-    ModelCount   int
-    LabelWidth   int
-    Dim          string
-    Reset        string
-    Vendors      []summaryMediaLines
-    SharedFlags  []summaryMediaLines
-    Footer       pageFooter
+    providerHeader
+
+    Vendors     []summaryMediaLines
+    SharedFlags []summaryMediaLines
+    Footer      pageFooter
 }
 ```
 
 <a name="summaryData"></a>
-### func [summaryData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L325>)
+### func [summaryData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L298>)
 
 ```go
-func summaryData(prov *core.Provider, paramFlags []parameters.ParamFlag, printImage, printVideo bool, style pageStyle) summaryPage
+func summaryData(prov *catalog.Provider, models []catalog.Model, paramFlags []params.Flag, style pageStyle, mediaFilterFlags map[media.Kind]string) summaryPage
 ```
 
-summaryData takes a provider, the parameter enumeration, the media selections, and the page style, and returns the aggregator summary's data.
+summaryData prepares the aggregator summary from its selected models, parameter declarations, page style, and command filter names.
 
 <a name="usageExamples"></a>
-## type [usageExamples](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L43-L52>)
+## type [usageExamples](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L36-L45>)
 
-usageExamples carries the examples a page's footer names.
+usageExamples contains the model keys and search terms shown in a page footer.
 
 - Keys: one fully qualified key per medium the models span, image first
 - Keyword: a term some model's slash\-delimited token begins with
@@ -2639,7 +2135,7 @@ usageExamples carries the examples a page's footer names.
 - AliasKeyword: a term some alias begins with, empty when no model declares an alias
 - AliasMatch: the alias the alias keyword matches
 - Alternation: a pattern of two terms joined by a bar
-- AnyPart: a term found inside a model's ID and opening no model's ID
+- AnyPart: an escaped term selected from inside a model ID
 - AcrossTokens: a pattern spanning two consecutive slash\-delimited tokens of a key
 
 ```go
@@ -2656,16 +2152,16 @@ type usageExamples struct {
 ```
 
 <a name="drawUsageExamples"></a>
-### func [drawUsageExamples](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L57>)
+### func [drawUsageExamples](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/examples.go#L49>)
 
 ```go
-func drawUsageExamples(providerID string, models []core.Model) usageExamples
+func drawUsageExamples(providerID string, models []catalog.Model) usageExamples
 ```
 
-drawUsageExamples takes a provider ID and the models a page shows, and returns the footer's examples drawn at random from them; no models draw no examples.
+drawUsageExamples draws model and search examples from a provider's selected models. Empty input returns no examples.
 
 <a name="vendorCount"></a>
-## type [vendorCount](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L201-L204>)
+## type [vendorCount](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L192-L195>)
 
 vendorCount holds one vendor's model count within a medium.
 
@@ -2680,16 +2176,16 @@ type vendorCount struct {
 ```
 
 <a name="vendorCounts"></a>
-### func [vendorCounts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L755>)
+### func [vendorCounts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L666>)
 
 ```go
-func vendorCounts(models []core.Model) []vendorCount
+func vendorCounts(models []catalog.Model) []vendorCount
 ```
 
-vendorCounts takes the models of one medium and returns each vendor with its model count, ordered by count descending and then vendor ascending. A model's vendor is the first slash\-delimited token of its bare ID.
+vendorCounts counts models by the first slash\-delimited part of their IDs. Results sort by descending count, then ascending vendor name.
 
 <a name="vendorExample"></a>
-## type [vendorExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L140-L143>)
+## type [vendorExample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/info.go#L141-L144>)
 
 vendorExample carries one summary search example naming a medium's top vendor.
 

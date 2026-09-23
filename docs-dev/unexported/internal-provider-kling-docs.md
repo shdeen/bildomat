@@ -12,67 +12,58 @@ Package kling provides image and video generation through the Kling API.
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func NewProvider\(decodedProvider \*core.Provider\) core.Generator](<#NewProvider>)
-- [func createKlingTask\(ctx context.Context, endpoint string, credential core.AuthCredential, providerModelName string, medium media.Kind, requestBody map\[string\]any\) \(string, error\)](<#createKlingTask>)
-- [func decodeKlingEnvelope\(responseBody \[\]byte, diagnosticContext string\) \(map\[string\]any, error\)](<#decodeKlingEnvelope>)
-- [func discardKlingDownloads\(artifacts \[\]core.Artifact\)](<#discardKlingDownloads>)
-- [func downloadKlingImages\(ctx context.Context, providerModelName string, resultURLs \[\]string, fallbackExtension string\) \(\[\]core.Artifact, error\)](<#downloadKlingImages>)
-- [func klingArray\(fieldValue any\) \(\[\]any, bool\)](<#klingArray>)
-- [func klingCreationPath\(model \*core.Model, mediaCount int\) string](<#klingCreationPath>)
-- [func klingEnvelopeFailure\(responseDocument map\[string\]any, diagnosticContext string\) error](<#klingEnvelopeFailure>)
-- [func klingFrameContents\(mediaInputs \[\]media.Input\) \[\]any](<#klingFrameContents>)
-- [func klingImageRequestBody\(generationRequest \*core.Generation, omniRequest bool\) map\[string\]any](<#klingImageRequestBody>)
-- [func klingInteger\(fieldValue any\) \(int, bool\)](<#klingInteger>)
-- [func klingObject\(fieldValue any\) \(map\[string\]any, bool\)](<#klingObject>)
-- [func klingOmniContents\(mediaInputs \[\]media.Input\) \[\]any](<#klingOmniContents>)
-- [func klingRequest\(generationRequest \*core.Generation\) \(creationPath string, requestBody map\[string\]any\)](<#klingRequest>)
-- [func klingString\(fieldValue any\) \(string, bool\)](<#klingString>)
-- [func klingTaskFailure\(taskID, taskStatus, failureMessage string\) error](<#klingTaskFailure>)
-- [func klingUnknownStatus\(taskID string, observedStatus any\) error](<#klingUnknownStatus>)
-- [func klingVideoRequestBody\(generationRequest \*core.Generation, omniRequest bool\) map\[string\]any](<#klingVideoRequestBody>)
+- [func NewProvider\(providerDescription \*catalog.Provider\) \(generation.Generator, error\)](<#NewProvider>)
+- [func buildRequestBody\(generationRequest \*generation.Generation\) \(creationPath string, requestBody map\[string\]any\)](<#buildRequestBody>)
+- [func compareImageIndexes\(firstImage, secondImage imageResult\) int](<#compareImageIndexes>)
+- [func createTask\(ctx context.Context, endpoint string, credential httpapi.AuthCredential, generationRequest \*generation.Generation, requestBody map\[string\]any\) \(string, error\)](<#createTask>)
+- [func downloadImages\(ctx context.Context, providerModelName string, resultURLs \[\]string, fallbackExtension string, record \*metadata.Record\) \(\[\]artifact.Media, error\)](<#downloadImages>)
+- [func envelopeFailure\(response \*taskEnvelope, diagnosticContext string\) error](<#envelopeFailure>)
+- [func exactInteger\(encoded json.RawMessage\) \(int, bool\)](<#exactInteger>)
+- [func frameContents\(mediaInputs \[\]media.Input\) \[\]any](<#frameContents>)
+- [func imageRequestBody\(generationRequest \*generation.Generation, omniRequest bool\) map\[string\]any](<#imageRequestBody>)
+- [func integerFromDecimal\(digits string, decimalPlaces, exponent int, negative bool\) \(int, bool\)](<#integerFromDecimal>)
+- [func omniContents\(mediaInputs \[\]media.Input\) \[\]any](<#omniContents>)
+- [func selectCreationPath\(model \*catalog.Model, mediaCount int\) string](<#selectCreationPath>)
+- [func taskFailure\(taskID, taskStatus, failureMessage string\) error](<#taskFailure>)
+- [func unknownStatus\(taskID string, observedStatus any\) error](<#unknownStatus>)
+- [func videoRequestBody\(generationRequest \*generation.Generation, omniRequest bool\) map\[string\]any](<#videoRequestBody>)
+- [type generator](<#generator>)
+  - [func \(\*generator\) AdjustParams\(model \*catalog.Model, inputs params.FlagInputs, mediaInputs \[\]media.Input, \_ \*metadata.Reuse\) \(generation.Preparation, error\)](<#generator.AdjustParams>)
+  - [func \(prov \*generator\) Generate\(ctx context.Context, generationRequest \*generation.Generation\) \(generation.Result, error\)](<#generator.Generate>)
+  - [func \(prov \*generator\) completeImageTask\(ctx context.Context, imagePoll \*imageJobPoll\) \(generation.Result, error\)](<#generator.completeImageTask>)
+  - [func \(prov \*generator\) completeVideoTask\(ctx context.Context, videoPoll \*videoJobPoll\) \(generation.Result, error\)](<#generator.completeVideoTask>)
+  - [func \(prov \*generator\) generateMedia\(ctx context.Context, generationRequest \*generation.Generation\) \(generation.Result, error\)](<#generator.generateMedia>)
 - [type imageJobPoll](<#imageJobPoll>)
-  - [func \(imagePoll \*imageJobPoll\) Poll\(ctx context.Context\) \(resultText string, taskComplete bool, pollErr error\)](<#imageJobPoll.Poll>)
-  - [func \(imagePoll \*imageJobPoll\) classifyResponse\(responseBody \[\]byte\) \(resultText string, taskComplete bool, classificationErr error\)](<#imageJobPoll.classifyResponse>)
-  - [func \(imagePoll \*imageJobPoll\) insertOrdered\(orderedIndexes \[\]int, orderedURLs \[\]string, providerIndex int, resultURL string\) \(extendedIndexes \[\]int, extendedURLs \[\]string, err error\)](<#imageJobPoll.insertOrdered>)
-  - [func \(imagePoll \*imageJobPoll\) readImageRecord\(record any\) \(providerIndex int, resultURL string, err error\)](<#imageJobPoll.readImageRecord>)
-  - [func \(imagePoll \*imageJobPoll\) retainResultURLs\(dataDocument map\[string\]any\) error](<#imageJobPoll.retainResultURLs>)
-- [type klingGenerator](<#klingGenerator>)
-  - [func \(\*klingGenerator\) AdjustParams\(model \*core.Model, inputs parameters.FlagInputs, mediaInputs \[\]media.Input\) \(parameters.Params, \[\]parameters.ParamChange, error\)](<#klingGenerator.AdjustParams>)
-  - [func \(generator \*klingGenerator\) Generate\(ctx context.Context, generationRequest \*core.Generation\) \(core.Result, error\)](<#klingGenerator.Generate>)
-  - [func \(generator \*klingGenerator\) completeImageTask\(ctx context.Context, imagePoll \*imageJobPoll\) \(core.Result, error\)](<#klingGenerator.completeImageTask>)
-  - [func \(generator \*klingGenerator\) completeVideoTask\(ctx context.Context, videoPoll \*videoJobPoll\) \(core.Result, error\)](<#klingGenerator.completeVideoTask>)
+  - [func \(imagePoll \*imageJobPoll\) Poll\(ctx context.Context\) \(taskComplete bool, pollErr error\)](<#imageJobPoll.Poll>)
+  - [func \(imagePoll \*imageJobPoll\) classifyResponse\(responseBody \[\]byte\) \(bool, error\)](<#imageJobPoll.classifyResponse>)
+  - [func \(imagePoll \*imageJobPoll\) retainResultURLs\(encodedResult json.RawMessage\) error](<#imageJobPoll.retainResultURLs>)
+- [type imageResponse](<#imageResponse>)
+- [type imageResult](<#imageResult>)
+- [type imageTask](<#imageTask>)
+- [type taskEnvelope](<#taskEnvelope>)
+  - [func decodeEnvelope\(responseBody \[\]byte, diagnosticContext string\) \(\*taskEnvelope, error\)](<#decodeEnvelope>)
 - [type videoJobPoll](<#videoJobPoll>)
-  - [func \(videoPoll \*videoJobPoll\) Poll\(ctx context.Context\) \(resultText string, taskComplete bool, pollErr error\)](<#videoJobPoll.Poll>)
-  - [func \(videoPoll \*videoJobPoll\) classifyResponse\(responseBody \[\]byte\) \(resultText string, taskComplete bool, classificationErr error\)](<#videoJobPoll.classifyResponse>)
-  - [func \(videoPoll \*videoJobPoll\) retainResultURL\(taskRecord map\[string\]any\) error](<#videoJobPoll.retainResultURL>)
+  - [func \(videoPoll \*videoJobPoll\) Poll\(ctx context.Context\) \(taskComplete bool, pollErr error\)](<#videoJobPoll.Poll>)
+  - [func \(videoPoll \*videoJobPoll\) classifyResponse\(responseBody \[\]byte\) \(bool, error\)](<#videoJobPoll.classifyResponse>)
+  - [func \(videoPoll \*videoJobPoll\) retainResultURL\(encodedOutputs json.RawMessage\) error](<#videoJobPoll.retainResultURL>)
+- [type videoTask](<#videoTask>)
 
 
 ## Constants
 
-<a name="taskStatusSubmitted"></a>The task states both task kinds share, the image task's completed state, and the image task's response fields; the URL field is the shared word.
+<a name="taskStatusSubmitted"></a>The task states shared by image and video jobs, and the image completion state.
 
 - taskStatusSubmitted: the task is queued
 - taskStatusProcessing: the task is running
 - taskStatusFailed: the task failed
 - imageStatusSucceeded: the image task completed, as the image API spells it
-- fieldTaskStatus: the data field carrying the task's state
-- fieldTaskStatusMsg: the data field carrying a failed task's message
-- fieldTaskResult: the data field carrying the completed result
-- fieldImages: the result field carrying the image records
-- fieldIndex: an image record's provider index
 
 ```go
 const (
     taskStatusSubmitted  = "submitted"
     taskStatusProcessing = "processing"
-    taskStatusFailed     = core.WordFailed
+    taskStatusFailed     = "failed"
     imageStatusSucceeded = "succeed"
-
-    fieldTaskStatus    = "task_status"
-    fieldTaskStatusMsg = "task_status_msg"
-    fieldTaskResult    = "task_result"
-    fieldImages        = "images"
-    fieldIndex         = "index"
 )
 ```
 
@@ -84,10 +75,30 @@ const (
 
 ```go
 const (
-    flagGenerateAudio parameters.FlagType = "generate-audio"
+    flagGenerateAudio params.FlagType = "generate-audio"
 
     audioOff    = "off"
     audioNative = "native"
+)
+```
+
+<a name="fieldPrompt"></a>Kling content fields identify prompts and media.
+
+- fieldPrompt: the generation prompt
+- fieldImage: an input image reference
+- fieldType: the content kind
+- fieldText: prompt content text
+- fieldURL: the media location
+- contentPrompt: the prompt content kind
+
+```go
+const (
+    fieldPrompt   = "prompt"
+    fieldImage    = "image"
+    fieldType     = "type"
+    fieldText     = "text"
+    fieldURL      = "url"
+    contentPrompt = "prompt" //nolint:goconst // The content type and prompt field name are independent protocol values.
 )
 ```
 
@@ -109,47 +120,38 @@ const (
 )
 ```
 
-<a name="fieldModelName"></a>The request fields and values; the prompt, image, type, text, URL, and data fields are the shared words.
+<a name="fieldModelName"></a>The Kling request fields, content types, and task identifiers.
 
 - fieldModelName: the image request field naming the model
-- fieldImageList: the omni image request's list of input images
 - fieldSettings: the video request's parameter object
 - fieldContents: the video request's content list
 - contentReferImage: the content type of an unanchored reference image
 - contentFirstFrame: the content type of the opening frame
 - contentLastFrame: the content type of the closing frame
-- fieldTaskID: the image creation response's task identifier
-- fieldID: the video creation response's task identifier
 
 ```go
 const (
     fieldModelName = "model_name"
-    fieldImageList = "image_list"
     fieldSettings  = "settings"
     fieldContents  = "contents"
 
     contentReferImage = "refer_image"
     contentFirstFrame = "first_frame"
     contentLastFrame  = "last_frame"
-
-    fieldTaskID = "task_id"
-    fieldID     = "id"
 )
 ```
 
-<a name="videoStatusSucceeded"></a>The video task's completed state, spelled unlike the image API's, its query, and its response fields; the status, message, and URL fields are the shared words, and the other task states are declared with the image task's.
+<a name="videoStatusSucceeded"></a>The video completion state and query route. Pending and failed states are shared with image jobs, but the two APIs spell completion differently.
 
 - videoStatusSucceeded: the video task completed
 - tasksQueryPath: the task query path, before the query string
 - fieldTaskIDs: the query parameter naming the tasks to report
-- fieldOutputs: a completed task's output list
 
 ```go
 const (
     videoStatusSucceeded = "succeeded"
     tasksQueryPath       = "/tasks?"
     fieldTaskIDs         = "task_ids"
-    fieldOutputs         = "outputs"
 )
 ```
 
@@ -172,16 +174,10 @@ const (
 const ProviderID = "kling"
 ```
 
-<a name="familyOmni"></a>familyOmni names the model family the omni routes serve; the config declares it on each omni model.
+<a name="familyOmni"></a>familyOmni identifies models that use the omni request routes.
 
 ```go
 const familyOmni = "omni"
-```
-
-<a name="fieldCode"></a>fieldCode is the envelope field carrying the response code, zero on success; the envelope's message and data fields are the shared words.
-
-```go
-const fieldCode = "code"
 ```
 
 ## Variables
@@ -193,180 +189,220 @@ var ConfigJSON []byte
 ```
 
 <a name="NewProvider"></a>
-## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L47>)
+## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L49>)
 
 ```go
-func NewProvider(decodedProvider *core.Provider) core.Generator
+func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error)
 ```
 
-NewProvider returns the Kling generator built over the decoded provider.
+NewProvider returns a generator with owned adapter settings, or a missing\-description error.
 
-<a name="createKlingTask"></a>
-## func [createKlingTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L232>)
+<a name="buildRequestBody"></a>
+## func [buildRequestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L72>)
 
 ```go
-func createKlingTask(ctx context.Context, endpoint string, credential core.AuthCredential, providerModelName string, medium media.Kind, requestBody map[string]any) (string, error)
+func buildRequestBody(generationRequest *generation.Generation) (creationPath string, requestBody map[string]any)
 ```
 
-createKlingTask submits one request and returns the task identifier.
+buildRequestBody returns the creation path and JSON body for one generation.
 
-<a name="decodeKlingEnvelope"></a>
-## func [decodeKlingEnvelope](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L17>)
+<a name="compareImageIndexes"></a>
+## func [compareImageIndexes](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L174>)
 
 ```go
-func decodeKlingEnvelope(responseBody []byte, diagnosticContext string) (map[string]any, error)
+func compareImageIndexes(firstImage, secondImage imageResult) int
 ```
 
-decodeKlingEnvelope decodes one response as a JSON object.
+compareImageIndexes compares images by their provider\-assigned index.
 
-<a name="discardKlingDownloads"></a>
-## func [discardKlingDownloads](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/artifact.go#L33>)
+<a name="createTask"></a>
+## func [createTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L243>)
 
 ```go
-func discardKlingDownloads(artifacts []core.Artifact)
+func createTask(ctx context.Context, endpoint string, credential httpapi.AuthCredential, generationRequest *generation.Generation, requestBody map[string]any) (string, error)
 ```
 
-discardKlingDownloads removes temporary downloads after a later download in the same result fails. Removal is best effort because the download error remains the actionable failure.
+createTask submits one request and returns the task identifier.
 
-<a name="downloadKlingImages"></a>
-## func [downloadKlingImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/artifact.go#L14>)
+<a name="downloadImages"></a>
+## func [downloadImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/artifact.go#L16>)
 
 ```go
-func downloadKlingImages(ctx context.Context, providerModelName string, resultURLs []string, fallbackExtension string) ([]core.Artifact, error)
+func downloadImages(ctx context.Context, providerModelName string, resultURLs []string, fallbackExtension string, record *metadata.Record) ([]artifact.Media, error)
 ```
 
-downloadKlingImages downloads every completed image in provider index order. A failed download removes the temporary files from prior successful downloads.
+downloadImages downloads every completed image in provider index order. A failed download removes the temporary files from prior successful downloads.
 
-<a name="klingArray"></a>
-## func [klingArray](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L87>)
+<a name="envelopeFailure"></a>
+## func [envelopeFailure](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L38>)
 
 ```go
-func klingArray(fieldValue any) ([]any, bool)
+func envelopeFailure(response *taskEnvelope, diagnosticContext string) error
 ```
 
-klingArray extracts a JSON array.
+envelopeFailure returns nil for code zero and classifies missing, invalid, or nonzero response codes.
 
-<a name="klingCreationPath"></a>
-## func [klingCreationPath](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L73>)
+<a name="exactInteger"></a>
+## func [exactInteger](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L62>)
 
 ```go
-func klingCreationPath(model *core.Model, mediaCount int) string
+func exactInteger(encoded json.RawMessage) (int, bool)
 ```
 
-klingCreationPath selects a documented creation path from a model's medium and family and its retained input count. It returns an empty path for an unsupported medium.
+exactInteger converts a valid encoded JSON number to int without rounding. Decimal and exponent forms must be integral and fit int; oversized exponents do not allocate expanded numbers.
 
-<a name="klingEnvelopeFailure"></a>
-## func [klingEnvelopeFailure](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L32>)
+<a name="frameContents"></a>
+## func [frameContents](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L197>)
 
 ```go
-func klingEnvelopeFailure(responseDocument map[string]any, diagnosticContext string) error
+func frameContents(mediaInputs []media.Input) []any
 ```
 
-klingEnvelopeFailure returns a generation failure for a nonzero envelope code and a classified malformed\-response error for an absent or invalid code.
+frameContents maps at most two images onto opening and closing frames. Explicit anchors keep their roles; unanchored images fill the free roles in retained order.
 
-<a name="klingFrameContents"></a>
-## func [klingFrameContents](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L186>)
+<a name="imageRequestBody"></a>
+## func [imageRequestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L116>)
 
 ```go
-func klingFrameContents(mediaInputs []media.Input) []any
+func imageRequestBody(generationRequest *generation.Generation, omniRequest bool) map[string]any
 ```
 
-klingFrameContents maps at most two images onto opening and closing frames. Explicit anchors keep their roles; unanchored images fill the free roles in retained order.
+imageRequestBody returns the standard or omni image request fields.
 
-<a name="klingImageRequestBody"></a>
-## func [klingImageRequestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L104>)
+<a name="integerFromDecimal"></a>
+## func [integerFromDecimal](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L94>)
 
 ```go
-func klingImageRequestBody(generationRequest *core.Generation, omniRequest bool) map[string]any
+func integerFromDecimal(digits string, decimalPlaces, exponent int, negative bool) (int, bool)
 ```
 
-klingImageRequestBody returns the standard or omni image request fields.
+integerFromDecimal bounds the exponent before expanding or truncating digits. It rejects fractional remainders and int overflow without lossy conversion.
 
-<a name="klingInteger"></a>
-## func [klingInteger](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L94>)
+<a name="omniContents"></a>
+## func [omniContents](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L173>)
 
 ```go
-func klingInteger(fieldValue any) (int, bool)
+func omniContents(mediaInputs []media.Input) []any
 ```
 
-klingInteger extracts an exactly represented JSON integer.
+omniContents returns anchored frames and unanchored reference images in their retained order.
 
-<a name="klingObject"></a>
-## func [klingObject](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L80>)
+<a name="selectCreationPath"></a>
+## func [selectCreationPath](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L85>)
 
 ```go
-func klingObject(fieldValue any) (map[string]any, bool)
+func selectCreationPath(model *catalog.Model, mediaCount int) string
 ```
 
-klingObject extracts a JSON object.
+selectCreationPath selects a documented creation path from a model's medium and family and its retained input count. It returns an empty path for an unsupported medium.
 
-<a name="klingOmniContents"></a>
-## func [klingOmniContents](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L161>)
+<a name="taskFailure"></a>
+## func [taskFailure](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L129>)
 
 ```go
-func klingOmniContents(mediaInputs []media.Input) []any
+func taskFailure(taskID, taskStatus, failureMessage string) error
 ```
 
-klingOmniContents returns anchored frames and unanchored reference images in their retained order.
+taskFailure returns a provider generation failure containing the task, terminal status, and provider message when one is present.
 
-<a name="klingRequest"></a>
-## func [klingRequest](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L59>)
+<a name="unknownStatus"></a>
+## func [unknownStatus](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L139>)
 
 ```go
-func klingRequest(generationRequest *core.Generation) (creationPath string, requestBody map[string]any)
+func unknownStatus(taskID string, observedStatus any) error
 ```
 
-klingRequest returns the creation path and JSON body for one generation.
+unknownStatus returns an unexpected\-status failure containing the task and observed value.
 
-<a name="klingString"></a>
-## func [klingString](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L73>)
+<a name="videoRequestBody"></a>
+## func [videoRequestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L147>)
 
 ```go
-func klingString(fieldValue any) (string, bool)
+func videoRequestBody(generationRequest *generation.Generation, omniRequest bool) map[string]any
 ```
 
-klingString extracts a string value.
+videoRequestBody returns a text, image, or omni video request body.
 
-<a name="klingTaskFailure"></a>
-## func [klingTaskFailure](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L57>)
+<a name="generator"></a>
+## type [generator](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L44-L46>)
+
+generator holds the Kling request settings.
+
+- adapterAPI: endpoints, polling limits, and artifact defaults
 
 ```go
-func klingTaskFailure(taskID, taskStatus, failureMessage string) error
+type generator struct {
+    adapterAPI *catalog.AdapterAPI
+}
 ```
 
-klingTaskFailure returns a provider generation failure containing the task, terminal status, and provider message when one is present.
-
-<a name="klingUnknownStatus"></a>
-## func [klingUnknownStatus](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L68>)
+<a name="generator.AdjustParams"></a>
+### func \(\*generator\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L61>)
 
 ```go
-func klingUnknownStatus(taskID string, observedStatus any) error
+func (*generator) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error)
 ```
 
-klingUnknownStatus returns an unexpected\-status failure containing the task and observed value.
+AdjustParams returns adjusted parameters and media with change records. It rejects video inputs, resolves video frame anchors, removes image frame prefixes, and converts the audio switch to the provider's request value.
 
-<a name="klingVideoRequestBody"></a>
-## func [klingVideoRequestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/request.go#L134>)
+<a name="generator.Generate"></a>
+### func \(\*generator\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L104>)
 
 ```go
-func klingVideoRequestBody(generationRequest *core.Generation, omniRequest bool) map[string]any
+func (prov *generator) Generate(ctx context.Context, generationRequest *generation.Generation) (generation.Result, error)
 ```
 
-klingVideoRequestBody returns a text, image, or omni video request body.
+Generate starts one Kling task, waits for completion, and downloads its artifacts.
+
+<a name="generator.completeImageTask"></a>
+### func \(\*generator\) [completeImageTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L163>)
+
+```go
+func (prov *generator) completeImageTask(ctx context.Context, imagePoll *imageJobPoll) (generation.Result, error)
+```
+
+completeImageTask polls one image task until it completes and downloads its result images in provider index order, returning them as the result.
+
+<a name="generator.completeVideoTask"></a>
+### func \(\*generator\) [completeVideoTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L180>)
+
+```go
+func (prov *generator) completeVideoTask(ctx context.Context, videoPoll *videoJobPoll) (generation.Result, error)
+```
+
+completeVideoTask polls one video task until it completes and fetches its result video, returning it as the result.
+
+<a name="generator.generateMedia"></a>
+### func \(\*generator\) [generateMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L116>)
+
+```go
+func (prov *generator) generateMedia(ctx context.Context, generationRequest *generation.Generation) (generation.Result, error)
+```
+
+generateMedia starts the selected image or video task and retrieves its completed artifacts.
 
 <a name="imageJobPoll"></a>
-## type [imageJobPoll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L37-L44>)
+## type [imageJobPoll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L36-L44>)
 
-imageJobPoll checks one image\-generation task and retains its completed result URLs in provider index order.
+imageJobPoll tracks one Kling image task.
+
+- apiBase: the provider API base URL
+- credential: authentication for status requests
+- taskID: the provider task identifier
+- providerModelName: the provider/model label used in errors
+- queryPath: the task status path
+- resultURLs: completed image URLs in provider index order
+- record: optional request and response retention
 
 ```go
 type imageJobPoll struct {
     apiBase           string
-    credential        core.AuthCredential
+    credential        httpapi.AuthCredential
     taskID            string
     providerModelName string
     queryPath         string
     resultURLs        []string
+    record            *metadata.Record
 }
 ```
 
@@ -374,136 +410,162 @@ type imageJobPoll struct {
 ### func \(\*imageJobPoll\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L47>)
 
 ```go
-func (imagePoll *imageJobPoll) Poll(ctx context.Context) (resultText string, taskComplete bool, pollErr error)
+func (imagePoll *imageJobPoll) Poll(ctx context.Context) (taskComplete bool, pollErr error)
 ```
 
 Poll retrieves and classifies one image task response.
 
 <a name="imageJobPoll.classifyResponse"></a>
-### func \(\*imageJobPoll\) [classifyResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L64>)
+### func \(\*imageJobPoll\) [classifyResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L86>)
 
 ```go
-func (imagePoll *imageJobPoll) classifyResponse(responseBody []byte) (resultText string, taskComplete bool, classificationErr error)
+func (imagePoll *imageJobPoll) classifyResponse(responseBody []byte) (bool, error)
 ```
 
-classifyResponse classifies one successful HTTP response as pending, complete, or failed.
-
-<a name="imageJobPoll.insertOrdered"></a>
-### func \(\*imageJobPoll\) [insertOrdered](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L164>)
-
-```go
-func (imagePoll *imageJobPoll) insertOrdered(orderedIndexes []int, orderedURLs []string, providerIndex int, resultURL string) (extendedIndexes []int, extendedURLs []string, err error)
-```
-
-insertOrdered takes the provider indexes and result URLs retained so far, in ascending index order, and one more index with its URL, and returns both extended with the pair at its ordered position. It fails when the index is already retained.
-
-<a name="imageJobPoll.readImageRecord"></a>
-### func \(\*imageJobPoll\) [readImageRecord](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L141>)
-
-```go
-func (imagePoll *imageJobPoll) readImageRecord(record any) (providerIndex int, resultURL string, err error)
-```
-
-readImageRecord takes one completed image record and returns its provider index and result URL. It fails when the record is not an object, when its index is not an integer, and when its URL is missing or empty.
+classifyResponse reports task completion and stores ordered output URLs in the poller. It validates the fields required by the reported task state.
 
 <a name="imageJobPoll.retainResultURLs"></a>
-### func \(\*imageJobPoll\) [retainResultURLs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L107>)
+### func \(\*imageJobPoll\) [retainResultURLs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L126>)
 
 ```go
-func (imagePoll *imageJobPoll) retainResultURLs(dataDocument map[string]any) error
+func (imagePoll *imageJobPoll) retainResultURLs(encodedResult json.RawMessage) error
 ```
 
-retainResultURLs validates completed image records and retains their URLs in ascending provider index order.
+retainResultURLs validates image URLs and unique indexes, then stores URLs in index order in the poller. Invalid results leave its retained URLs unchanged.
 
-<a name="klingGenerator"></a>
-## type [klingGenerator](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L40-L44>)
+<a name="imageResponse"></a>
+## type [imageResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L69-L74>)
 
-klingGenerator generates images and videos through the Kling API.
+imageResponse preserves the declared index until its exact value is validated.
 
 ```go
-type klingGenerator struct {
-    adapterAPI   *core.AdapterAPI
-    pollInterval time.Duration
-    pollTimeout  time.Duration
+type imageResponse struct {
+    // Index identifies the image's position in the provider result.
+    Index json.RawMessage `json:"index"`
+    // URL contains the image download location.
+    URL any `json:"url"`
 }
 ```
 
-<a name="klingGenerator.AdjustParams"></a>
-### func \(\*klingGenerator\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L63>)
+<a name="imageResult"></a>
+## type [imageResult](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L77-L82>)
+
+imageResult contains the validated facts needed to order and download an image.
 
 ```go
-func (*klingGenerator) AdjustParams(model *core.Model, inputs parameters.FlagInputs, mediaInputs []media.Input) (parameters.Params, []parameters.ParamChange, error)
+type imageResult struct {
+    // Index identifies the image's position in the provider result.
+    Index int
+    // URL contains the image download location.
+    URL string
+}
 ```
 
-AdjustParams returns the Kling generation parameters and adjustment records.
+<a name="imageTask"></a>
+## type [imageTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/imagepoll.go#L59-L66>)
 
-<a name="klingGenerator.Generate"></a>
-### func \(\*klingGenerator\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L108>)
+imageTask carries the image API's distinct status and result fields.
 
 ```go
-func (generator *klingGenerator) Generate(ctx context.Context, generationRequest *core.Generation) (core.Result, error)
+type imageTask struct {
+    // Status preserves the reported task state and its JSON type.
+    Status any `json:"task_status"`
+    // Message preserves the optional task failure message.
+    Message any `json:"task_status_msg"`
+    // Result contains the encoded image results.
+    Result json.RawMessage `json:"task_result"`
+}
 ```
 
-Generate starts one Kling task, waits for completion, and downloads its artifacts.
+<a name="taskEnvelope"></a>
+## type [taskEnvelope](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L13-L20>)
 
-<a name="klingGenerator.completeImageTask"></a>
-### func \(\*klingGenerator\) [completeImageTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L159>)
+taskEnvelope preserves absent code separately from explicit JSON null.
 
 ```go
-func (generator *klingGenerator) completeImageTask(ctx context.Context, imagePoll *imageJobPoll) (core.Result, error)
+type taskEnvelope struct {
+    // Code distinguishes an absent code from null or another encoded value.
+    Code json.RawMessage `json:"code"`
+    // Message preserves the optional provider message and its JSON type.
+    Message any `json:"message"`
+    // Data contains the task payload.
+    Data json.RawMessage `json:"data"`
+}
 ```
 
-completeImageTask polls one image task until it completes and downloads its result images in provider index order, returning them as the result.
-
-<a name="klingGenerator.completeVideoTask"></a>
-### func \(\*klingGenerator\) [completeVideoTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/kling.go#L174>)
+<a name="decodeEnvelope"></a>
+### func [decodeEnvelope](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/response.go#L23>)
 
 ```go
-func (generator *klingGenerator) completeVideoTask(ctx context.Context, videoPoll *videoJobPoll) (core.Result, error)
+func decodeEnvelope(responseBody []byte, diagnosticContext string) (*taskEnvelope, error)
 ```
 
-completeVideoTask polls one video task until it completes and fetches its result video, returning it as the result.
+decodeEnvelope accepts additional remote fields and rejects a non\-object envelope.
 
 <a name="videoJobPoll"></a>
-## type [videoJobPoll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L29-L35>)
+## type [videoJobPoll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L33-L40>)
 
-videoJobPoll checks one video\-generation task and retains its completed result URL.
+videoJobPoll tracks one Kling video task.
+
+- apiBase: the provider API base URL
+- credential: authentication for status requests
+- taskID: the provider task identifier
+- providerModelName: the provider/model label used in errors
+- resultURL: the completed video download URL
+- record: optional request and response retention
 
 ```go
 type videoJobPoll struct {
     apiBase           string
-    credential        core.AuthCredential
+    credential        httpapi.AuthCredential
     taskID            string
     providerModelName string
     resultURL         string
+    record            *metadata.Record
 }
 ```
 
 <a name="videoJobPoll.Poll"></a>
-### func \(\*videoJobPoll\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L38>)
+### func \(\*videoJobPoll\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L43>)
 
 ```go
-func (videoPoll *videoJobPoll) Poll(ctx context.Context) (resultText string, taskComplete bool, pollErr error)
+func (videoPoll *videoJobPoll) Poll(ctx context.Context) (taskComplete bool, pollErr error)
 ```
 
 Poll retrieves and classifies one video task response.
 
 <a name="videoJobPoll.classifyResponse"></a>
-### func \(\*videoJobPoll\) [classifyResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L56>)
+### func \(\*videoJobPoll\) [classifyResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L67>)
 
 ```go
-func (videoPoll *videoJobPoll) classifyResponse(responseBody []byte) (resultText string, taskComplete bool, classificationErr error)
+func (videoPoll *videoJobPoll) classifyResponse(responseBody []byte) (bool, error)
 ```
 
-classifyResponse classifies one successful HTTP response as pending, complete, or failed.
+classifyResponse reports the first returned task's completion and stores its first output URL in the poller. Invalid or failed states return classified errors.
 
 <a name="videoJobPoll.retainResultURL"></a>
-### func \(\*videoJobPoll\) [retainResultURL](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L101>)
+### func \(\*videoJobPoll\) [retainResultURL](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L111>)
 
 ```go
-func (videoPoll *videoJobPoll) retainResultURL(taskRecord map[string]any) error
+func (videoPoll *videoJobPoll) retainResultURL(encodedOutputs json.RawMessage) error
 ```
 
-retainResultURL validates a completed video record and retains its first output URL.
+retainResultURL validates the first output and stores its URL in the poller.
+
+<a name="videoTask"></a>
+## type [videoTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/kling/videopoll.go#L56-L63>)
+
+videoTask carries the video API's distinct status and output list.
+
+```go
+type videoTask struct {
+    // Status preserves the reported task state and its JSON type.
+    Status any `json:"status"`
+    // Message preserves the optional task failure message.
+    Message any `json:"message"`
+    // Outputs contains the encoded video result list.
+    Outputs json.RawMessage `json:"outputs"`
+}
+```
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

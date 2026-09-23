@@ -71,7 +71,7 @@ A rainbow spinner becomes a wind turbine, then a papercut illustration, then a l
   <img src="assets/windspin/field.jpg" width="350" alt="Identical colorful turbines placed in the background">
 
 <p align="center">
-    <img src="assets/windspin/motion.gif" width="800" alt="The developed idea: an animated papercut landscape of colorful turbines spinning in unison.">
+    <img src="assets/windspin/motion.gif" width="675" alt="The developed idea: an animated papercut landscape of colorful turbines spinning in unison.">
 </p>
 
 <p align="center">

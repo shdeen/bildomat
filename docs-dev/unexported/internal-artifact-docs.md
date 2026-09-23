@@ -6,17 +6,324 @@
 import "github.com/shdeen/bildomat/internal/artifact"
 ```
 
-Package artifact owns exclusive file creation and completed\-file facts.
+Package artifact owns generated media, output paths, persistence, and cleanup.
 
 ## Index
 
+- [Constants](<#constants>)
+- [func Cleanup\(artifacts \[\]Media\) error](<#Cleanup>)
+- [func CreateDir\(path string\) error](<#CreateDir>)
+- [func DefaultStem\(mediaKind media.Kind\) string](<#DefaultStem>)
+- [func ExpandHome\(path string\) \(string, error\)](<#ExpandHome>)
+- [func FormatExt\(format string\) string](<#FormatExt>)
+- [func artifactName\(stem string, artifacts \[\]Media, i int\) string](<#artifactName>)
+- [func artifactPath\(dir, stem string, artifacts \[\]Media, i int\) string](<#artifactPath>)
+- [func claimFile\(dir, name, ext string\) \(\*os.File, string, error\)](<#claimFile>)
+- [func fileExists\(path string\) bool](<#fileExists>)
+- [func hasDestinationClash\(dir, stem string, artifacts \[\]Media, writesSidecar bool\) bool](<#hasDestinationClash>)
+- [func openFile\(path string\) \(\*os.File, error\)](<#openFile>)
+- [func outPathFormat\(ext string\) \(string, bool\)](<#outPathFormat>)
+- [func pathIsExistingDirectory\(path string\) bool](<#pathIsExistingDirectory>)
+- [func removeFile\(path string, classification error\) error](<#removeFile>)
+- [func resolveOutputDir\(userInputDirPath string\) \(string, error\)](<#resolveOutputDir>)
+- [func resolveStem\(dir, requestedStem string, mediaKind media.Kind, artifacts \[\]Media, writesSidecar bool\) \(stem string, file \*os.File, err error\)](<#resolveStem>)
+- [func sanitizeFilename\(text string\) string](<#sanitizeFilename>)
+- [func suffixedName\(name string, suffixNumber int\) string](<#suffixedName>)
+- [func uniqueStem\(dir, stem string, artifacts \[\]Media, writesSidecar bool\) string](<#uniqueStem>)
+- [type Location](<#Location>)
+  - [func ParseOutPath\(outPath string\) Location](<#ParseOutPath>)
+  - [func \(location \*Location\) Resolve\(\) error](<#Location.Resolve>)
+- [type Media](<#Media>)
+  - [func New\(data \[\]byte, mime, fallbackExt string\) \(Media, error\)](<#New>)
+  - [func \(generated \*Media\) cleanup\(\) error](<#Media.cleanup>)
 - [type SavedFile](<#SavedFile>)
+  - [func Write\(dir, name, ext string, data \[\]byte\) \(SavedFile, error\)](<#Write>)
+  - [func WriteMedia\(dir, requestedStem string, mediaKind media.Kind, artifacts \[\]Media, writesSidecar bool\) \(finalStem string, completedFiles \[\]SavedFile, writeErr error\)](<#WriteMedia>)
+  - [func closeOutput\(file \*os.File, path string, written int64, writeErr error\) \(SavedFile, error\)](<#closeOutput>)
+  - [func commitFile\(file \*os.File, path string, data \[\]byte\) \(SavedFile, error\)](<#commitFile>)
+  - [func copyFile\(file \*os.File, path, source string\) \(SavedFile, error\)](<#copyFile>)
+  - [func writeArtifact\(dir, name string, generated Media\) \(SavedFile, error\)](<#writeArtifact>)
+  - [func writeToReservedFile\(file \*os.File, dstPath string, generated Media\) \(SavedFile, error\)](<#writeToReservedFile>)
 
+
+## Constants
+
+<a name="ResponseEmptyInline"></a>The internal/artifact section of the copy catalog, one constant per entry.
+
+```go
+const (
+    ResponseEmptyInline = "empty inline result"
+)
+```
+
+<a name="SidecarExt"></a>SidecarExt is the Markdown extension shared by sidecar persistence and collision checks.
+
+```go
+const SidecarExt = ".md"
+```
+
+<a name="firstSuffixNumber"></a>firstSuffixNumber is the first two\-digit suffix a taken name receives.
+
+```go
+const firstSuffixNumber = 2
+```
+
+<a name="genStemPrefix"></a>genStemPrefix starts default filenames such as bild\-image and bild\-video.
+
+```go
+const genStemPrefix = "bild"
+```
+
+<a name="Cleanup"></a>
+## func [Cleanup](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/media.go#L33>)
+
+```go
+func Cleanup(artifacts []Media) error
+```
+
+Cleanup attempts to remove every temporary source in the supplied artifacts. It clears their TmpPath fields even on failure and returns all removal errors.
+
+<a name="CreateDir"></a>
+## func [CreateDir](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L144>)
+
+```go
+func CreateDir(path string) error
+```
+
+CreateDir creates a directory and missing parents, accepting an existing directory.
+
+<a name="DefaultStem"></a>
+## func [DefaultStem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L24>)
+
+```go
+func DefaultStem(mediaKind media.Kind) string
+```
+
+DefaultStem returns the default filename stem for an image or video run.
+
+<a name="ExpandHome"></a>
+## func [ExpandHome](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L110>)
+
+```go
+func ExpandHome(path string) (string, error)
+```
+
+ExpandHome replaces \~ or a leading \~/ with the home directory, returning an error if it is unavailable. Other paths are unchanged.
+
+<a name="FormatExt"></a>
+## func [FormatExt](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L95>)
+
+```go
+func FormatExt(format string) string
+```
+
+FormatExt returns the canonical file extension for format, or an empty string when format is unsupported.
+
+<a name="artifactName"></a>
+## func [artifactName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L89>)
+
+```go
+func artifactName(stem string, artifacts []Media, i int) string
+```
+
+artifactName appends the artifact index to the stem for a batch and leaves a single artifact unnumbered.
+
+<a name="artifactPath"></a>
+## func [artifactPath](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L99>)
+
+```go
+func artifactPath(dir, stem string, artifacts []Media, i int) string
+```
+
+artifactPath returns the destination path for an artifact, including its batch index and extension.
+
+<a name="claimFile"></a>
+## func [claimFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L23>)
+
+```go
+func claimFile(dir, name, ext string) (*os.File, string, error)
+```
+
+claimFile exclusively creates the requested filename or its first free numbered variant. It returns the open file and its path; the extension remains unchanged.
+
+<a name="fileExists"></a>
+## func [fileExists](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L153>)
+
+```go
+func fileExists(path string) bool
+```
+
+fileExists reports whether a file, directory, or symbolic link occupies a path.
+
+<a name="hasDestinationClash"></a>
+## func [hasDestinationClash](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L142>)
+
+```go
+func hasDestinationClash(dir, stem string, artifacts []Media, writesSidecar bool) bool
+```
+
+hasDestinationClash reports whether any exact path the run will write already exists.
+
+<a name="openFile"></a>
+## func [openFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L44>)
+
+```go
+func openFile(path string) (*os.File, error)
+```
+
+openFile creates a new file without replacing any existing path.
+
+<a name="outPathFormat"></a>
+## func [outPathFormat](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L78>)
+
+```go
+func outPathFormat(ext string) (string, bool)
+```
+
+outPathFormat returns the image format represented by an extension and whether the extension is supported.
+
+<a name="pathIsExistingDirectory"></a>
+## func [pathIsExistingDirectory](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L62>)
+
+```go
+func pathIsExistingDirectory(path string) bool
+```
+
+pathIsExistingDirectory reports whether a path names a directory after home expansion.
+
+<a name="removeFile"></a>
+## func [removeFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L121>)
+
+```go
+func removeFile(path string, classification error) error
+```
+
+removeFile removes an owned file, retaining the operation's classification and the original removal cause. An already absent file needs no more cleanup.
+
+<a name="resolveOutputDir"></a>
+## func [resolveOutputDir](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L125>)
+
+```go
+func resolveOutputDir(userInputDirPath string) (string, error)
+```
+
+resolveOutputDir expands a leading tilde, resolves an absolute path, and creates the directory and any missing parents.
+
+<a name="resolveStem"></a>
+## func [resolveStem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L105>)
+
+```go
+func resolveStem(dir, requestedStem string, mediaKind media.Kind, artifacts []Media, writesSidecar bool) (stem string, file *os.File, err error)
+```
+
+resolveStem chooses an available stem and exclusively creates its first artifact. An empty requested stem uses the medium's default name; collisions add a numbered suffix.
+
+<a name="sanitizeFilename"></a>
+## func [sanitizeFilename](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L168>)
+
+```go
+func sanitizeFilename(text string) string
+```
+
+sanitizeFilename replaces path separators and ASCII control characters with hyphens.
+
+<a name="suffixedName"></a>
+## func [suffixedName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L83>)
+
+```go
+func suffixedName(name string, suffixNumber int) string
+```
+
+suffixedName appends a numeric suffix padded to at least two digits.
+
+<a name="uniqueStem"></a>
+## func [uniqueStem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L128>)
+
+```go
+func uniqueStem(dir, stem string, artifacts []Media, writesSidecar bool) string
+```
+
+uniqueStem returns the requested stem if every destination is free, or the first available numbered variant starting at 02.
+
+<a name="Location"></a>
+## type [Location](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L18-L23>)
+
+Location contains the parsed components of an output path.
+
+- Dir: the directory portion of the path
+- Stem: the filename without its extension
+- Ext: the supported media extension as supplied
+- Format: the image format represented by Ext
+
+```go
+type Location struct {
+    Dir    string
+    Stem   string
+    Ext    string
+    Format string
+}
+```
+
+<a name="ParseOutPath"></a>
+### func [ParseOutPath](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L27>)
+
+```go
+func ParseOutPath(outPath string) Location
+```
+
+ParseOutPath separates an output path into its directory, stem, and supported media extension. Unsupported extensions are discarded; only image extensions select an output format.
+
+<a name="Location.Resolve"></a>
+### func \(\*Location\) [Resolve](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L155>)
+
+```go
+func (location *Location) Resolve() error
+```
+
+Resolve makes the location's directory absolute, creates it, and sanitizes its stem. It updates Dir only after successful directory creation and leaves an empty stem empty.
+
+<a name="Media"></a>
+## type [Media](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/media.go#L15-L19>)
+
+Media contains generated media stored in memory or in a temporary file.
+
+- Data: the generated bytes when held in memory
+- TmpPath: the temporary file path when stored on disk
+- FileExt: the detected or fallback filename extension, including its leading period
+
+```go
+type Media struct {
+    Data    []byte
+    TmpPath string
+    FileExt string
+}
+```
+
+<a name="New"></a>
+### func [New](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/media.go#L23>)
+
+```go
+func New(data []byte, mime, fallbackExt string) (Media, error)
+```
+
+New returns a bytes\-backed artifact with an extension inferred from its MIME type, data, or fallback extension.
+
+<a name="Media.cleanup"></a>
+### func \(\*Media\) [cleanup](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/media.go#L43>)
+
+```go
+func (generated *Media) cleanup() error
+```
+
+cleanup attempts to remove this artifact's temporary source and clears TmpPath, even on failure.
 
 <a name="SavedFile"></a>
-## type [SavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L5-L8>)
+## type [SavedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L16-L19>)
 
-SavedFile describes one successfully closed output file.
+SavedFile describes a successfully closed output file.
+
+- Path: the saved destination path
+- Bytes: the number of bytes written
 
 ```go
 type SavedFile struct {
@@ -24,5 +331,68 @@ type SavedFile struct {
     Bytes int64  `json:"bytes"`
 }
 ```
+
+<a name="Write"></a>
+### func [Write](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L86>)
+
+```go
+func Write(dir, name, ext string, data []byte) (SavedFile, error)
+```
+
+Write exclusively creates and writes one file under the first free name.
+
+<a name="WriteMedia"></a>
+### func [WriteMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L31>)
+
+```go
+func WriteMedia(dir, requestedStem string, mediaKind media.Kind, artifacts []Media, writesSidecar bool) (finalStem string, completedFiles []SavedFile, writeErr error)
+```
+
+WriteMedia saves generated media under an available stem and returns all completed files. A destination failure stops further writes. It then attempts source cleanup for every supplied artifact, clearing each TmpPath even when removal fails.
+
+<a name="closeOutput"></a>
+### func [closeOutput](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L97>)
+
+```go
+func closeOutput(file *os.File, path string, written int64, writeErr error) (SavedFile, error)
+```
+
+closeOutput closes the destination and removes only this attempt's incomplete file on failure. Both operation and cleanup errors remain discoverable.
+
+<a name="commitFile"></a>
+### func [commitFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L56>)
+
+```go
+func commitFile(file *os.File, path string, data []byte) (SavedFile, error)
+```
+
+commitFile writes and closes a claimed destination, returning its path and byte count. A write or close failure removes the incomplete destination.
+
+<a name="copyFile"></a>
+### func [copyFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/file.go#L67>)
+
+```go
+func copyFile(file *os.File, path, source string) (SavedFile, error)
+```
+
+copyFile copies a source into a claimed destination and closes both files. It preserves the source and removes an incomplete destination on failure.
+
+<a name="writeArtifact"></a>
+### func [writeArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L73>)
+
+```go
+func writeArtifact(dir, name string, generated Media) (SavedFile, error)
+```
+
+writeArtifact writes generated media under the first free filename and returns the saved file.
+
+<a name="writeToReservedFile"></a>
+### func [writeToReservedFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/disk.go#L64>)
+
+```go
+func writeToReservedFile(file *os.File, dstPath string, generated Media) (SavedFile, error)
+```
+
+writeToReservedFile writes and closes a claimed destination from generated bytes or a source file.
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

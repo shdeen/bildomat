@@ -10,21 +10,61 @@ Package metadata stores experimental generation records. The format and reuse me
 
 ## Index
 
+- [Constants](<#constants>)
 - [type BinaryField](<#BinaryField>)
+- [type Call](<#Call>)
+- [type File](<#File>)
+- [type Input](<#Input>)
 - [type Record](<#Record>)
   - [func New\(provider, model, version, prompt string, started time.Time\) \*Record](<#New>)
   - [func Read\(path string\) \(\*Record, error\)](<#Read>)
-  - [func \(record \*Record\) Begin\(method, endpoint, contentType string, body \[\]byte, fields \[\]BinaryField\) int](<#Record.Begin>)
-  - [func \(record \*Record\) Receive\(requestIndex int, responseType string, status int, contentType string, body \[\]byte, fields \[\]BinaryField, captureErr error\)](<#Record.Receive>)
+  - [func \(record \*Record\) Begin\(method, endpoint, contentType string, body \[\]byte\) int](<#Record.Begin>)
+  - [func \(record \*Record\) Describe\(supplied json.RawMessage, sources \[\]string\)](<#Record.Describe>)
+  - [func \(record \*Record\) Prepared\(inputs \[\]media.Input\)](<#Record.Prepared>)
+  - [func \(record \*Record\) ProviderFinished\(generationErr error\)](<#Record.ProviderFinished>)
+  - [func \(record \*Record\) Receive\(requestIndex int, responseType string, status int, contentType string, body \[\]byte, captureErr error\)](<#Record.Receive>)
+  - [func \(record \*Record\) ReceiveFile\(requestIndex, status int, contentType, path string, captureErr error\)](<#Record.ReceiveFile>)
   - [func \(record \*Record\) RequestFailed\(requestIndex int, requestErr error\)](<#Record.RequestFailed>)
   - [func \(record \*Record\) Retain\(provider, model string, values json.RawMessage\)](<#Record.Retain>)
   - [func \(record \*Record\) Save\(dir, stem string, files \[\]artifact.SavedFile, generationErr error\) \(string, error\)](<#Record.Save>)
+  - [func \(record \*Record\) SetFields\(requestFields, responseFields \[\]BinaryField\)](<#Record.SetFields>)
+- [type Request](<#Request>)
+- [type Response](<#Response>)
+- [type ReturnValue](<#ReturnValue>)
+- [type Reuse](<#Reuse>)
 
+
+## Constants
+
+<a name="Synchronous"></a>Response types describe the request's role, independently of HTTP timing.
+
+- Synchronous: a submission or direct download response
+- Asynchronous: a response to polling an existing operation
+
+```go
+const (
+    Synchronous  = "synchronous"
+    Asynchronous = "asynchronous"
+)
+```
+
+<a name="BinarySaved"></a>The internal/metadata section of the copy catalog, one constant per entry.
+
+```go
+const (
+    BinarySaved       = "[Bildomat: base64 data redacted for length; saved locally to %s]"
+    BinaryUnavailable = "[Bildomat: base64 data unavailable; see persistence-errors]"
+)
+```
 
 <a name="BinaryField"></a>
-## type [BinaryField](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L17-L21>)
+## type [BinaryField](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/binary.go#L53-L57>)
 
-BinaryField identifies a known encoded field by its JSON path. An asterisk matches one array index or object property. MIMEField names a sibling field.
+BinaryField declares a base64 value at a JSON path; an asterisk matches one path segment.
+
+- Path: the property names or array indexes leading to the value
+- MIMEField: the optional sibling property that supplies the content type
+- MIME: the content type used when the sibling property supplies none
 
 ```go
 type BinaryField struct {
@@ -34,17 +74,110 @@ type BinaryField struct {
 }
 ```
 
-<a name="Record"></a>
-## type [Record](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L13>)
+<a name="Call"></a>
+## type [Call](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L136-L145>)
 
-Record contains the retained facts of one generation.
+Call records an actual submitted request, excluding authentication headers.
+
+- Method, Endpoint: the HTTP method and request URL
+- ContentType: the submitted body type
+- Payload: the retained body, with binary content represented by references
+- Sent: the UTC request capture time
+- Error: the failure message when no response arrived
 
 ```go
-type Record struct{}
+type Call struct {
+    Method      string          `json:"method"`
+    Endpoint    string          `json:"endpoint"`
+    ContentType string          `json:"content-type,omitempty"`
+    Payload     json.RawMessage `json:"payload"`
+    Sent        time.Time       `json:"sent"`
+    Error       string          `json:"error,omitempty"`
+    // contains filtered or unexported fields
+}
+```
+
+<a name="File"></a>
+## type [File](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L181-L186>)
+
+File describes generated media successfully saved to its final path.
+
+- SavedFile: the final path and byte count
+- MIME: the retained content type
+- References: the provider download URLs whose content matches the file
+
+```go
+type File struct {
+    artifact.SavedFile
+
+    MIME       string   `json:"content-type,omitempty"`
+    References []string `json:"provider-references,omitempty"`
+}
+```
+
+<a name="Input"></a>
+## type [Input](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L121-L126>)
+
+Input describes a prepared input; its data is retained through the submitted payload, without embedding the bytes a second time.
+
+- Source: the input path or URL
+- MIME: the prepared content type
+- Time: the optional frame time in seconds
+- Frame: the optional first or last frame selection
+
+```go
+type Input struct {
+    Source string   `json:"source"`
+    MIME   string   `json:"content-type,omitempty"`
+    Time   *float64 `json:"time,omitempty"`
+    Frame  string   `json:"frame,omitempty"`
+}
+```
+
+<a name="Record"></a>
+## type [Record](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L66-L91>)
+
+Record contains the retained facts of one generation. Its unexported state owns binary copies independently of provider artifact cleanup.
+
+- Schema: the record format version
+- ID: the generated identifier for this run
+- Version: the Bildomat version that produced the record
+- Provider, Model: the selected catalog identifiers
+- Started, Finished: the UTC execution times
+- ElapsedMS: the elapsed execution time in milliseconds
+- Status: the final status, including local persistence failures
+- ProviderStatus: the provider operation status before local persistence
+- Request: the supplied options, prepared inputs, and submitted requests
+- Artifacts: the successfully saved generated files
+- Responses: the provider responses in capture order
+- Returns: the provider data retained for later requests
+- Errors: the generation failure messages
+- PersistenceErrors: the record capture and persistence failure messages
+
+```go
+type Record struct {
+    Schema            int           `json:"schema-version"`
+    ID                string        `json:"generation-id"`
+    Version           string        `json:"bildomat-version"`
+    Provider          string        `json:"provider"`
+    Model             string        `json:"model"`
+    Started           time.Time     `json:"started"`
+    Finished          time.Time     `json:"finished"`
+    ElapsedMS         int64         `json:"elapsed-ms"`
+    Status            string        `json:"status"`
+    ProviderStatus    string        `json:"provider-status,omitempty"`
+    Request           Request       `json:"request"`
+    Artifacts         []File        `json:"artifacts"`
+    Responses         []Response    `json:"provider-responses"`
+    Returns           []ReturnValue `json:"return-values,omitempty"`
+    Errors            []string      `json:"errors,omitempty"`
+    PersistenceErrors []string      `json:"persistence-errors,omitempty"`
+    // contains filtered or unexported fields
+}
 ```
 
 <a name="New"></a>
-### func [New](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L24>)
+### func [New](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L200>)
 
 ```go
 func New(provider, model, version, prompt string, started time.Time) *Record
@@ -53,34 +186,70 @@ func New(provider, model, version, prompt string, started time.Time) *Record
 New creates the record for one generation.
 
 <a name="Read"></a>
-### func [Read](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L42>)
+### func [Read](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L438>)
 
 ```go
 func Read(path string) (*Record, error)
 ```
 
-Read loads a provisional generation record from an absolute path.
+Read loads a generation record and validates its schema and required fields.
 
 <a name="Record.Begin"></a>
-### func \(\*Record\) [Begin](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L27>)
+### func \(\*Record\) [Begin](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L244>)
 
 ```go
-func (record *Record) Begin(method, endpoint, contentType string, body []byte, fields []BinaryField) int
+func (record *Record) Begin(method, endpoint, contentType string, body []byte) int
 ```
 
-Begin records the actual payload before a provider request is sent.
+Begin records the actual payload before a provider request is sent. A nil receiver leaves persistence disabled and returns an unused request index.
 
-<a name="Record.Receive"></a>
-### func \(\*Record\) [Receive](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L30>)
+<a name="Record.Describe"></a>
+### func \(\*Record\) [Describe](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L219>)
 
 ```go
-func (record *Record) Receive(requestIndex int, responseType string, status int, contentType string, body []byte, fields []BinaryField, captureErr error)
+func (record *Record) Describe(supplied json.RawMessage, sources []string)
+```
+
+Describe assigns supplied options and input sources to the record without copying them.
+
+<a name="Record.Prepared"></a>
+### func \(\*Record\) [Prepared](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L229>)
+
+```go
+func (record *Record) Prepared(inputs []media.Input)
+```
+
+Prepared records the inputs actually passed to the request builder and makes unchanged local files available for exact\-content matching during persistence.
+
+<a name="Record.ProviderFinished"></a>
+### func \(\*Record\) [ProviderFinished](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L340>)
+
+```go
+func (record *Record) ProviderFinished(generationErr error)
+```
+
+ProviderFinished distinguishes provider execution from later local write errors.
+
+<a name="Record.Receive"></a>
+### func \(\*Record\) [Receive](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L260>)
+
+```go
+func (record *Record) Receive(requestIndex int, responseType string, status int, contentType string, body []byte, captureErr error)
 ```
 
 Receive records a response before execution narrows its JSON shape.
 
+<a name="Record.ReceiveFile"></a>
+### func \(\*Record\) [ReceiveFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L294>)
+
+```go
+func (record *Record) ReceiveFile(requestIndex, status int, contentType, path string, captureErr error)
+```
+
+ReceiveFile retains a downloaded body independently of the artifact's temporary file. The saved response later references its actual final file.
+
 <a name="Record.RequestFailed"></a>
-### func \(\*Record\) [RequestFailed](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L33>)
+### func \(\*Record\) [RequestFailed](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L322>)
 
 ```go
 func (record *Record) RequestFailed(requestIndex int, requestErr error)
@@ -89,7 +258,7 @@ func (record *Record) RequestFailed(requestIndex int, requestErr error)
 RequestFailed records a request that received no response.
 
 <a name="Record.Retain"></a>
-### func \(\*Record\) [Retain](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L36>)
+### func \(\*Record\) [Retain](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L331>)
 
 ```go
 func (record *Record) Retain(provider, model string, values json.RawMessage)
@@ -98,12 +267,108 @@ func (record *Record) Retain(provider, model string, values json.RawMessage)
 Retain adds provider\-specific values for subsequent requests.
 
 <a name="Record.Save"></a>
-### func \(\*Record\) [Save](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L39>)
+### func \(\*Record\) [Save](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L350>)
 
 ```go
 func (record *Record) Save(dir, stem string, files []artifact.SavedFile, generationErr error) (string, error)
 ```
 
-Save persists a record beside the completed artifacts under their final stem.
+Save finishes the record and writes it beside the supplied final artifact paths. It also saves unmatched binary content and returns the record path with any persistence errors.
+
+<a name="Record.SetFields"></a>
+### func \(\*Record\) [SetFields](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L210>)
+
+```go
+func (record *Record) SetFields(requestFields, responseFields []BinaryField)
+```
+
+SetFields assigns provider\-declared binary fields to the record without copying the slices. Explicit data URIs are recognized even without a declaration.
+
+<a name="Request"></a>
+## type [Request](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L103-L111>)
+
+Request distinguishes the supplied options, adjusted options, prepared inputs, and exact submitted HTTP payloads of one generation.
+
+- Prompt: the submitted prompt
+- Supplied, Adjusted: the options before and after conformance
+- Adjustments: the recorded parameter changes
+- Sources: the supplied input paths or URLs
+- Inputs: the media prepared for submission
+- Calls: the provider requests in submission order
+
+```go
+type Request struct {
+    Prompt      string          `json:"prompt"`
+    Supplied    json.RawMessage `json:"supplied-parameters,omitempty"`
+    Adjusted    json.RawMessage `json:"adjusted-parameters,omitempty"`
+    Adjustments json.RawMessage `json:"adjustments,omitempty"`
+    Sources     []string        `json:"input-sources,omitempty"`
+    Inputs      []Input         `json:"prepared-inputs,omitempty"`
+    Calls       []Call          `json:"provider-requests"`
+}
+```
+
+<a name="Response"></a>
+## type [Response](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L160-L173>)
+
+Response retains one full provider body before its execution\-specific decode.
+
+- Type: the synchronous or asynchronous request role
+- RequestIndex: the index of the request in Request.Calls
+- Endpoint: the associated request URL
+- Status: the HTTP response status
+- ContentType: the returned body type
+- Received: the UTC response capture time
+- Body: the full retained body, with binary content represented by references
+- Incomplete: whether capturing the response failed
+- CaptureError: the response read failure message
+- DecodeError: the JSON decode failure for a non\-JSON response
+
+```go
+type Response struct {
+    Type         string          `json:"type"`
+    RequestIndex int             `json:"request-index"`
+    Endpoint     string          `json:"endpoint"`
+    Status       int             `json:"status"`
+    ContentType  string          `json:"content-type,omitempty"`
+    Received     time.Time       `json:"received"`
+    Body         json.RawMessage `json:"full-response"`
+    Incomplete   bool            `json:"incomplete,omitempty"`
+    CaptureError string          `json:"capture-error,omitempty"`
+    DecodeError  string          `json:"decode-error,omitempty"`
+    // contains filtered or unexported fields
+}
+```
+
+<a name="ReturnValue"></a>
+## type [ReturnValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/record.go#L193-L197>)
+
+ReturnValue keeps a provider's own retained shape separate from generic facts.
+
+- Provider, Model: the catalog identifiers associated with the retained data
+- Data: the provider\-specific values available for reuse
+
+```go
+type ReturnValue struct {
+    Provider string          `json:"provider"`
+    Model    string          `json:"model"`
+    Data     json.RawMessage `json:"retained-data"`
+}
+```
+
+<a name="Reuse"></a>
+## type [Reuse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/metadata/reuse.go#L7-L10>)
+
+Reuse contains one provisional reuse selection loaded by the command. Its syntax and retained format are experimental and subject to change.
+
+- URI: the selected original provider resource URL
+- Record: the source generation record, when one was supplied
+
+```go
+type Reuse struct {
+    URI    string
+    Record *Record
+}
+```
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

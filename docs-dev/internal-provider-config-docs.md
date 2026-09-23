@@ -16,7 +16,12 @@ Package config embeds the descriptor\-class provider configurations: the provide
 
 ## Constants
 
-<a name="IDOpenAI"></a>The descriptor\-class provider IDs. Each names its configuration file, \<ID\>.json.
+<a name="IDOpenAI"></a>Descriptor\-class provider IDs name their embedded configuration files.
+
+- IDOpenAI: OpenAI
+- IDXAI: xAI
+- IDOpenRouter: OpenRouter
+- IDRecraft: Recraft
 
 ```go
 const (
@@ -29,7 +34,12 @@ const (
 
 ## Variables
 
-<a name="JSONOpenAI"></a>The embedded configuration documents, one per descriptor\-class provider.
+<a name="JSONOpenAI"></a>Embedded documents define descriptor\-class providers.
+
+- JSONOpenAI: OpenAI configuration
+- JSONXAI: xAI configuration
+- JSONOpenRouter: OpenRouter configuration
+- JSONRecraft: Recraft configuration
 
 ```go
 var (

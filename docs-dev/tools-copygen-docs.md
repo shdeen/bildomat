@@ -6,13 +6,7 @@
 import "github.com/shdeen/bildomat/tools/copygen"
 ```
 
-Command copygen generates the per\-package copy constants from the one catalog source, internal/templates/copy.toml.
-
-The catalog's top\-level tables name package directories relative to the repository root. For each table, copygen writes \<dir\>/zz\_consts.go: one Go string constant per entry, named exactly by the entry key. It runs from the internal/templates directory via its go:generate directive.
-
-Validation: a malformed TOML document, a table naming no package directory, a non\-string value, or an entry key that is not a valid exported Go identifier all fail generation.
-
-String discipline: this tool builds the catalog, so it cannot take its own wording from it; its diagnostics are named constants here instead.
+Command copygen turns internal/templates/copy.toml into per\-package string constants. Each top\-level table names a package directory relative to the repository root. The go:generate directive runs it from internal/templates.
 
 ## Index
 

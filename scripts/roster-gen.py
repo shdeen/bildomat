@@ -41,9 +41,8 @@ REPO = Path(__file__).resolve().parent.parent
 PROVIDER_DIR = REPO / "internal" / "provider"
 ROSTER_PATH = REPO / "scripts" / "invariants" / "model-roster.json"
 
-# The parameter flags each roster section covers. The sizing trio and the
-# input media is shaped by its own section; every other consumed flag
-# is listed under "other parameters".
+# The parameter flags each roster section covers. The sizing trio and the input media and duration
+# have their own sections; all other consumed flags are listed under "other parameters".
 SIZING_FLAGS = {"size", "aspect-ratio", "resolution"}
 SPLIT_FLAGS = ("aspect-ratio", "resolution")
 INPUT_MEDIA_FLAG = "input-media"
@@ -212,6 +211,7 @@ class Grouper:
         return result
 
 
+# Consolidate declared provider capabilities and reject duplicate aliases.
 def build(configs):
     providers = [
         {"provider": cfg["displayName"], "id": pid, "API key variable": cfg["apiKeyEnvVar"]}
@@ -306,6 +306,7 @@ def content_without_date(roster):
     return {k: v for k, v in roster.items() if k != "lastUpdated"}
 
 
+# Check or rewrite the roster, retaining its date when capability data is unchanged.
 def main():
     check_only = sys.argv[1:] == ["--check"]
     if sys.argv[1:] not in ([], ["--check"]):

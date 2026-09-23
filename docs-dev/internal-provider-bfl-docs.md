@@ -6,16 +6,16 @@
 import "github.com/shdeen/bildomat/internal/provider/bfl"
 ```
 
-Package bfl provides image generation through the Black Forest Labs asynchronous API.
+Package bfl provides image and video generation through the Black Forest Labs asynchronous API.
 
 ## Index
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func NewProvider\(decoded \*core.Provider\) core.Generator](<#NewProvider>)
+- [func NewProvider\(providerDescription \*catalog.Provider\) \(generation.Generator, error\)](<#NewProvider>)
 - [type Provider](<#Provider>)
-  - [func \(\*Provider\) AdjustParams\(model \*core.Model, inputs parameters.FlagInputs, mediaInputs \[\]media.Input\) \(parameters.Params, \[\]parameters.ParamChange, error\)](<#Provider.AdjustParams>)
-  - [func \(p \*Provider\) Generate\(ctx context.Context, run \*core.Generation\) \(core.Result, error\)](<#Provider.Generate>)
+  - [func \(\*Provider\) AdjustParams\(model \*catalog.Model, inputs params.FlagInputs, mediaInputs \[\]media.Input, \_ \*metadata.Reuse\) \(generation.Preparation, error\)](<#Provider.AdjustParams>)
+  - [func \(p \*Provider\) Generate\(ctx context.Context, run \*generation.Generation\) \(generation.Result, error\)](<#Provider.Generate>)
 
 
 ## Constants
@@ -52,18 +52,18 @@ var ConfigJSON []byte
 ```
 
 <a name="NewProvider"></a>
-## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L36>)
+## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L37>)
 
 ```go
-func NewProvider(decoded *core.Provider) core.Generator
+func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error)
 ```
 
-NewProvider returns the Black Forest Labs generator built over the decoded provider. It never returns a nil pointer.
+NewProvider returns a generator with owned adapter settings, or a missing\-description error.
 
 <a name="Provider"></a>
-## type [Provider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L26-L32>)
+## type [Provider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L31-L34>)
 
-Provider generates images through the Black Forest Labs asynchronous API.
+Provider generates images and videos through the Black Forest Labs asynchronous API.
 
 ```go
 type Provider struct {
@@ -72,19 +72,19 @@ type Provider struct {
 ```
 
 <a name="Provider.AdjustParams"></a>
-### func \(\*Provider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L53>)
+### func \(\*Provider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L49>)
 
 ```go
-func (*Provider) AdjustParams(model *core.Model, inputs parameters.FlagInputs, mediaInputs []media.Input) (parameters.Params, []parameters.ParamChange, error)
+func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error)
 ```
 
 AdjustParams returns model\-compatible generation parameters and records describing each adjustment. Video models resolve the first and last frame anchors to keyframe times; image models drop frame prefixes with a record.
 
 <a name="Provider.Generate"></a>
-### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L73>)
+### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L69>)
 
 ```go
-func (p *Provider) Generate(ctx context.Context, run *core.Generation) (core.Result, error)
+func (p *Provider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error)
 ```
 
 Generate starts an image or video job, waits for completion, and returns the downloaded artifact.

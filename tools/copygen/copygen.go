@@ -1,17 +1,6 @@
-// Command copygen generates the per-package copy constants from the one
-// catalog source, internal/templates/copy.toml.
-//
-// The catalog's top-level tables name package directories relative to the
-// repository root. For each table, copygen writes <dir>/zz_consts.go:
-// one Go string constant per entry, named exactly by the entry key. It runs
-// from the internal/templates directory via its go:generate directive.
-//
-// Validation: a malformed TOML document, a table naming no package
-// directory, a non-string value, or an entry key that is not a valid
-// exported Go identifier all fail generation.
-//
-// String discipline: this tool builds the catalog, so it cannot take its own
-// wording from it; its diagnostics are named constants here instead.
+// Command copygen turns internal/templates/copy.toml into per-package string constants. Each
+// top-level table names a package directory relative to the repository root. The go:generate
+// directive runs it from internal/templates.
 package main
 
 import (
@@ -30,8 +19,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-// errCatalogEntry marks a catalog source whose shape, entry form, or target
-// package is invalid.
+// errCatalogEntry marks a catalog source whose shape, entry form, or target package is invalid.
 var errCatalogEntry = errors.New("invalid catalog entry")
 
 // sourceName is the catalog source read from the working directory.
@@ -40,8 +28,7 @@ const sourceName = "copy.toml"
 // generatedName is the Go source written into each target package directory.
 const generatedName = "zz_consts.go"
 
-// The tool's diagnostics. The catalog cannot supply them: it is the
-// artifact under construction.
+// The tool's diagnostics. The catalog cannot supply them: it is the artifact under construction.
 const (
 	diagPrefix           = "copygen:"
 	diagReadFailed       = "reading %s: %w"
@@ -63,10 +50,10 @@ const (
 	generatedFooter      = ")\n"
 )
 
-// identifierForm is the required shape of an entry key: a valid exported
-// Go identifier.
+// identifierForm restricts catalog keys to exported ASCII alphanumeric identifiers.
 var identifierForm = regexp.MustCompile(`^[A-Z][A-Za-z0-9]*$`)
 
+// main runs copy generation and reports failures on stderr with a nonzero exit status.
 func main() {
 	if err := generate(); err != nil {
 		fmt.Fprintln(os.Stderr, diagPrefix, err)
@@ -74,8 +61,8 @@ func main() {
 	}
 }
 
-// generate reads and validates the catalog source and writes each package's
-// generated constants file.
+// generate validates and renders the catalog before writing each package's constants. A write
+// failure may leave earlier files updated.
 func generate() error {
 	sourcePath, err := filepath.Abs(sourceName)
 	if err != nil {
@@ -118,8 +105,8 @@ func generate() error {
 	return nil
 }
 
-// loadCatalog decodes the catalog source into per-package entry maps,
-// validating the document shape, every table, and every entry.
+// loadCatalog decodes the catalog source into per-package entry maps, validating the document
+// shape, every table, and every entry.
 func loadCatalog(sourcePath, repositoryRoot string) (map[string]map[string]string, error) {
 	// #nosec G304 -- sourcePath is the fixed catalog source beside the go:generate directive.
 	sourceBytes, err := os.ReadFile(sourcePath)
@@ -203,8 +190,8 @@ func renderPackageSource(repositoryRoot, dir string, entries map[string]string) 
 	return string(formatted), nil
 }
 
-// packageNameOf returns the package clause of the first Go source file in a
-// directory, skipping test files and the generated file itself.
+// packageNameOf returns the package clause of the first Go source file in a directory, skipping
+// test files and the generated file itself.
 func packageNameOf(dir string) (string, error) {
 	dirEntries, err := os.ReadDir(dir)
 	if err != nil {

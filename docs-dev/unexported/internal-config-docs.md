@@ -6,7 +6,7 @@
 import "github.com/shdeen/bildomat/internal/config"
 ```
 
-Package config loads the user's optional configuration file at \<home\>/.bildomat/config.yml: a default model, a default output directory, and per\-provider API keys, read once per run. A fault never stops the caller; Load returns the decoded settings together with the classified faults, each wrapping a sentinel under errs.ErrUserConfig, for the caller's warning path.
+Package config loads optional settings from \<home\>/.bildomat/config.yml. It returns settings and classified faults so the caller can warn about configuration errors without stopping the run.
 
 ## Index
 
@@ -14,7 +14,6 @@ Package config loads the user's optional configuration file at \<home\>/.bildoma
 - [Variables](<#variables>)
 - [func UnknownProviderFault\(filePath, providerID string\) error](<#UnknownProviderFault>)
 - [func decodeFault\(filePath string, err error\) error](<#decodeFault>)
-- [func pathValueFault\(filePath, offendingValue string, sentinel error\) error](<#pathValueFault>)
 - [func readSettingKeys\(\) \[\]string](<#readSettingKeys>)
 - [type Settings](<#Settings>)
   - [func Load\(\) \(Settings, string, \[\]error\)](<#Load>)
@@ -50,16 +49,16 @@ var declaredKeys = readSettingKeys()
 ```
 
 <a name="UnknownProviderFault"></a>
-## func [UnknownProviderFault](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L96>)
+## func [UnknownProviderFault](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L86>)
 
 ```go
 func UnknownProviderFault(filePath, providerID string) error
 ```
 
-UnknownProviderFault returns the classified fault for a non\-empty api\-keys entry naming a provider the catalog does not hold. The caller supplies the config file's path and the offending provider ID.
+UnknownProviderFault describes an api\-keys provider absent from the catalog.
 
 <a name="decodeFault"></a>
-## func [decodeFault](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L137>)
+## func [decodeFault](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L125>)
 
 ```go
 func decodeFault(filePath string, err error) error
@@ -67,28 +66,19 @@ func decodeFault(filePath string, err error) error
 
 decodeFault classifies one failed decode of the config file.
 
-<a name="pathValueFault"></a>
-## func [pathValueFault](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L144>)
-
-```go
-func pathValueFault(filePath, offendingValue string, sentinel error) error
-```
-
-pathValueFault builds a classified fault carrying the config file's path as its outermost quoted context and the offending value as its deepest, the shape the warning renderer reads the two values from.
-
 <a name="readSettingKeys"></a>
-## func [readSettingKeys](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L54>)
+## func [readSettingKeys](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L46>)
 
 ```go
 func readSettingKeys() []string
 ```
 
-readSettingKeys returns the schema's top\-level keys from the Settings yaml tags, so the schema is stated exactly once.
+readSettingKeys returns the top\-level configuration keys declared by Settings.
 
 <a name="Settings"></a>
-## type [Settings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L41-L45>)
+## type [Settings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L34-L38>)
 
-Settings holds the user config file's three optional settings. An empty value means unset: the loader drops empty values, so a consumer never sees an empty\-but\-present setting.
+Settings holds optional defaults and API keys. Empty values mean unset; Load removes empty API keys.
 
 - DefaultModel: the model used when \-\-model is omitted; anything the \-\-model flag accepts
 - DefaultOutputDir: the directory used when no output location is given; anything the directory portion of \-\-output\-path accepts
@@ -103,21 +93,21 @@ type Settings struct {
 ```
 
 <a name="Load"></a>
-### func [Load](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L70>)
+### func [Load](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L62>)
 
 ```go
 func Load() (Settings, string, []error)
 ```
 
-Load resolves the config file's location under the home directory, reads and decodes the file, and returns the decoded settings, the file's resolved path \(empty when the location cannot be resolved\), and the classified faults. A missing file or a missing .bildomat directory is silent: zero settings and no faults.
+Load reads the optional configuration file and returns settings, its path, and classified faults. A missing file returns empty settings without a fault; an unresolved home returns an empty path.
 
 <a name="decode"></a>
-### func [decode](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L104>)
+### func [decode](<https://github.com/shdeen/bildomat-dev/blob/main/internal/config/config.go#L92>)
 
 ```go
 func decode(filePath string, content []byte) (Settings, []error)
 ```
 
-decode decodes one config file's content into its settings, dropping empty values, and returns the classified faults: a decode failure, or one fault per unknown top\-level key. The path labels the faults; it is not read.
+decode parses configuration bytes, drops empty API keys, and reports malformed YAML or unknown top\-level settings. The supplied path labels faults without being read.
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

@@ -11,17 +11,23 @@ Package params owns generation parameter definitions, values, and adjustment.
 ## Index
 
 - [Constants](<#constants>)
-- [func AdjustParams\(inputs FlagInputs, definitions Definitions, modelLabel string\) \(Params, \[\]ParamChange, error\)](<#AdjustParams>)
-- [func CheckFlagInputTypes\(inputs FlagInputs, paramFlags \[\]ParamFlag\) error](<#CheckFlagInputTypes>)
-- [func FormatParamValue\(paramVal any\) string](<#FormatParamValue>)
-- [func ParamValue\[T any\]\(paramVals map\[FlagType\]any, param FlagType\) \(T, error\)](<#ParamValue>)
+- [func Adjust\(inputs FlagInputs, definitions Definitions, modelLabel string\) \(Values, \[\]Adjustment, error\)](<#Adjust>)
+- [func CheckFlagInputTypes\(inputs FlagInputs, paramFlags \[\]Flag\) error](<#CheckFlagInputTypes>)
+- [func ConstraintFault\(param \*Definition\) string](<#ConstraintFault>)
+- [func FormatValue\(paramVal any\) string](<#FormatValue>)
+- [func GuidanceMissing\(paramCfg \*Definition, paramFlag \*Flag\) bool](<#GuidanceMissing>)
 - [func ParseDimensions\(size string\) \(parsedWidth, parsedHeight int, isValid bool\)](<#ParseDimensions>)
-- [func ParseParamValue\(dataType DataType, rawValue string\) \(any, error\)](<#ParseParamValue>)
+- [func ParseValue\(dataType DataType, rawValue string\) \(any, error\)](<#ParseValue>)
 - [func PickSize\(sizes \[\]string, landscape bool, tierH int, requestedRatio Nullable\[float64\]\) string](<#PickSize>)
+- [func Value\[T any\]\(paramVals map\[FlagType\]any, param FlagType\) \(T, error\)](<#Value>)
+- [type Adjustment](<#Adjustment>)
 - [type Change](<#Change>)
 - [type DataType](<#DataType>)
+- [type Definition](<#Definition>)
 - [type Definitions](<#Definitions>)
-  - [func \(definitions Definitions\) Param\(flag FlagType\) \(Param, bool\)](<#Definitions.Param>)
+  - [func \(definitions Definitions\) Param\(flag FlagType\) \(Definition, bool\)](<#Definitions.Param>)
+- [type Flag](<#Flag>)
+  - [func Flags\(\) \[\]Flag](<#Flags>)
 - [type FlagInputs](<#FlagInputs>)
   - [func \(userInputs FlagInputs\) Supplied\(flag FlagType\) bool](<#FlagInputs.Supplied>)
 - [type FlagType](<#FlagType>)
@@ -31,12 +37,8 @@ Package params owns generation parameter definitions, values, and adjustment.
   - [func \(n \*Nullable\[T\]\) UnmarshalJSON\(data \[\]byte\) error](<#Nullable[T].UnmarshalJSON>)
   - [func \(n Nullable\[T\]\) ValIf\(\) \(T, bool\)](<#Nullable[T].ValIf>)
   - [func \(n Nullable\[T\]\) ValOr\(defaultVal T\) T](<#Nullable[T].ValOr>)
-- [type Param](<#Param>)
-- [type ParamChange](<#ParamChange>)
-- [type ParamFlag](<#ParamFlag>)
-  - [func ParamFlags\(\) \[\]ParamFlag](<#ParamFlags>)
-- [type Params](<#Params>)
 - [type SizeBounds](<#SizeBounds>)
+- [type Values](<#Values>)
 
 
 ## Constants
@@ -45,48 +47,62 @@ Package params owns generation parameter definitions, values, and adjustment.
 
 ```go
 const (
-    BoundMaxForm           = "max %s"
-    BoundMinForm           = "min %s"
-    ReasonModelLimits      = "%s limits"
-    ReasonSupersededBySize = "superseded by Size %s"
+    BoundMaxForm            = "max %s"
+    BoundMinForm            = "min %s"
+    BoundsAndValuesConflict = "size bounds and allowed values both declared"
+    NegativeMaxMultipleForm = "negative maxMultiple %d"
+    RangeBoundNegative      = "negative range bound"
+    RangeInverted           = "minValue %s exceeds maxValue %s"
+    ReasonModelLimits       = "%s limits"
+    ReasonSupersededBySize  = "superseded by Size %s"
+    ValuesAndRangeConflict  = "allowed values and a range both declared"
 )
 ```
 
-<a name="AdjustParams"></a>
-## func [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L69>)
+<a name="Adjust"></a>
+## func [Adjust](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L74>)
 
 ```go
-func AdjustParams(inputs FlagInputs, definitions Definitions, modelLabel string) (Params, []ParamChange, error)
+func Adjust(inputs FlagInputs, definitions Definitions, modelLabel string) (Values, []Adjustment, error)
 ```
 
-AdjustParams applies parameter definitions and returns request values and their notices. modelLabel identifies the model in existing notices and conflicting\-bound errors.
+Adjust applies model parameter definitions and returns request values and adjustment notices. It leaves supplied inputs unchanged and returns completed values and notices on failure; modelLabel identifies the model in notices and conflicting\-constraint errors.
 
 <a name="CheckFlagInputTypes"></a>
-## func [CheckFlagInputTypes](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L115>)
+## func [CheckFlagInputTypes](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L114>)
 
 ```go
-func CheckFlagInputTypes(inputs FlagInputs, paramFlags []ParamFlag) error
+func CheckFlagInputTypes(inputs FlagInputs, paramFlags []Flag) error
 ```
 
-CheckFlagInputTypes takes the supplied flag inputs and the parameter flag records and returns ErrParamValueTypeMismatch naming the first flag whose stored value does not have the type its record declares: a string slice for a repeatable flag, otherwise the string, number, integer, or boolean of its data type. A flag without a record is not checked.
+CheckFlagInputTypes rejects the first stored input that differs from its declared Go type. Repeatable flags require a string slice; inputs without a flag definition are not checked.
 
-<a name="FormatParamValue"></a>
-## func [FormatParamValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L165>)
+<a name="ConstraintFault"></a>
+## func [ConstraintFault](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/validation.go#L26>)
 
 ```go
-func FormatParamValue(paramVal any) string
+func ConstraintFault(param *Definition) string
 ```
 
-FormatParamValue returns the textual representation of a parameter value.
+ConstraintFault returns the first constraint error in a parameter configuration, or an empty string when it is valid.
 
-<a name="ParamValue"></a>
-## func [ParamValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L41>)
+<a name="FormatValue"></a>
+## func [FormatValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L162>)
 
 ```go
-func ParamValue[T any](paramVals map[FlagType]any, param FlagType) (T, error)
+func FormatValue(paramVal any) string
 ```
 
-ParamValue takes parameter values and a parameter name and returns the stored value with the requested type. An absent parameter reads as the zero value. A stored value of another type is a repository defect and returns ErrParamValueTypeMismatch naming the parameter.
+FormatValue returns the textual representation of a parameter value.
+
+<a name="GuidanceMissing"></a>
+## func [GuidanceMissing](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/validation.go#L9>)
+
+```go
+func GuidanceMissing(paramCfg *Definition, paramFlag *Flag) bool
+```
+
+GuidanceMissing reports whether a parameter lacks declared constraints and flag value guidance. Boolean flags need no value guidance.
 
 <a name="ParseDimensions"></a>
 ## func [ParseDimensions](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/sizing.go#L52>)
@@ -97,23 +113,53 @@ func ParseDimensions(size string) (parsedWidth, parsedHeight int, isValid bool)
 
 ParseDimensions takes WxH dimensions and returns positive width and height values and whether parsing succeeded.
 
-<a name="ParseParamValue"></a>
-## func [ParseParamValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L81>)
+<a name="ParseValue"></a>
+## func [ParseValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L82>)
 
 ```go
-func ParseParamValue(dataType DataType, rawValue string) (any, error)
+func ParseValue(dataType DataType, rawValue string) (any, error)
 ```
 
-ParseParamValue parses parameter text according to the requested data type and returns its typed value.
+ParseValue parses parameter text according to the requested data type and returns its typed value.
 
 <a name="PickSize"></a>
-## func [PickSize](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/sizing.go#L207>)
+## func [PickSize](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/sizing.go#L191>)
 
 ```go
 func PickSize(sizes []string, landscape bool, tierH int, requestedRatio Nullable[float64]) string
 ```
 
 PickSize selects declared dimensions by orientation, nearest short edge, nearest supplied ratio, and declaration order. If the requested orientation has no candidate, it considers both orientations.
+
+<a name="Value"></a>
+## func [Value](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L39>)
+
+```go
+func Value[T any](paramVals map[FlagType]any, param FlagType) (T, error)
+```
+
+Value reads a typed parameter, returning its zero value when absent. A stored value of another type returns ErrParamValueTypeMismatch naming the parameter.
+
+<a name="Adjustment"></a>
+## type [Adjustment](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L19-L25>)
+
+Adjustment records one adjustment to a supplied generation parameter.
+
+- FlagID: the parameter that is adjusted
+- Type: the kind of adjustment
+- InputVal: the value supplied by the user
+- WireVal: the resulting value
+- Comment: additional user\-facing detail about the adjustment
+
+```go
+type Adjustment struct {
+    FlagID   FlagType `json:"flagID"`
+    Type     Change   `json:"type"`
+    InputVal string   `json:"inputVal"`
+    WireVal  string   `json:"wireVal"`
+    Comment  string   `json:"comment"`
+}
+```
 
 <a name="Change"></a>
 ## type [Change](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/param.go#L4>)
@@ -175,23 +221,96 @@ const (
 )
 ```
 
+<a name="Definition"></a>
+## type [Definition](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/param.go#L43-L54>)
+
+Definition contains a model's provider mapping and constraints for one parameter.
+
+- ParamID: the provider request key, or empty when request code handles the parameter
+- FlagID: the command flag that supplies the parameter
+- AllowedValues: the accepted parameter values
+- MinValue: the optional minimum numeric value
+- MaxValue: the optional maximum numeric value
+- MaxMultiple: the maximum number of values accepted for a repeatable parameter
+- CustomSize: the optional constraints for free\-form dimensions
+- RuleDescription: the user\-facing description of a parameter adjustment rule
+- ModelInfoComment: expanded model\-specific guidance appended on the model's details page
+- Required: whether the provider's documentation names the parameter as required; a record declaring nothing is optional
+
+The encoding carries only what a record declares: the request key and every constraint are absent when empty, and an unset bound is absent rather than null.
+
+```go
+type Definition struct {
+    ParamID          string            `json:"paramID,omitempty"`
+    FlagID           FlagType          `json:"flagID"`
+    Required         bool              `json:"required,omitempty"`
+    AllowedValues    []string          `json:"allowedValues,omitempty"`
+    MinValue         Nullable[float64] `json:"minValue,omitzero"`
+    MaxValue         Nullable[float64] `json:"maxValue,omitzero"`
+    MaxMultiple      int               `json:"maxMultiple,omitempty"`
+    CustomSize       *SizeBounds       `json:"customSize,omitempty"`
+    RuleDescription  string            `json:"ruleDescription,omitempty"`
+    ModelInfoComment string            `json:"modelInfoComment,omitempty"`
+}
+```
+
 <a name="Definitions"></a>
 ## type [Definitions](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/param.go#L57>)
 
 Definitions contains the declared parameter configurations for a model.
 
 ```go
-type Definitions []Param
+type Definitions []Definition
 ```
 
 <a name="Definitions.Param"></a>
 ### func \(Definitions\) [Param](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/param.go#L60>)
 
 ```go
-func (definitions Definitions) Param(flag FlagType) (Param, bool)
+func (definitions Definitions) Param(flag FlagType) (Definition, bool)
 ```
 
 Param returns a flag's declared configuration and whether it exists.
+
+<a name="Flag"></a>
+## type [Flag](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L68-L78>)
+
+Flag describes a generation parameter's identifier, accepted names, type, and help text.
+
+- FlagID: the parameter's canonical flag name
+- FlagName: the parameter name shown to users \("Duration", "Aspect ratio"\)
+- DataType: the parameter's value type
+- Aliases: alternate flag names
+- Description: the parameter description shown in help output
+- ExampleValues: example values shown in help output
+- Comment: additional parameter guidance shown in help output
+- TextHint: the value placeholder shown in help output
+- AllowMultiple: whether the parameter accepts multiple values
+
+The encoding carries only what a record declares: an empty alias list, example list, comment, or hint is absent.
+
+```go
+type Flag struct {
+    FlagID        FlagType `json:"flagID"`
+    FlagName      string   `json:"flagName"`
+    DataType      DataType `json:"dataType"`
+    Aliases       []string `json:"aliases,omitempty"`
+    Description   string   `json:"description"`
+    ExampleValues []string `json:"exampleValues,omitempty"`
+    Comment       string   `json:"comment,omitempty"`
+    TextHint      string   `json:"textHint,omitempty"`
+    AllowMultiple bool     `json:"allowMultiple,omitempty"`
+}
+```
+
+<a name="Flags"></a>
+### func [Flags](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/zz_paramflags.go#L7>)
+
+```go
+func Flags() []Flag
+```
+
+Flags returns generation parameter records in declaration order. Each call creates independent records that callers may modify.
 
 <a name="FlagInputs"></a>
 ## type [FlagInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/input.go#L4>)
@@ -203,13 +322,13 @@ type FlagInputs map[FlagType]any
 ```
 
 <a name="FlagInputs.Supplied"></a>
-### func \(FlagInputs\) [Supplied](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/input.go#L9>)
+### func \(FlagInputs\) [Supplied](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/input.go#L8>)
 
 ```go
 func (userInputs FlagInputs) Supplied(flag FlagType) bool
 ```
 
-Supplied reports whether the parameter was meaningfully supplied. Thought output requires true, and input media requires at least one source.
+Supplied reports whether a parameter has a meaningful supplied value. Thought output requires true, and input media requires at least one source.
 
 <a name="FlagType"></a>
 ## type [FlagType](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L14>)
@@ -249,9 +368,12 @@ const (
 ```
 
 <a name="Nullable"></a>
-## type [Nullable](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L14-L20>)
+## type [Nullable](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L16-L20>)
 
-Nullable stores a value and whether it was explicitly set.
+Nullable distinguishes an explicitly supplied value from absence.
+
+- value: the stored value, including its type's zero value
+- isSet: whether a value was explicitly supplied
 
 ```go
 type Nullable[T any] struct {
@@ -260,16 +382,16 @@ type Nullable[T any] struct {
 ```
 
 <a name="GetSetIf"></a>
-### func [GetSetIf](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L24>)
+### func [GetSetIf](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L23>)
 
 ```go
 func GetSetIf[T any](provided bool, val T) Nullable[T]
 ```
 
-GetSetIf takes a condition and value and returns a set Nullable when the condition is true. Otherwise, it returns an unset Nullable.
+GetSetIf returns a set Nullable only when provided is true.
 
 <a name="Nullable[T].MarshalJSON"></a>
-### func \(Nullable\[T\]\) [MarshalJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L48>)
+### func \(Nullable\[T\]\) [MarshalJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L46>)
 
 ```go
 func (n Nullable[T]) MarshalJSON() ([]byte, error)
@@ -278,16 +400,16 @@ func (n Nullable[T]) MarshalJSON() ([]byte, error)
 MarshalJSON encodes the stored value, or the JSON null token when none was set.
 
 <a name="Nullable[T].UnmarshalJSON"></a>
-### func \(\*Nullable\[T\]\) [UnmarshalJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L63>)
+### func \(\*Nullable\[T\]\) [UnmarshalJSON](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L61>)
 
 ```go
 func (n *Nullable[T]) UnmarshalJSON(data []byte) error
 ```
 
-UnmarshalJSON takes encoded data and decodes it into n. It clears n for null data and returns an error when a non\-null value cannot be decoded.
+UnmarshalJSON replaces n with the decoded value, or clears it for null. An invalid value returns a decoding error without changing n.
 
 <a name="Nullable[T].ValIf"></a>
-### func \(Nullable\[T\]\) [ValIf](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L43>)
+### func \(Nullable\[T\]\) [ValIf](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L41>)
 
 ```go
 func (n Nullable[T]) ValIf() (T, bool)
@@ -296,116 +418,13 @@ func (n Nullable[T]) ValIf() (T, bool)
 ValIf returns the stored value and whether it was set.
 
 <a name="Nullable[T].ValOr"></a>
-### func \(Nullable\[T\]\) [ValOr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L34>)
+### func \(Nullable\[T\]\) [ValOr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/nullable.go#L32>)
 
 ```go
 func (n Nullable[T]) ValOr(defaultVal T) T
 ```
 
-ValOr takes a default value and returns the stored value when set. Otherwise, it returns the default value.
-
-<a name="Param"></a>
-## type [Param](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/param.go#L43-L54>)
-
-Param contains a model's provider mapping and constraints for one parameter.
-
-- ParamID: the provider request key, or empty when request code handles the parameter
-- FlagID: the command flag that supplies the parameter
-- AllowedValues: the accepted parameter values
-- MinValue: the optional minimum numeric value
-- MaxValue: the optional maximum numeric value
-- MaxMultiple: the maximum number of values accepted for a repeatable parameter
-- CustomSize: the optional constraints for free\-form dimensions
-- RuleDescription: the user\-facing description of a parameter adjustment rule
-- ModelInfoComment: expanded model\-specific guidance appended on the model's details page
-- Required: whether the provider's documentation names the parameter as required; a record declaring nothing is optional
-
-The encoding carries only what a record declares: the request key and every constraint are absent when empty, and an unset bound is absent rather than null.
-
-```go
-type Param struct {
-    ParamID          string            `json:"paramID,omitempty"`
-    FlagID           FlagType          `json:"flagID"`
-    Required         bool              `json:"required,omitempty"`
-    AllowedValues    []string          `json:"allowedValues,omitempty"`
-    MinValue         Nullable[float64] `json:"minValue,omitzero"`
-    MaxValue         Nullable[float64] `json:"maxValue,omitzero"`
-    MaxMultiple      int               `json:"maxMultiple,omitempty"`
-    CustomSize       *SizeBounds       `json:"customSize,omitempty"`
-    RuleDescription  string            `json:"ruleDescription,omitempty"`
-    ModelInfoComment string            `json:"modelInfoComment,omitempty"`
-}
-```
-
-<a name="ParamChange"></a>
-## type [ParamChange](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L19-L25>)
-
-ParamChange records one adjustment to a supplied generation parameter.
-
-- FlagID: the parameter that is adjusted
-- Type: the kind of adjustment
-- InputVal: the value supplied by the user
-- WireVal: the resulting value
-- Comment: additional user\-facing detail about the adjustment
-
-```go
-type ParamChange struct {
-    FlagID   FlagType
-    Type     Change
-    InputVal string
-    WireVal  string
-    Comment  string
-}
-```
-
-<a name="ParamFlag"></a>
-## type [ParamFlag](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/flag.go#L68-L78>)
-
-ParamFlag describes a generation parameter's identifier, accepted names, type, and help text.
-
-- FlagID: the parameter's canonical flag name
-- FlagName: the parameter name shown to users \("Duration", "Aspect ratio"\)
-- DataType: the parameter's value type
-- Aliases: alternate flag names
-- Description: the parameter description shown in help output
-- ExampleValues: example values shown in help output
-- Comment: additional parameter guidance shown in help output
-- TextHint: the value placeholder shown in help output
-- AllowMultiple: whether the parameter accepts multiple values
-
-The encoding carries only what a record declares: an empty alias list, example list, comment, or hint is absent.
-
-```go
-type ParamFlag struct {
-    FlagID        FlagType `json:"flagID"`
-    FlagName      string   `json:"flagName"`
-    DataType      DataType `json:"dataType"`
-    Aliases       []string `json:"aliases,omitempty"`
-    Description   string   `json:"description"`
-    ExampleValues []string `json:"exampleValues,omitempty"`
-    Comment       string   `json:"comment,omitempty"`
-    TextHint      string   `json:"textHint,omitempty"`
-    AllowMultiple bool     `json:"allowMultiple,omitempty"`
-}
-```
-
-<a name="ParamFlags"></a>
-### func [ParamFlags](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/zz_paramflags.go#L8>)
-
-```go
-func ParamFlags() []ParamFlag
-```
-
-ParamFlags returns the parameter flag records, one per generation parameter, in the order the parameter flag document declares them. Every call builds a new slice, so no caller's change reaches another caller.
-
-<a name="Params"></a>
-## type [Params](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L28>)
-
-Params maps parameter names to values that are ready for a provider request.
-
-```go
-type Params map[FlagType]any
-```
+ValOr returns the stored value or defaultVal when unset.
 
 <a name="SizeBounds"></a>
 ## type [SizeBounds](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/sizing.go#L17-L25>)
@@ -430,6 +449,15 @@ type SizeBounds struct {
     EdgeIncrem int     `json:"edgeIncrem,omitempty"`
     LongEdge   int     `json:"longEdge,omitempty"`
 }
+```
+
+<a name="Values"></a>
+## type [Values](<https://github.com/shdeen/bildomat-dev/blob/main/internal/params/paramchange.go#L28>)
+
+Values maps parameter names to values that are ready for a provider request.
+
+```go
+type Values map[FlagType]any
 ```
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

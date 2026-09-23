@@ -6,13 +6,7 @@
 import "github.com/shdeen/bildomat/tools/copygen"
 ```
 
-Command copygen generates the per\-package copy constants from the one catalog source, internal/templates/copy.toml.
-
-The catalog's top\-level tables name package directories relative to the repository root. For each table, copygen writes \<dir\>/zz\_consts.go: one Go string constant per entry, named exactly by the entry key. It runs from the internal/templates directory via its go:generate directive.
-
-Validation: a malformed TOML document, a table naming no package directory, a non\-string value, or an entry key that is not a valid exported Go identifier all fail generation.
-
-String discipline: this tool builds the catalog, so it cannot take its own wording from it; its diagnostics are named constants here instead.
+Command copygen turns internal/templates/copy.toml into per\-package string constants. Each top\-level table names a package directory relative to the repository root. The go:generate directive runs it from internal/templates.
 
 ## Index
 
@@ -75,23 +69,23 @@ const sourceName = "copy.toml"
 var errCatalogEntry = errors.New("invalid catalog entry")
 ```
 
-<a name="identifierForm"></a>identifierForm is the required shape of an entry key: a valid exported Go identifier.
+<a name="identifierForm"></a>identifierForm restricts catalog keys to exported ASCII alphanumeric identifiers.
 
 ```go
 var identifierForm = regexp.MustCompile(`^[A-Z][A-Za-z0-9]*$`)
 ```
 
 <a name="generate"></a>
-## func [generate](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L79>)
+## func [generate](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L66>)
 
 ```go
 func generate() error
 ```
 
-generate reads and validates the catalog source and writes each package's generated constants file.
+generate validates and renders the catalog before writing each package's constants. A write failure may leave earlier files updated.
 
 <a name="loadCatalog"></a>
-## func [loadCatalog](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L123>)
+## func [loadCatalog](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L110>)
 
 ```go
 func loadCatalog(sourcePath, repositoryRoot string) (map[string]map[string]string, error)
@@ -100,16 +94,16 @@ func loadCatalog(sourcePath, repositoryRoot string) (map[string]map[string]strin
 loadCatalog decodes the catalog source into per\-package entry maps, validating the document shape, every table, and every entry.
 
 <a name="main"></a>
-## func [main](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L70>)
+## func [main](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L57>)
 
 ```go
 func main()
 ```
 
-
+main runs copy generation and reports failures on stderr with a nonzero exit status.
 
 <a name="packageNameOf"></a>
-## func [packageNameOf](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L208>)
+## func [packageNameOf](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L195>)
 
 ```go
 func packageNameOf(dir string) (string, error)
@@ -118,7 +112,7 @@ func packageNameOf(dir string) (string, error)
 packageNameOf returns the package clause of the first Go source file in a directory, skipping test files and the generated file itself.
 
 <a name="renderPackageSource"></a>
-## func [renderPackageSource](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L174>)
+## func [renderPackageSource](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L161>)
 
 ```go
 func renderPackageSource(repositoryRoot, dir string, entries map[string]string) (string, error)

@@ -27,6 +27,12 @@ var APIKeyText string
 var CompactUsageText string
 ```
 
+<a name="ExamplesText"></a>ExamplesText defines the model and search examples shared by help and provider summaries.
+
+```go
+var ExamplesText string
+```
+
 <a name="HelpCommandText"></a>HelpCommandText is one command's help page: its usage form and its flags.
 
 ```go
@@ -67,6 +73,12 @@ var ListProvidersText string
 
 ```go
 var ModelInfoText string
+```
+
+<a name="ProviderHeaderText"></a>ProviderHeaderText defines the identity and catalog totals shared by provider pages.
+
+```go
+var ProviderHeaderText string
 ```
 
 <a name="ProviderInfoText"></a>ProviderInfoText is the standard provider page: the provider's identity and catalog counts, then per medium its model roster and options.

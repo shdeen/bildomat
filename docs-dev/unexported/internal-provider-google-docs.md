@@ -12,65 +12,70 @@ Package google provides image and video generation through Google media APIs.
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func NewProvider\(decoded \*core.Provider\) core.Generator](<#NewProvider>)
-- [func adjustParams\(params parameters.Params, \_ \*core.Model, inputs \[\]media.Input\) \(parameters.Params, \[\]parameters.ParamChange, error\)](<#adjustParams>)
+- [func NewProvider\(providerDescription \*catalog.Provider\) \(generation.Generator, error\)](<#NewProvider>)
+- [func adjustReuse\(model \*catalog.Model, parameterValues params.Values, inputs \[\]media.Input, reuse \*metadata.Reuse\) \(string, \[\]params.Adjustment, error\)](<#adjustReuse>)
+- [func adjustVeoDuration\(parameterValues params.Values, inputs \[\]media.Input\) \(\[\]params.Adjustment, error\)](<#adjustVeoDuration>)
 - [func canonicalFileID\(fileRef string\) \(string, error\)](<#canonicalFileID>)
-- [func checkFileReady\(fileResource string, status int, body \[\]byte\) \(bool, error\)](<#checkFileReady>)
-- [func createArtifact\(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, i int, video video, fallbackExt string\) \(core.Artifact, error\)](<#createArtifact>)
-- [func createArtifacts\(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, operation operation, fallbackExt string\) \(\[\]core.Artifact, error\)](<#createArtifacts>)
-- [func createBlockArtifact\(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, pollPace, pollBudget time.Duration, block \*interactionBlock, fallback string\) \(core.Artifact, error\)](<#createBlockArtifact>)
-- [func credential\(key string\) core.AuthCredential](<#credential>)
-- [func downloadArtifact\(ctx context.Context, apiBase, endpoint string, c core.AuthCredential, fallback string\) \(core.Artifact, error\)](<#downloadArtifact>)
-- [func downloadFile\(ctx context.Context, apiBase string, c core.AuthCredential, fileResource, fallback string\) \(core.Artifact, error\)](<#downloadFile>)
-- [func extractInteractionMedia\(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, pollPace, pollBudget time.Duration, body \[\]byte, mediaBlockType, fallback string\) \(core.Artifact, \[\]string, error\)](<#extractInteractionMedia>)
+- [func checkFileReady\(fileResource string, body \[\]byte\) \(bool, error\)](<#checkFileReady>)
+- [func checkReuseSource\(adjusted json.RawMessage\) error](<#checkReuseSource>)
 - [func fileIDFromURI\(ref string\) string](<#fileIDFromURI>)
-- [func googleMediaKinds\(mediaInputs \[\]media.Input\) \(imageInputs, videoInputs \[\]media.Input\)](<#googleMediaKinds>)
 - [func inputMediaObject\(mediaInput \*media.Input\) map\[string\]any](<#inputMediaObject>)
 - [func inputVideoObject\(mediaInput \*media.Input\) map\[string\]any](<#inputVideoObject>)
-- [func interactionImageBody\(model \*core.Model, prompt string, params parameters.Params, mediaInputs \[\]media.Input\) \(map\[string\]any, error\)](<#interactionImageBody>)
+- [func interactionImageBody\(model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input\) \(map\[string\]any, error\)](<#interactionImageBody>)
 - [func interactionInput\(modelID, prompt string, mediaInputs \[\]media.Input\) map\[string\]any](<#interactionInput>)
-- [func interactionVideoBody\(model \*core.Model, prompt string, params parameters.Params, mediaInputs \[\]media.Input\) \(map\[string\]any, error\)](<#interactionVideoBody>)
+- [func interactionVideoBody\(model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input\) \(map\[string\]any, error\)](<#interactionVideoBody>)
 - [func interactionVideoTask\(refs int\) string](<#interactionVideoTask>)
 - [func mergeFields\(dst, src map\[string\]any\)](<#mergeFields>)
 - [func newInteractionStepError\(model string, e \*interactionStepError\) error](<#newInteractionStepError>)
-- [func placeDeclaredParams\(body map\[string\]any, model \*core.Model, params parameters.Params\) error](<#placeDeclaredParams>)
+- [func originalVideoURI\(videoURI string\) bool](<#originalVideoURI>)
+- [func placeDeclaredParams\(body map\[string\]any, model \*catalog.Model, parameterValues params.Values\) error](<#placeDeclaredParams>)
 - [func placeFrameImages\(inst map\[string\]any, imageInputs \[\]media.Input\) \[\]media.Input](<#placeFrameImages>)
-- [func placeInstanceMedia\(inst map\[string\]any, model \*core.Model, mediaInputs \[\]media.Input\)](<#placeInstanceMedia>)
-- [func placeOrdinaryImages\(inst map\[string\]any, model \*core.Model, ordinaryImages \[\]media.Input\)](<#placeOrdinaryImages>)
-- [func removeArtifacts\(artifacts \[\]core.Artifact\)](<#removeArtifacts>)
-- [func requestBody\(model \*core.Model, prompt string, params parameters.Params, mediaInputs \[\]media.Input\) map\[string\]any](<#requestBody>)
-- [func startOperation\(ctx context.Context, apiBase string, authCred core.AuthCredential, model \*core.Model, prompt string, params parameters.Params, mediaInputs \[\]media.Input\) \(string, error\)](<#startOperation>)
+- [func placeInstanceMedia\(inst map\[string\]any, model \*catalog.Model, mediaInputs \[\]media.Input\)](<#placeInstanceMedia>)
+- [func placeOrdinaryImages\(inst map\[string\]any, model \*catalog.Model, ordinaryImages \[\]media.Input\)](<#placeOrdinaryImages>)
+- [func recordVideoURI\(record \*metadata.Record\) \(string, error\)](<#recordVideoURI>)
+- [func requestBody\(model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, reuseURI string\) map\[string\]any](<#requestBody>)
+- [func responseVideoURIs\(responses \[\]metadata.Response\) \[\]string](<#responseVideoURIs>)
+- [func retainOperation\(record \*metadata.Record, model string, completed operation\) error](<#retainOperation>)
 - [func validateVeoInputMedia\(mediaInputs \[\]media.Input\) error](<#validateVeoInputMedia>)
-- [func valueReachedPath\(body map\[string\]any, path string, value any\) bool](<#valueReachedPath>)
-- [func veoFamily\(model \*core.Model\) bool](<#veoFamily>)
+- [func veoFamily\(model \*catalog.Model\) bool](<#veoFamily>)
 - [type Provider](<#Provider>)
-  - [func \(\*Provider\) AdjustParams\(model \*core.Model, inputs parameters.FlagInputs, mediaInputs \[\]media.Input\) \(parameters.Params, \[\]parameters.ParamChange, error\)](<#Provider.AdjustParams>)
-  - [func \(prov \*Provider\) Generate\(ctx context.Context, run \*core.Generation\) \(core.Result, error\)](<#Provider.Generate>)
-  - [func \(p \*Provider\) generateInteraction\(ctx context.Context, run \*core.Generation\) \(core.Result, error\)](<#Provider.generateInteraction>)
+  - [func \(\*Provider\) AdjustParams\(model \*catalog.Model, inputs params.FlagInputs, mediaInputs \[\]media.Input, reuse \*metadata.Reuse\) \(generation.Preparation, error\)](<#Provider.AdjustParams>)
+  - [func \(prov \*Provider\) Generate\(ctx context.Context, run \*generation.Generation\) \(generation.Result, error\)](<#Provider.Generate>)
+- [type apiSession](<#apiSession>)
+  - [func \(session \*apiSession\) createArtifact\(ctx context.Context, i int, sampleVideo video, fallbackExt string, record \*metadata.Record\) \(artifact.Media, error\)](<#apiSession.createArtifact>)
+  - [func \(session \*apiSession\) createArtifacts\(ctx context.Context, completedOperation operation, fallbackExt string, record \*metadata.Record\) \(\[\]artifact.Media, error\)](<#apiSession.createArtifacts>)
+  - [func \(session \*apiSession\) createBlockArtifact\(ctx context.Context, block \*interactionBlock, fallback string, record \*metadata.Record\) \(artifact.Media, error\)](<#apiSession.createBlockArtifact>)
+  - [func \(session \*apiSession\) downloadArtifact\(ctx context.Context, endpoint, fallback string, record \*metadata.Record\) \(artifact.Media, error\)](<#apiSession.downloadArtifact>)
+  - [func \(session \*apiSession\) extractInteractionMedia\(ctx context.Context, body \[\]byte, mediaBlockType, fallback string, record \*metadata.Record\) \(artifact.Media, \[\]string, error\)](<#apiSession.extractInteractionMedia>)
+  - [func \(session \*apiSession\) generateInteraction\(ctx context.Context, run \*generation.Generation\) \(generation.Result, error\)](<#apiSession.generateInteraction>)
+  - [func \(session \*apiSession\) generateVeo\(ctx context.Context, run \*generation.Generation\) \(generation.Result, error\)](<#apiSession.generateVeo>)
+  - [func \(session \*apiSession\) pollOperation\(ctx context.Context, name string, record \*metadata.Record\) \(operation, error\)](<#apiSession.pollOperation>)
+  - [func \(session \*apiSession\) startOperation\(ctx context.Context, model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, reuseURI string, record \*metadata.Record\) \(string, error\)](<#apiSession.startOperation>)
 - [type fileReadyProbe](<#fileReadyProbe>)
-  - [func \(probe \*fileReadyProbe\) Poll\(ctx context.Context\) \(resourceURL string, complete bool, err error\)](<#fileReadyProbe.Poll>)
+  - [func \(probe \*fileReadyProbe\) Poll\(ctx context.Context\) \(complete bool, err error\)](<#fileReadyProbe.Poll>)
 - [type interactionBlock](<#interactionBlock>)
-  - [func findMediaBlock\(blocks \[\]interactionBlock, mediaBlockType string, mediaBlock \*interactionBlock, firstTextBlock \*string\) \(selectedMediaBlock \*interactionBlock, textBlock string\)](<#findMediaBlock>)
+  - [func findMediaBlock\(blocks \[\]interactionBlock, mediaBlockType string, mediaBlock \*interactionBlock, firstTextBlock string\) \(selectedMediaBlock \*interactionBlock, textBlock string\)](<#findMediaBlock>)
 - [type interactionResponse](<#interactionResponse>)
 - [type interactionStep](<#interactionStep>)
 - [type interactionStepError](<#interactionStepError>)
 - [type opError](<#opError>)
 - [type operation](<#operation>)
-  - [func pollOperation\(ctx context.Context, apiBase string, authCred core.AuthCredential, name string, pollPace, pollBudget time.Duration\) \(operation, error\)](<#pollOperation>)
 - [type operationProbe](<#operationProbe>)
-  - [func \(probe \*operationProbe\) Poll\(ctx context.Context\) \(operationName string, complete bool, err error\)](<#operationProbe.Poll>)
+  - [func \(probe \*operationProbe\) Poll\(ctx context.Context\) \(complete bool, err error\)](<#operationProbe.Poll>)
 - [type result](<#result>)
+- [type retainedOperation](<#retainedOperation>)
+- [type retainedVideo](<#retainedVideo>)
+- [type reuseSourceSettings](<#reuseSourceSettings>)
 - [type sample](<#sample>)
+  - [func completedSamples\(completed operation, identity string\) \(\[\]sample, error\)](<#completedSamples>)
 - [type video](<#video>)
 - [type videos](<#videos>)
 
 
 ## Constants
 
-<a name="familyVeo"></a>The Google adapter's tokens.
+<a name="filesPathSegment"></a>The Google adapter's tokens.
 
-- familyVeo: the model family the Veo API serves; the config declares it on each Veo model
-- googleKeyHeader: the credential header
 - filesPathSegment: the path segment naming the Files resource, which also opens a resource name
 - fileIDStopChars: the characters a bare file ID never contains
 - downloadQuerySuffix: the file\-download query
@@ -81,8 +86,6 @@ Package google provides image and video generation through Google media APIs.
 
 ```go
 const (
-    familyVeo            = "veo"
-    googleKeyHeader      = "x-goog-api-key"
     filesPathSegment     = "files"
     fileIDStopChars      = "/:?"
     downloadQuerySuffix  = ":download?alt=media"
@@ -93,7 +96,41 @@ const (
 )
 ```
 
-<a name="interactionsPathSuffix"></a>The Interactions API's tokens; the type, MIME type, data, text, model, and error fields and values are the shared words.
+<a name="familyVeo"></a>Google API selection and authentication values.
+
+- familyVeo: the model family served by the Veo API
+- googleKeyHeader: the request header carrying the API key
+
+```go
+const (
+    familyVeo       = "veo"
+    googleKeyHeader = "x-goog-api-key"
+)
+```
+
+<a name="interactionFieldMIMEType"></a>Interactions content fields and discriminators identify request and response values.
+
+- interactionFieldMIMEType: the block MIME type
+- interactionFieldData: inline base64 media
+- interactionFieldType: the block kind
+- interactionFieldText: text content
+- interactionFieldModel: the model ID
+- interactionTextType: the text block kind
+- interactionStatusError: a failed output step
+
+```go
+const (
+    interactionFieldMIMEType = "mime_type"
+    interactionFieldData     = "data"
+    interactionFieldType     = "type"
+    interactionFieldText     = "text"
+    interactionFieldModel    = "model"
+    interactionTextType      = "text" //nolint:goconst // The content type and text field name are independent protocol values.
+    interactionStatusError   = "error"
+)
+```
+
+<a name="interactionsPathSuffix"></a>The Interactions API's endpoint, request field, and response field tokens.
 
 - interactionsPathSuffix: the request path under the API base
 - wireKeyURI: the block field carrying a file resource URI
@@ -147,6 +184,42 @@ const (
 )
 ```
 
+<a name="veoExtensionModel"></a>Veo extension targets and accepted source references.
+
+- veoExtensionModel: the standard extension model
+- veoExtensionFast: the fast extension model
+- veoExtensionResolution: the required source and output resolution
+- veoExtensionMaxSourceSeconds: the longest accepted source duration
+- googleVideoHost: the host of original Google video references
+- googleVideoScheme: the required reference scheme
+
+```go
+const (
+    veoExtensionModel            = "veo-3.1-generate-preview"
+    veoExtensionFast             = "veo-3.1-fast-generate-preview"
+    veoExtensionResolution       = "720p"
+    veoExtensionMaxSourceSeconds = 141
+    googleVideoHost              = "generativelanguage.googleapis.com"
+    googleVideoScheme            = "https"
+)
+```
+
+<a name="veoFieldMIMEType"></a>Veo instance fields identify media and prompt inputs.
+
+- veoFieldMIMEType: the image MIME type
+- veoFieldImage: an image reference or opening frame
+- veoFieldVideo: a video input
+- veoFieldPrompt: the generation prompt
+
+```go
+const (
+    veoFieldMIMEType = "mimeType"
+    veoFieldImage    = "image"
+    veoFieldVideo    = "video"
+    veoFieldPrompt   = "prompt"
+)
+```
+
 <a name="resolution1080p"></a>The forced\-duration rule: the resolutions that force the duration, and the duration Veo requires under them or with reference images.
 
 - resolution1080p: full HD output
@@ -162,7 +235,7 @@ const (
 )
 ```
 
-<a name="modelsPathPrefix"></a>The Veo API's tokens; the prompt, video, and image fields and the camel\-cased MIME type field are the shared words.
+<a name="modelsPathPrefix"></a>The Veo API's endpoint and request field tokens.
 
 - modelsPathPrefix: the start\-request path before the model ID
 - predictActionSuffix: the start\-request action after the model ID
@@ -220,6 +293,12 @@ const (
 const ProviderID = "google"
 ```
 
+<a name="VeoExtendID"></a>VeoExtendID identifies provisional, experimental Veo extension. Its selection syntax and the generation\-record format are subject to change.
+
+```go
+const VeoExtendID = "veo-extend"
+```
+
 <a name="startResponseContext"></a>startResponseContext names the operation start response in a failed\-decode context.
 
 ```go
@@ -235,25 +314,34 @@ var ConfigJSON []byte
 ```
 
 <a name="NewProvider"></a>
-## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L45>)
+## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L36>)
 
 ```go
-func NewProvider(decoded *core.Provider) core.Generator
+func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error)
 ```
 
-NewProvider returns the Google generator built over the decoded provider. It never returns a nil pointer.
+NewProvider returns a generator with independent adapter settings. It rejects missing settings and configured paths that overwrite required Interactions fields.
 
-<a name="adjustParams"></a>
-## func [adjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L37>)
+<a name="adjustReuse"></a>
+## func [adjustReuse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/reuse.go#L49>)
 
 ```go
-func adjustParams(params parameters.Params, _ *core.Model, inputs []media.Input) (parameters.Params, []parameters.ParamChange, error)
+func adjustReuse(model *catalog.Model, parameterValues params.Values, inputs []media.Input, reuse *metadata.Reuse) (string, []params.Adjustment, error)
 ```
 
-adjustParams forces an eight\-second duration when inputs or high\-resolution output require it. It mutates params and returns a record when the duration changes, or the parameter error when a stored resolution or duration has another type.
+adjustReuse validates a non\-nil reuse selection and returns its original video URI. It forces duration and resolution in the supplied parameter map and returns change records.
+
+<a name="adjustVeoDuration"></a>
+## func [adjustVeoDuration](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L49>)
+
+```go
+func adjustVeoDuration(parameterValues params.Values, inputs []media.Input) ([]params.Adjustment, error)
+```
+
+adjustVeoDuration forces eight seconds for any media input or high\-resolution output. It updates the supplied parameter map and returns a change record, or an error for an incompatible resolution or duration value.
 
 <a name="canonicalFileID"></a>
-## func [canonicalFileID](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L205>)
+## func [canonicalFileID](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/files.go#L38>)
 
 ```go
 func canonicalFileID(fileRef string) (string, error)
@@ -262,79 +350,25 @@ func canonicalFileID(fileRef string) (string, error)
 canonicalFileID returns the canonical files/\<id\> resource represented by a file reference.
 
 <a name="checkFileReady"></a>
-## func [checkFileReady](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L268>)
+## func [checkFileReady](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/files.go#L101>)
 
 ```go
-func checkFileReady(fileResource string, status int, body []byte) (bool, error)
+func checkFileReady(fileResource string, body []byte) (bool, error)
 ```
 
 checkFileReady returns whether a file response reports a ready state.
 
-<a name="createArtifact"></a>
-## func [createArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L403>)
+<a name="checkReuseSource"></a>
+## func [checkReuseSource](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/reuse.go#L142>)
 
 ```go
-func createArtifact(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, i int, video video, fallbackExt string) (core.Artifact, error)
+func checkReuseSource(adjusted json.RawMessage) error
 ```
 
-createArtifact returns the artifact represented by a video response. It may download the video URI into a temporary file.
-
-<a name="createArtifacts"></a>
-## func [createArtifacts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L361>)
-
-```go
-func createArtifacts(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, operation operation, fallbackExt string) ([]core.Artifact, error)
-```
-
-createArtifacts returns the video artifacts in a completed operation. It removes any temporary artifact files when a sample fails.
-
-<a name="createBlockArtifact"></a>
-## func [createBlockArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L369>)
-
-```go
-func createBlockArtifact(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, pollPace, pollBudget time.Duration, block *interactionBlock, fallback string) (core.Artifact, error)
-```
-
-createBlockArtifact returns the artifact represented by a media block. It may wait for and download a file\-backed media resource.
-
-<a name="credential"></a>
-## func [credential](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L200>)
-
-```go
-func credential(key string) core.AuthCredential
-```
-
-credential returns a Google API key header credential.
-
-<a name="downloadArtifact"></a>
-## func [downloadArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L312>)
-
-```go
-func downloadArtifact(ctx context.Context, apiBase, endpoint string, c core.AuthCredential, fallback string) (core.Artifact, error)
-```
-
-downloadArtifact downloads a URL and returns a file\-backed artifact. It sends the credential only when the URL and API base have the same origin.
-
-<a name="downloadFile"></a>
-## func [downloadFile](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L306>)
-
-```go
-func downloadFile(ctx context.Context, apiBase string, c core.AuthCredential, fileResource, fallback string) (core.Artifact, error)
-```
-
-downloadFile downloads a file resource and returns a file\-backed artifact.
-
-<a name="extractInteractionMedia"></a>
-## func [extractInteractionMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L304>)
-
-```go
-func extractInteractionMedia(ctx context.Context, apiBase string, authCred core.AuthCredential, model string, pollPace, pollBudget time.Duration, body []byte, mediaBlockType, fallback string) (core.Artifact, []string, error)
-```
-
-extractInteractionMedia returns the first requested media artifact and each thought summary in a response body. It may download URI\-backed media into a temporary file.
+checkReuseSource rejects incompatible source resolution, aspect, or duration metadata. Omitted fields are accepted; they do not establish that Google will accept the source.
 
 <a name="fileIDFromURI"></a>
-## func [fileIDFromURI](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L218>)
+## func [fileIDFromURI](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/files.go#L51>)
 
 ```go
 func fileIDFromURI(ref string) string
@@ -342,17 +376,8 @@ func fileIDFromURI(ref string) string
 
 fileIDFromURI returns the file identifier in an absolute Files download URI.
 
-<a name="googleMediaKinds"></a>
-## func [googleMediaKinds](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L294>)
-
-```go
-func googleMediaKinds(mediaInputs []media.Input) (imageInputs, videoInputs []media.Input)
-```
-
-googleMediaKinds separates image and video inputs without changing their relative order.
-
 <a name="inputMediaObject"></a>
-## func [inputMediaObject](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L282>)
+## func [inputMediaObject](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L261>)
 
 ```go
 func inputMediaObject(mediaInput *media.Input) map[string]any
@@ -361,25 +386,25 @@ func inputMediaObject(mediaInput *media.Input) map[string]any
 inputMediaObject returns an image's local bytes or remote URI encoded for a Veo request.
 
 <a name="inputVideoObject"></a>
-## func [inputVideoObject](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L270>)
+## func [inputVideoObject](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L249>)
 
 ```go
 func inputVideoObject(mediaInput *media.Input) map[string]any
 ```
 
-inputVideoObject returns a video's local bytes or remote URI encoded for a Veo request: the bytes under encodedVideo, or the URI under uri, with the MIME type under encoding either way.
+inputVideoObject returns a video URI or base64 bytes with the input MIME type.
 
 <a name="interactionImageBody"></a>
-## func [interactionImageBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L188>)
+## func [interactionImageBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L152>)
 
 ```go
-func interactionImageBody(model *core.Model, prompt string, params parameters.Params, mediaInputs []media.Input) (map[string]any, error)
+func interactionImageBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input) (map[string]any, error)
 ```
 
-interactionImageBody returns the request fields for an image interaction: the input blocks, the fixed response\-format type, every declared parameter at its declared path, and the thought\-summary selection. It returns the parameter error when a stored thoughts value has another type, and the unplaced\-parameter error when a supplied parameter has no declared path.
+interactionImageBody returns an image request with input blocks and declared parameters. It rejects an invalid thoughts value or a supplied parameter without a request path.
 
 <a name="interactionInput"></a>
-## func [interactionInput](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L160>)
+## func [interactionInput](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L127>)
 
 ```go
 func interactionInput(modelID, prompt string, mediaInputs []media.Input) map[string]any
@@ -388,16 +413,16 @@ func interactionInput(modelID, prompt string, mediaInputs []media.Input) map[str
 interactionInput returns the model and ordered input blocks for an Interactions request.
 
 <a name="interactionVideoBody"></a>
-## func [interactionVideoBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L203>)
+## func [interactionVideoBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L166>)
 
 ```go
-func interactionVideoBody(model *core.Model, prompt string, params parameters.Params, mediaInputs []media.Input) (map[string]any, error)
+func interactionVideoBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input) (map[string]any, error)
 ```
 
-interactionVideoBody returns the request fields for a video interaction: the input blocks, the fixed response\-format type and delivery, the task the input images select, every declared parameter at its declared path, and the thought\-summary selection. A video input selects no task. It returns the errors interactionImageBody returns.
+interactionVideoBody returns a video request with URI delivery and declared parameters. The number of image references selects the task. Invalid thoughts values and parameters without request paths return errors.
 
 <a name="interactionVideoTask"></a>
-## func [interactionVideoTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L291>)
+## func [interactionVideoTask](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L228>)
 
 ```go
 func interactionVideoTask(refs int) string
@@ -406,16 +431,16 @@ func interactionVideoTask(refs int) string
 interactionVideoTask returns the video task represented by the number of input image references.
 
 <a name="mergeFields"></a>
-## func [mergeFields](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L275>)
+## func [mergeFields](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L212>)
 
 ```go
 func mergeFields(dst, src map[string]any)
 ```
 
-mergeFields takes destination and source request fields and writes each source field into the destination: a field whose value is an object on both sides merges one level down, and any other field replaces the destination's.
+mergeFields recursively merges source objects into the supplied destination map. A source value replaces the destination value unless both are objects.
 
 <a name="newInteractionStepError"></a>
-## func [newInteractionStepError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L394>)
+## func [newInteractionStepError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L258>)
 
 ```go
 func newInteractionStepError(model string, e *interactionStepError) error
@@ -423,169 +448,263 @@ func newInteractionStepError(model string, e *interactionStepError) error
 
 newInteractionStepError returns a generation error containing the interaction step's diagnostic values.
 
-<a name="placeDeclaredParams"></a>
-## func [placeDeclaredParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L226>)
+<a name="originalVideoURI"></a>
+## func [originalVideoURI](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/reuse.go#L184>)
 
 ```go
-func placeDeclaredParams(body map[string]any, model *core.Model, params parameters.Params) error
+func originalVideoURI(videoURI string) bool
 ```
 
-placeDeclaredParams takes the request body, the model, and the adjusted parameters. It merges every declared parameter into the body at its declared path, writes the thought\-summary selection when thoughts are requested, and then reads every supplied parameter back from the body: the first one, in flag order, whose value is not at its declared path, because the path is missing or another value took it, returns the unplaced\-parameter error naming the flag. Input media is placed by the input blocks and thoughts by the summary selection, so both count as consumed.
+originalVideoURI checks the form of a Google Files reference without replacing or fetching it. Only Google can confirm its provenance and current lifetime.
+
+<a name="placeDeclaredParams"></a>
+## func [placeDeclaredParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L184>)
+
+```go
+func placeDeclaredParams(body map[string]any, model *catalog.Model, parameterValues params.Values) error
+```
+
+placeDeclaredParams merges configured parameters and requested thought summaries into body. It rejects invalid thoughts values and parameters without paths, except input media.
 
 <a name="placeFrameImages"></a>
-## func [placeFrameImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L224>)
+## func [placeFrameImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L207>)
 
 ```go
 func placeFrameImages(inst map[string]any, imageInputs []media.Input) []media.Input
 ```
 
-placeFrameImages takes the request instance and the image inputs, writes the opening frame under the image field and the closing frame under the last\-frame field, and returns the images carrying no frame anchor, in input order.
+placeFrameImages writes opening and closing frame images into the supplied instance and returns unanchored images in input order.
 
 <a name="placeInstanceMedia"></a>
-## func [placeInstanceMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L209>)
+## func [placeInstanceMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L194>)
 
 ```go
-func placeInstanceMedia(inst map[string]any, model *core.Model, mediaInputs []media.Input)
+func placeInstanceMedia(inst map[string]any, model *catalog.Model, mediaInputs []media.Input)
 ```
 
-placeInstanceMedia takes the request instance, the model, and the input media, and writes the media into the instance: one video under the video field in the video encoding, or otherwise the frame images under their fields and the remaining images as the single image or the reference list.
+placeInstanceMedia writes video or image inputs into the supplied request instance.
 
 <a name="placeOrdinaryImages"></a>
-## func [placeOrdinaryImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L247>)
+## func [placeOrdinaryImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L228>)
 
 ```go
-func placeOrdinaryImages(inst map[string]any, model *core.Model, ordinaryImages []media.Input)
+func placeOrdinaryImages(inst map[string]any, model *catalog.Model, ordinaryImages []media.Input)
 ```
 
-placeOrdinaryImages takes the request instance, the model, and the images carrying no frame anchor, and writes them into the instance: as the single image when there is one, the model takes one input, and no opening frame took the image field, and otherwise as the reference image list. No images write nothing.
+placeOrdinaryImages writes unanchored images into the supplied request instance. A single image uses the image field only for single\-input models with no opening frame; otherwise the images become asset references.
 
-<a name="removeArtifacts"></a>
-## func [removeArtifacts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L424>)
+<a name="recordVideoURI"></a>
+## func [recordVideoURI](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/reuse.go#L102>)
 
 ```go
-func removeArtifacts(artifacts []core.Artifact)
+func recordVideoURI(record *metadata.Record) (string, error)
 ```
 
-removeArtifacts removes the temporary files referenced by artifacts.
+recordVideoURI selects one distinct original video without reading local media.
 
 <a name="requestBody"></a>
-## func [requestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L188>)
+## func [requestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L172>)
 
 ```go
-func requestBody(model *core.Model, prompt string, params parameters.Params, mediaInputs []media.Input) map[string]any
+func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, reuseURI string) map[string]any
 ```
 
 requestBody returns the request fields for a Veo operation.
 
-<a name="startOperation"></a>
-## func [startOperation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L130>)
+<a name="responseVideoURIs"></a>
+## func [responseVideoURIs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/reuse.go#L163>)
 
 ```go
-func startOperation(ctx context.Context, apiBase string, authCred core.AuthCredential, model *core.Model, prompt string, params parameters.Params, mediaInputs []media.Input) (string, error)
+func responseVideoURIs(responses []metadata.Response) []string
 ```
 
-startOperation sends a Veo generation request and returns its operation name.
+responseVideoURIs extracts references from completed operation bodies. This also detects multiple videos when the extracted return values are incomplete. Non\-operation responses are ignored.
+
+<a name="retainOperation"></a>
+## func [retainOperation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/record.go#L28>)
+
+```go
+func retainOperation(record *metadata.Record, model string, completed operation) error
+```
+
+retainOperation appends the operation name and original video URIs to the supplied record. It accepts a nil record. The retained format is provisional.
 
 <a name="validateVeoInputMedia"></a>
-## func [validateVeoInputMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L103>)
+## func [validateVeoInputMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L112>)
 
 ```go
 func validateVeoInputMedia(mediaInputs []media.Input) error
 ```
 
-validateVeoInputMedia rejects media combinations the Veo request shape cannot represent. Frame prefixes are already resolved to anchors, so only the anchor combination and the media kinds need checking here.
-
-<a name="valueReachedPath"></a>
-## func [valueReachedPath](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L254>)
-
-```go
-func valueReachedPath(body map[string]any, path string, value any) bool
-```
-
-valueReachedPath takes the request body, a dotted request path, and a value, and reports whether the body holds exactly that value at that path.
+validateVeoInputMedia rejects mixed images and videos, multiple videos, and a closing frame without an opening frame. The caller must resolve frame prefixes to anchors first.
 
 <a name="veoFamily"></a>
-## func [veoFamily](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L195>)
+## func [veoFamily](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L173>)
 
 ```go
-func veoFamily(model *core.Model) bool
+func veoFamily(model *catalog.Model) bool
 ```
 
 veoFamily reports whether a model belongs to the Veo API family.
 
 <a name="Provider"></a>
-## type [Provider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L32-L41>)
+## type [Provider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L29-L32>)
 
 Provider generates media through the Google Veo and Interactions APIs.
 
 ```go
 type Provider struct {
     // adapterAPI contains the endpoints and polling settings used by the provider.
-    adapterAPI *core.AdapterAPI
-    // veoPollPace is the delay between Veo operation status requests.
-    // veoPollBudget is the maximum duration allowed for Veo operation polling.
-    veoPollPace, veoPollBudget time.Duration
-    // filePollPace is the delay between file status requests.
-    // filePollBudget is the maximum duration allowed for file polling.
-    filePollPace, filePollBudget time.Duration
+    adapterAPI *catalog.AdapterAPI
 }
 ```
 
 <a name="Provider.AdjustParams"></a>
-### func \(\*Provider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L63>)
+### func \(\*Provider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L62>)
 
 ```go
-func (*Provider) AdjustParams(model *core.Model, inputs parameters.FlagInputs, mediaInputs []media.Input) (parameters.Params, []parameters.ParamChange, error)
+func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, reuse *metadata.Reuse) (generation.Preparation, error)
 ```
 
-AdjustParams returns model\-compatible generation parameters and records describing each adjustment. It applies Veo duration constraints when model belongs to the Veo family.
+AdjustParams returns model\-compatible parameters, media, and change records. It validates reuse selections and Veo frame constraints, and removes frame prefixes from Interactions inputs.
 
 <a name="Provider.Generate"></a>
-### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L132>)
+### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L142>)
 
 ```go
-func (prov *Provider) Generate(ctx context.Context, run *core.Generation) (core.Result, error)
+func (prov *Provider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error)
 ```
 
-Generate sends run through the API family selected by its model and returns the generated artifacts.
+Generate submits to the model's API family and returns artifacts and thought summaries. It preserves the caller's request and returns completed preparation even on failure.
 
-<a name="Provider.generateInteraction"></a>
-### func \(\*Provider\) [generateInteraction](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L22>)
+<a name="apiSession"></a>
+## type [apiSession](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L25-L29>)
+
+apiSession holds one generation's Google settings and identity.
+
+- settings: endpoints, polling limits, and artifact defaults
+- credential: authentication for provider requests
+- model: the provider/model label used in errors
 
 ```go
-func (p *Provider) generateInteraction(ctx context.Context, run *core.Generation) (core.Result, error)
+type apiSession struct {
+    settings   *catalog.AdapterAPI
+    credential httpapi.AuthCredential
+    model      string
+}
+```
+
+<a name="apiSession.createArtifact"></a>
+### func \(\*apiSession\) [createArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L204>)
+
+```go
+func (session *apiSession) createArtifact(ctx context.Context, i int, sampleVideo video, fallbackExt string, record *metadata.Record) (artifact.Media, error)
+```
+
+createArtifact returns the artifact represented by a video response. It may download the video URI into a temporary file.
+
+<a name="apiSession.createArtifacts"></a>
+### func \(\*apiSession\) [createArtifacts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L178>)
+
+```go
+func (session *apiSession) createArtifacts(ctx context.Context, completedOperation operation, fallbackExt string, record *metadata.Record) ([]artifact.Media, error)
+```
+
+createArtifacts returns the video artifacts in a completed operation. It removes any temporary artifact files when a sample fails.
+
+<a name="apiSession.createBlockArtifact"></a>
+### func \(\*apiSession\) [createBlockArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L276>)
+
+```go
+func (session *apiSession) createBlockArtifact(ctx context.Context, block *interactionBlock, fallback string, record *metadata.Record) (artifact.Media, error)
+```
+
+createBlockArtifact returns the artifact represented by a media block. It may wait for and download a file\-backed media resource.
+
+<a name="apiSession.downloadArtifact"></a>
+### func \(\*apiSession\) [downloadArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L302>)
+
+```go
+func (session *apiSession) downloadArtifact(ctx context.Context, endpoint, fallback string, record *metadata.Record) (artifact.Media, error)
+```
+
+downloadArtifact downloads a URL and returns a file\-backed artifact. It sends the credential only when the URL and API base have the same origin.
+
+<a name="apiSession.extractInteractionMedia"></a>
+### func \(\*apiSession\) [extractInteractionMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L226>)
+
+```go
+func (session *apiSession) extractInteractionMedia(ctx context.Context, body []byte, mediaBlockType, fallback string, record *metadata.Record) (artifact.Media, []string, error)
+```
+
+extractInteractionMedia returns the first requested media artifact and each thought summary in a response body. It may download URI\-backed media into a temporary file.
+
+<a name="apiSession.generateInteraction"></a>
+### func \(\*apiSession\) [generateInteraction](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L33>)
+
+```go
+func (session *apiSession) generateInteraction(ctx context.Context, run *generation.Generation) (generation.Result, error)
 ```
 
 generateInteraction sends an Interactions request and returns its media artifact and thought summaries.
 
+<a name="apiSession.generateVeo"></a>
+### func \(\*apiSession\) [generateVeo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L86>)
+
+```go
+func (session *apiSession) generateVeo(ctx context.Context, run *generation.Generation) (generation.Result, error)
+```
+
+generateVeo submits a Veo operation and returns its downloaded artifacts. It replaces the request's remote inputs with downloaded media and retains operation references and responses in the generation record.
+
+<a name="apiSession.pollOperation"></a>
+### func \(\*apiSession\) [pollOperation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L167>)
+
+```go
+func (session *apiSession) pollOperation(ctx context.Context, name string, record *metadata.Record) (operation, error)
+```
+
+pollOperation waits for a Veo operation to complete and returns its final response.
+
+<a name="apiSession.startOperation"></a>
+### func \(\*apiSession\) [startOperation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/apisession.go#L129>)
+
+```go
+func (session *apiSession) startOperation(ctx context.Context, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, reuseURI string, record *metadata.Record) (string, error)
+```
+
+startOperation sends a Veo generation request and returns its operation name.
+
 <a name="fileReadyProbe"></a>
-## type [fileReadyProbe](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L249-L253>)
+## type [fileReadyProbe](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/files.go#L83-L88>)
 
 fileReadyProbe holds the values needed to inspect a file resource.
 
 - apiBase: the base endpoint for file status requests
 - credential: the credential sent with each status request
 - fileResource: the canonical file resource name
+- record: optional retention of the file\-status requests and responses
 
 ```go
 type fileReadyProbe struct {
     apiBase      string
-    credential   core.AuthCredential
+    credential   httpapi.AuthCredential
     fileResource string
+    record       *metadata.Record
 }
 ```
 
 <a name="fileReadyProbe.Poll"></a>
-### func \(\*fileReadyProbe\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/google.go#L256>)
+### func \(\*fileReadyProbe\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/files.go#L91>)
 
 ```go
-func (probe *fileReadyProbe) Poll(ctx context.Context) (resourceURL string, complete bool, err error)
+func (probe *fileReadyProbe) Poll(ctx context.Context) (complete bool, err error)
 ```
 
 Poll checks the file resource and reports whether it is ready for download.
 
 <a name="interactionBlock"></a>
-## type [interactionBlock](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L98-L109>)
+## type [interactionBlock](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L66-L77>)
 
 interactionBlock contains one typed media or text block.
 
@@ -605,16 +724,16 @@ type interactionBlock struct {
 ```
 
 <a name="findMediaBlock"></a>
-### func [findMediaBlock](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L352>)
+### func [findMediaBlock](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L241>)
 
 ```go
-func findMediaBlock(blocks []interactionBlock, mediaBlockType string, mediaBlock *interactionBlock, firstTextBlock *string) (selectedMediaBlock *interactionBlock, textBlock string)
+func findMediaBlock(blocks []interactionBlock, mediaBlockType string, mediaBlock *interactionBlock, firstTextBlock string) (selectedMediaBlock *interactionBlock, textBlock string)
 ```
 
-findMediaBlock returns the first usable block of the requested media type and the first text block encountered. It writes the first text through firstTextBlock when that value is empty.
+findMediaBlock returns the first usable block of the requested media type and the first text block encountered.
 
 <a name="interactionResponse"></a>
-## type [interactionResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L68-L71>)
+## type [interactionResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L36-L39>)
 
 interactionResponse contains the steps returned for an interaction.
 
@@ -626,7 +745,7 @@ type interactionResponse struct {
 ```
 
 <a name="interactionStep"></a>
-## type [interactionStep](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L74-L85>)
+## type [interactionStep](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L42-L53>)
 
 interactionStep contains one interaction step and its content.
 
@@ -646,7 +765,7 @@ type interactionStep struct {
 ```
 
 <a name="interactionStepError"></a>
-## type [interactionStepError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L88-L95>)
+## type [interactionStepError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/interactions.go#L56-L63>)
 
 interactionStepError contains the diagnostic values for a failed interaction step.
 
@@ -662,7 +781,7 @@ type interactionStepError struct {
 ```
 
 <a name="opError"></a>
-## type [opError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L92-L97>)
+## type [opError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L104-L109>)
 
 opError contains a terminal operation failure.
 
@@ -676,7 +795,7 @@ type opError struct {
 ```
 
 <a name="operation"></a>
-## type [operation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L80-L89>)
+## type [operation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L92-L101>)
 
 operation contains the state and result of a Veo operation.
 
@@ -693,17 +812,8 @@ type operation struct {
 }
 ```
 
-<a name="pollOperation"></a>
-### func [pollOperation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L350>)
-
-```go
-func pollOperation(ctx context.Context, apiBase string, authCred core.AuthCredential, name string, pollPace, pollBudget time.Duration) (operation, error)
-```
-
-pollOperation waits for a Veo operation to complete and returns its final response.
-
 <a name="operationProbe"></a>
-## type [operationProbe](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L311-L316>)
+## type [operationProbe](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L278-L284>)
 
 operationProbe holds the values and completed result for a Veo operation.
 
@@ -711,27 +821,29 @@ operationProbe holds the values and completed result for a Veo operation.
 - credential: the credential sent with each status request
 - name: the operation resource name
 - completed: the completed operation response
+- record: optional retention of every operation response
 
 ```go
 type operationProbe struct {
     apiBase    string
-    credential core.AuthCredential
+    credential httpapi.AuthCredential
     name       string
     completed  operation
+    record     *metadata.Record
 }
 ```
 
 <a name="operationProbe.Poll"></a>
-### func \(\*operationProbe\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L319>)
+### func \(\*operationProbe\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L287>)
 
 ```go
-func (probe *operationProbe) Poll(ctx context.Context) (operationName string, complete bool, err error)
+func (probe *operationProbe) Poll(ctx context.Context) (complete bool, err error)
 ```
 
 Poll checks the Veo operation and stores its completed response.
 
 <a name="result"></a>
-## type [result](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L100-L103>)
+## type [result](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L112-L115>)
 
 result contains a completed operation response.
 
@@ -742,8 +854,50 @@ type result struct {
 }
 ```
 
+<a name="retainedOperation"></a>
+## type [retainedOperation](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/record.go#L13-L18>)
+
+retainedOperation is Google's provisional return\-values shape. It preserves original provider references independently of downloaded artifact paths.
+
+```go
+type retainedOperation struct {
+    // Operation is the original operation resource name.
+    Operation string `json:"operation"`
+    // Videos contains original provider video references.
+    Videos []retainedVideo `json:"videos,omitempty"`
+}
+```
+
+<a name="retainedVideo"></a>
+## type [retainedVideo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/record.go#L21-L24>)
+
+retainedVideo identifies one original generated video for a follow\-up request.
+
+```go
+type retainedVideo struct {
+    // URI is the original provider video reference.
+    URI string `json:"uri"`
+}
+```
+
+<a name="reuseSourceSettings"></a>
+## type [reuseSourceSettings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/reuse.go#L38-L45>)
+
+reuseSourceSettings decodes restrictions retained from an earlier generation.
+
+```go
+type reuseSourceSettings struct {
+    // Resolution is the source video resolution.
+    Resolution string `json:"resolution"`
+    // Aspect is the source aspect ratio.
+    Aspect string `json:"aspect-ratio"`
+    // Duration is the source video length in seconds.
+    Duration float64 `json:"duration"`
+}
+```
+
 <a name="sample"></a>
-## type [sample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L114-L117>)
+## type [sample](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L126-L129>)
 
 sample contains one generated video sample.
 
@@ -754,8 +908,17 @@ type sample struct {
 }
 ```
 
+<a name="completedSamples"></a>
+### func [completedSamples](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L319>)
+
+```go
+func completedSamples(completed operation, identity string) ([]sample, error)
+```
+
+completedSamples validates required output while preserving sample\-specific errors and safety\-filter explanations from a completed operation.
+
 <a name="video"></a>
-## type [video](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L120-L127>)
+## type [video](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L132-L139>)
 
 video contains an inline video or a video download location.
 
@@ -771,7 +934,7 @@ type video struct {
 ```
 
 <a name="videos"></a>
-## type [videos](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L106-L111>)
+## type [videos](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/google/veo.go#L118-L123>)
 
 videos contains generated samples and safety filter reasons.
 

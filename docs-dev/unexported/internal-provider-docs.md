@@ -6,80 +6,646 @@
 import "github.com/shdeen/bildomat/internal/provider"
 ```
 
-Package provider constructs generators whose behavior is defined by embedded provider configurations.
+Package provider executes image and video requests defined by provider descriptions.
 
 ## Index
 
 - [Constants](<#constants>)
-- [func NewProvider\(prov \*core.Provider\) core.Generator](<#NewProvider>)
-- [func missingAPIError\(prov \*core.Provider, section string\) error](<#missingAPIError>)
-- [type Provider](<#Provider>)
-  - [func \(p \*Provider\) AdjustParams\(model \*core.Model, inputs parameters.FlagInputs, mediaInputs \[\]media.Input\) \(parameters.Params, \[\]parameters.ParamChange, error\)](<#Provider.AdjustParams>)
-  - [func \(p \*Provider\) Generate\(ctx context.Context, run \*core.Generation\) \(core.Result, error\)](<#Provider.Generate>)
+- [func APIErr\(provModelLabel string, status int, body \[\]byte\) error](<#APIErr>)
+- [func AdapterSettings\(providerDescription \*catalog.Provider, providerID string\) \(\*catalog.AdapterAPI, error\)](<#AdapterSettings>)
+- [func CheckOwnedPaths\(providerID string, model \*catalog.Model, ownedPaths ...string\) error](<#CheckOwnedPaths>)
+- [func NewProvider\(providerDescription \*catalog.Provider\) \(generation.Generator, error\)](<#NewProvider>)
+- [func PollResponseError\(identity string, status int, body \[\]byte, transportErr error\) error](<#PollResponseError>)
+- [func WireParamValues\(model \*catalog.Model, gp params.Values, stringParams ...params.FlagType\) map\[string\]any](<#WireParamValues>)
+- [func addInputMedia\(body map\[string\]any, style catalog.InputMediaStyle, inputMediaProvParam, inputMediaListProvParam string, mediaInputs \[\]media.Input\) error](<#addInputMedia>)
+- [func addStringInputMedia\(body map\[string\]any, inputMediaProvParam string, mediaInputs \[\]media.Input\)](<#addStringInputMedia>)
+- [func addVideoInputMedia\(body map\[string\]any, api \*catalog.VideoAPI, mediaInputs \[\]media.Input\) error](<#addVideoInputMedia>)
+- [func classifyResponse\(jobID string, body \[\]byte, runningWords \[\]string, doneWord string, failedWords \[\]string\) \(keepPolling, jobDone bool, err error\)](<#classifyResponse>)
+- [func createImageArtifacts\(ctx context.Context, provModelLabel string, api \*catalog.ImageAPI, status int, body \[\]byte, record \*metadata.Record\) \(\[\]artifact.Media, error\)](<#createImageArtifacts>)
+- [func createRespArtifact\(ctx context.Context, api \*catalog.ImageAPI, imageData imageDataItem, record \*metadata.Record\) \(artifact.Media, error\)](<#createRespArtifact>)
+- [func errMsg\(body \[\]byte\) string](<#errMsg>)
+- [func fetchVideo\(ctx context.Context, credential httpapi.AuthCredential, api \*catalog.VideoAPI, provModelLabel, jobID string, body \[\]byte, record \*metadata.Record\) \(artifact.Media, error\)](<#fetchVideo>)
+- [func formBody\(api \*catalog.ImageAPI, model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, stringParams ...params.FlagType\) \(contentType string, body \[\]byte, err error\)](<#formBody>)
+- [func frameMediaValues\(api \*catalog.VideoAPI, frameInputs \[\]media.Input\) \(\[\]any, error\)](<#frameMediaValues>)
+- [func getGenErr\(jobID, statusWord, msg string\) error](<#getGenErr>)
+- [func getJobID\(provModelLabel, idField string, status int, body \[\]byte, errReceived error\) \(string, error\)](<#getJobID>)
+- [func getRespBody\(body \[\]byte\) \(map\[string\]any, error\)](<#getRespBody>)
+- [func getUnknownErr\(jobID string, observed any, body \[\]byte\) error](<#getUnknownErr>)
+- [func getVideoJobBody\(api \*catalog.VideoAPI, model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, stringParams ...params.FlagType\) \(map\[string\]any, error\)](<#getVideoJobBody>)
+- [func inputMediaURLNested\(mediaInput \*media.Input\) map\[string\]string](<#inputMediaURLNested>)
+- [func inputMediaURLObject\(mediaInput \*media.Input\) map\[string\]string](<#inputMediaURLObject>)
+- [func isDigits\(segment string\) bool](<#isDigits>)
+- [func joinDetailMessages\(errDetails \[\]any\) string](<#joinDetailMessages>)
+- [func jsonBody\(api \*catalog.ImageAPI, model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, stringParams ...params.FlagType\) \(map\[string\]any, error\)](<#jsonBody>)
+- [func mediaURLType\(mediaInput \*media.Input\) string](<#mediaURLType>)
+- [func missingAPIError\(providerID, section string\) error](<#missingAPIError>)
+- [func multipartBody\(fields map\[string\]string, inputMediaFormField string, mediaInputs \[\]media.Input\) \(contentType string, body \[\]byte, err error\)](<#multipartBody>)
+- [func placeWireValue\(fields map\[string\]any, path string, value any\)](<#placeWireValue>)
+- [func pollFailureMsg\(pollBody map\[string\]any\) string](<#pollFailureMsg>)
+- [func pollVideoJob\(ctx context.Context, credential httpapi.AuthCredential, api \*catalog.VideoAPI, provModelLabel, jobID string, record \*metadata.Record\) \(\[\]byte, error\)](<#pollVideoJob>)
+- [func prepareVideoInputs\(ctx context.Context, api \*catalog.VideoAPI, run \*generation.Generation\) \(generation.Preparation, error\)](<#prepareVideoInputs>)
+- [func segmentIndex\(segment string, segmentCount int\) \(int, bool\)](<#segmentIndex>)
+- [func sendImageRequest\(ctx context.Context, credential httpapi.AuthCredential, api \*catalog.ImageAPI, model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, record \*metadata.Record, stringParams ...params.FlagType\) \(status int, respBody \[\]byte, err error\)](<#sendImageRequest>)
+- [func splitFrameInputs\(mediaInputs \[\]media.Input\) \(ordinaryInputs, frameInputs \[\]media.Input\)](<#splitFrameInputs>)
+- [func startVideoJob\(ctx context.Context, credential httpapi.AuthCredential, api \*catalog.VideoAPI, provModelLabel string, model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input, record \*metadata.Record, stringParams ...params.FlagType\) \(string, error\)](<#startVideoJob>)
+- [func submitImage\(ctx context.Context, api \*catalog.ImageAPI, apiKey string, run \*generation.Generation, stringParams ...params.FlagType\) \(\[\]artifact.Media, error\)](<#submitImage>)
+- [func submitVideo\(ctx context.Context, api \*catalog.VideoAPI, apiKey string, run \*generation.Generation, stringParams ...params.FlagType\) \(\[\]artifact.Media, error\)](<#submitVideo>)
+- [func videoJobFields\(model \*catalog.Model, prompt string, parameterValues params.Values, stringParams ...params.FlagType\) map\[string\]string](<#videoJobFields>)
+- [func walkURL\(pollBody \[\]byte, segments \[\]string\) string](<#walkURL>)
+- [func writeMediaPart\(multipartWriter \*multipart.Writer, field string, mediaIndex int, mediaInput \*media.Input\) error](<#writeMediaPart>)
+- [type imageDataItem](<#imageDataItem>)
+  - [func parseRespImages\(body \[\]byte\) \(\[\]imageDataItem, error\)](<#parseRespImages>)
+- [type sharedProvider](<#sharedProvider>)
+  - [func \(provider \*sharedProvider\) AdjustParams\(model \*catalog.Model, inputs params.FlagInputs, mediaInputs \[\]media.Input, \_ \*metadata.Reuse\) \(generation.Preparation, error\)](<#sharedProvider.AdjustParams>)
+  - [func \(provider \*sharedProvider\) Generate\(ctx context.Context, run \*generation.Generation\) \(generation.Result, error\)](<#sharedProvider.Generate>)
+- [type videoJobProbe](<#videoJobProbe>)
+  - [func \(probe \*videoJobProbe\) Poll\(ctx context.Context\) \(isDone bool, pollErr error\)](<#videoJobProbe.Poll>)
 
 
 ## Constants
+
+<a name="respFieldDetail"></a>Provider error fields carry validation details.
+
+- respFieldDetail: a message or list of validation failures
+- respFieldMsg: the message within a validation failure
+
+```go
+const (
+    respFieldDetail = "detail"
+    respFieldMsg    = "msg"
+)
+```
+
+<a name="CreationResponseContext"></a>Response labels provide context for failed decoding.
+
+- CreationResponseContext: the response that creates a job or task
+- PollResponseContext: a status response for a running job or task
+
+```go
+const (
+    CreationResponseContext = "creation response"
+    PollResponseContext     = "poll response"
+)
+```
+
+<a name="fieldMIMEType"></a>Shared request and response fields identify model, prompt, and media values.
+
+- fieldMIMEType: the media MIME type
+- fieldModel: the requested model ID
+- fieldPrompt: the generation prompt
+- fieldType: the media reference kind
+- fieldURL: the media location
+- fieldData: the response artifact list
+- fieldImageURL: an image reference
+- fieldVideoURL: a video reference
+
+```go
+const (
+    fieldMIMEType = "mime_type"
+    fieldModel    = "model"
+    fieldPrompt   = "prompt"
+    fieldType     = "type"
+    fieldURL      = "url"
+    fieldData     = "data"
+    fieldImageURL = "image_url"
+    fieldVideoURL = "video_url"
+)
+```
+
+<a name="headerContentDisposition"></a>Multipart headers describe the submitted file and its MIME type.
+
+- headerContentDisposition: the form field name and filename
+- headerContentType: the file MIME type
+
+```go
+const (
+    headerContentDisposition = "Content-Disposition"
+    headerContentType        = "Content-Type"
+)
+```
+
+<a name="fieldB64JSON"></a>The image response fields for base64 data and media type.
+
+- fieldB64JSON: the field carrying an image's base64 data
+- fieldMediaType: the field some providers carry a MIME type under
+
+```go
+const (
+    fieldB64JSON   = "b64_json"
+    fieldMediaType = "media_type"
+)
+```
+
+<a name="pollFieldStatus"></a>The polling response fields and the decode failure context.
+
+- pollFieldDetails: the response field carrying failure details
+- pollFieldStatus: the response field carrying job status
+- pollFieldError: the response field carrying a provider error
+- bodyDecodeContext: the failed body decode's chain context
+
+```go
+const (
+    pollFieldStatus   = "status"
+    pollFieldError    = "error"
+    pollFieldDetails  = "details"
+    bodyDecodeContext = "json decode"
+)
+```
 
 <a name="APISectionMissing"></a>The internal/provider section of the copy catalog, one constant per entry.
 
 ```go
 const (
-    APISectionMissing = "%s.json: no %s for the resolved medium"
+    APISectionMissing         = "%s.json: no %s for the resolved medium"
+    DownloadURLMissing        = "%s: %s: no download url in the completed poll"
+    FieldContextForm          = "field %s"
+    FrameFieldUnavailable     = "a frame prefix reached a request with no frame field"
+    FrameMediaUndescribed     = "provider has no frame-media request description"
+    FrameRoleDuplicate        = "duplicate frame role %s"
+    FrameTimeUnresolved       = "unresolved frame time on %s"
+    JSONMediaPartsUnsupported = "JSON requests cannot contain multipart file parts"
+    JobDecodeErrorForm        = "jobID %q: %w"
+    MissingResponseValue      = "missing"
+    RespEntryForm             = "%s: entry %d"
+    SingleMediaNoVideo        = "single-or-array request does not accept video"
+    StartContextForm          = "%s start"
+    UnknownStatusForm         = "%s (%s): %s"
 )
 ```
 
-<a name="sectionVideoAPI"></a>sectionVideoAPI is the video API section the missing\-API fault cites; the image API section's name comes from core.
+<a name="partFilenameForm"></a>partFilenameForm is the multipart file part's content\-disposition value, completed by the field name, the part's index, and its extension.
 
 ```go
-const sectionVideoAPI = "VideoAPI"
+const partFilenameForm = `form-data; name=%q; filename="image-%d%s"`
 ```
+
+<a name="APIErr"></a>
+## func [APIErr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/apierr.go#L23>)
+
+```go
+func APIErr(provModelLabel string, status int, body []byte) error
+```
+
+APIErr classifies an unsuccessful HTTP response and preserves a recognized server message. Otherwise it includes a bounded body excerpt. Statuses 429, 502, 503, and 504 are temporary.
+
+<a name="AdapterSettings"></a>
+## func [AdapterSettings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L56>)
+
+```go
+func AdapterSettings(providerDescription *catalog.Provider, providerID string) (*catalog.AdapterAPI, error)
+```
+
+AdapterSettings returns an owned copy of the selected provider's adapter settings. A missing description or adapter section returns a configuration error naming providerID.
+
+<a name="CheckOwnedPaths"></a>
+## func [CheckOwnedPaths](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/requestpath.go#L14>)
+
+```go
+func CheckOwnedPaths(providerID string, model *catalog.Model, ownedPaths ...string) error
+```
+
+CheckOwnedPaths rejects configured assignments that overlap fields an adapter must construct. The adapter supplies its own protocol paths; generic configured\-path consistency is checked when the catalog is decoded.
 
 <a name="NewProvider"></a>
-## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L27>)
+## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L30>)
 
 ```go
-func NewProvider(prov *core.Provider) core.Generator
+func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error)
 ```
 
-NewProvider returns the generator for one descriptor\-class provider, built over the decoded provider. It never returns a nil pointer.
+NewProvider validates the API sections required by the models and returns a generator with independent copies of the request settings.
+
+<a name="PollResponseError"></a>
+## func [PollResponseError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/apierr.go#L43>)
+
+```go
+func PollResponseError(identity string, status int, body []byte, transportErr error) error
+```
+
+PollResponseError combines an unsuccessful HTTP status with any transport error. A successful or unavailable status returns the transport error unchanged.
+
+<a name="WireParamValues"></a>
+## func [WireParamValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L89>)
+
+```go
+func WireParamValues(model *catalog.Model, gp params.Values, stringParams ...params.FlagType) map[string]any
+```
+
+WireParamValues returns supplied parameters under their configured request paths. It omits parameters without paths and formats the selected parameters as strings. Dotted paths create nested objects shared by parameters with the same parent.
+
+<a name="addInputMedia"></a>
+## func [addInputMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L129>)
+
+```go
+func addInputMedia(body map[string]any, style catalog.InputMediaStyle, inputMediaProvParam, inputMediaListProvParam string, mediaInputs []media.Input) error
+```
+
+addInputMedia writes media references into the supplied request body in the configured format. It rejects frame prefixes, unsupported video references, and multipart\-only styles.
+
+<a name="addStringInputMedia"></a>
+## func [addStringInputMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L176>)
+
+```go
+func addStringInputMedia(body map[string]any, inputMediaProvParam string, mediaInputs []media.Input)
+```
+
+addStringInputMedia writes one media string or an ordered list into the supplied body.
+
+<a name="addVideoInputMedia"></a>
+## func [addVideoInputMedia](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L134>)
+
+```go
+func addVideoInputMedia(body map[string]any, api *catalog.VideoAPI, mediaInputs []media.Input) error
+```
+
+addVideoInputMedia writes ordinary references and configured opening or closing frames into the supplied request body.
+
+<a name="classifyResponse"></a>
+## func [classifyResponse](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/poll.go#L27>)
+
+```go
+func classifyResponse(jobID string, body []byte, runningWords []string, doneWord string, failedWords []string) (keepPolling, jobDone bool, err error)
+```
+
+classifyResponse maps a job response to continued polling, completion, or a classified error. A non\-null error field takes precedence over the status.
+
+<a name="createImageArtifacts"></a>
+## func [createImageArtifacts](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L333>)
+
+```go
+func createImageArtifacts(ctx context.Context, provModelLabel string, api *catalog.ImageAPI, status int, body []byte, record *metadata.Record) ([]artifact.Media, error)
+```
+
+createImageArtifacts decodes or downloads the images in a successful response. If an item fails, it cleans up earlier downloads and returns any cleanup error with the failure.
+
+<a name="createRespArtifact"></a>
+## func [createRespArtifact](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L367>)
+
+```go
+func createRespArtifact(ctx context.Context, api *catalog.ImageAPI, imageData imageDataItem, record *metadata.Record) (artifact.Media, error)
+```
+
+createRespArtifact returns the artifact represented by imageData. It may download a URL\-backed image into a temporary file.
+
+<a name="errMsg"></a>
+## func [errMsg](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/apierr.go#L53>)
+
+```go
+func errMsg(body []byte) string
+```
+
+errMsg extracts a message from a provider error object or the first array element. It checks error.message, detail text or validation messages, then the top\-level message.
+
+<a name="fetchVideo"></a>
+## func [fetchVideo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L305>)
+
+```go
+func fetchVideo(ctx context.Context, credential httpapi.AuthCredential, api *catalog.VideoAPI, provModelLabel, jobID string, body []byte, record *metadata.Record) (artifact.Media, error)
+```
+
+fetchVideo downloads a completed video's media and returns a file\-backed artifact.
+
+<a name="formBody"></a>
+## func [formBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L212>)
+
+```go
+func formBody(api *catalog.ImageAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, stringParams ...params.FlagType) (contentType string, body []byte, err error)
+```
+
+formBody returns the content type and multipart body for an image generation request; an empty prompt sends no prompt part.
+
+<a name="frameMediaValues"></a>
+## func [frameMediaValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L178>)
+
+```go
+func frameMediaValues(api *catalog.VideoAPI, frameInputs []media.Input) ([]any, error)
+```
+
+frameMediaValues returns request objects for resolved first and last frame images. It rejects video inputs, unresolved frame times, and duplicate frame roles.
+
+<a name="getGenErr"></a>
+## func [getGenErr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/poll.go#L75>)
+
+```go
+func getGenErr(jobID, statusWord, msg string) error
+```
+
+getGenErr returns a generation error containing the job identifier, status, and optional message.
+
+<a name="getJobID"></a>
+## func [getJobID](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L232>)
+
+```go
+func getJobID(provModelLabel, idField string, status int, body []byte, errReceived error) (string, error)
+```
+
+getJobID returns the job identifier from a successful response.
+
+<a name="getRespBody"></a>
+## func [getRespBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/poll.go#L102>)
+
+```go
+func getRespBody(body []byte) (map[string]any, error)
+```
+
+getRespBody decodes a JSON response object and preserves any decoding error.
+
+<a name="getUnknownErr"></a>
+## func [getUnknownErr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/poll.go#L85>)
+
+```go
+func getUnknownErr(jobID string, observed any, body []byte) error
+```
+
+getUnknownErr returns an error describing an unrecognized job status.
+
+<a name="getVideoJobBody"></a>
+## func [getVideoJobBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L114>)
+
+```go
+func getVideoJobBody(api *catalog.VideoAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, stringParams ...params.FlagType) (map[string]any, error)
+```
+
+getVideoJobBody returns the JSON fields for a video job request.
+
+<a name="inputMediaURLNested"></a>
+## func [inputMediaURLNested](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L206>)
+
+```go
+func inputMediaURLNested(mediaInput *media.Input) map[string]string
+```
+
+inputMediaURLNested returns the nested URL value for one media reference.
+
+<a name="inputMediaURLObject"></a>
+## func [inputMediaURLObject](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L192>)
+
+```go
+func inputMediaURLObject(mediaInput *media.Input) map[string]string
+```
+
+inputMediaURLObject returns the request object for one media reference.
+
+<a name="isDigits"></a>
+## func [isDigits](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L392>)
+
+```go
+func isDigits(segment string) bool
+```
+
+isDigits reports whether text contains one or more ASCII digits.
+
+<a name="joinDetailMessages"></a>
+## func [joinDetailMessages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/apierr.go#L89>)
+
+```go
+func joinDetailMessages(errDetails []any) string
+```
+
+joinDetailMessages joins nonempty validation messages with semicolons.
+
+<a name="jsonBody"></a>
+## func [jsonBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L67>)
+
+```go
+func jsonBody(api *catalog.ImageAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, stringParams ...params.FlagType) (map[string]any, error)
+```
+
+jsonBody returns the JSON fields for an image generation request; an empty prompt sends no prompt field.
+
+<a name="mediaURLType"></a>
+## func [mediaURLType](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L197>)
+
+```go
+func mediaURLType(mediaInput *media.Input) string
+```
+
+mediaURLType returns the provider\-neutral nested reference type for one media input.
 
 <a name="missingAPIError"></a>
-## func [missingAPIError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L101>)
+## func [missingAPIError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L131>)
 
 ```go
-func missingAPIError(prov *core.Provider, section string) error
+func missingAPIError(providerID, section string) error
 ```
 
-missingAPIError returns a configuration error for a missing API section.
+missingAPIError classifies an absent API section and names its provider.
 
-<a name="Provider"></a>
-## type [Provider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L20-L23>)
-
-Provider generates media according to one decoded provider.
+<a name="multipartBody"></a>
+## func [multipartBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L228>)
 
 ```go
-type Provider struct {
-    // prov is the decoded provider, whose request settings shape every request.
-    prov core.Provider
+func multipartBody(fields map[string]string, inputMediaFormField string, mediaInputs []media.Input) (contentType string, body []byte, err error)
+```
+
+multipartBody returns multipart form data containing fields and local image parts.
+
+<a name="placeWireValue"></a>
+## func [placeWireValue](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L110>)
+
+```go
+func placeWireValue(fields map[string]any, path string, value any)
+```
+
+placeWireValue writes a value into the supplied map at a dotted request path. It creates intermediate objects, replacing any non\-object values along the path.
+
+<a name="pollFailureMsg"></a>
+## func [pollFailureMsg](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/poll.go#L55>)
+
+```go
+func pollFailureMsg(pollBody map[string]any) string
+```
+
+pollFailureMsg returns the failure message carried by a polling response.
+
+<a name="pollVideoJob"></a>
+## func [pollVideoJob](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L290>)
+
+```go
+func pollVideoJob(ctx context.Context, credential httpapi.AuthCredential, api *catalog.VideoAPI, provModelLabel, jobID string, record *metadata.Record) ([]byte, error)
+```
+
+pollVideoJob waits for a video job to complete and returns its final response body.
+
+<a name="prepareVideoInputs"></a>
+## func [prepareVideoInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L58>)
+
+```go
+func prepareVideoInputs(ctx context.Context, api *catalog.VideoAPI, run *generation.Generation) (generation.Preparation, error)
+```
+
+prepareVideoInputs downloads multipart references and resizes them when the API requires it. It works on a copy and returns any media and adjustments prepared before a failure.
+
+<a name="segmentIndex"></a>
+## func [segmentIndex](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L378>)
+
+```go
+func segmentIndex(segment string, segmentCount int) (int, bool)
+```
+
+segmentIndex returns the list index represented by a path segment when it is within bounds.
+
+<a name="sendImageRequest"></a>
+## func [sendImageRequest](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/imageapi.go#L44>)
+
+```go
+func sendImageRequest(ctx context.Context, credential httpapi.AuthCredential, api *catalog.ImageAPI, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, record *metadata.Record, stringParams ...params.FlagType) (status int, respBody []byte, err error)
+```
+
+sendImageRequest sends JSON or multipart data to the configured image endpoint and returns the HTTP status and response body. It records the prepared media and request.
+
+<a name="splitFrameInputs"></a>
+## func [splitFrameInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L161>)
+
+```go
+func splitFrameInputs(mediaInputs []media.Input) (ordinaryInputs, frameInputs []media.Input)
+```
+
+splitFrameInputs takes media inputs and returns the inputs carrying no frame prefix and the inputs carrying one, each in input order.
+
+<a name="startVideoJob"></a>
+## func [startVideoJob](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L85>)
+
+```go
+func startVideoJob(ctx context.Context, credential httpapi.AuthCredential, api *catalog.VideoAPI, provModelLabel string, model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input, record *metadata.Record, stringParams ...params.FlagType) (string, error)
+```
+
+startVideoJob sends a video job request and returns the response's job identifier.
+
+<a name="submitImage"></a>
+## func [submitImage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/imageapi.go#L19>)
+
+```go
+func submitImage(ctx context.Context, api *catalog.ImageAPI, apiKey string, run *generation.Generation, stringParams ...params.FlagType) ([]artifact.Media, error)
+```
+
+submitImage sends an image request and returns its artifacts. For multipart requests, it replaces the request's input media with downloaded data and records the prepared media and provider responses.
+
+<a name="submitVideo"></a>
+## func [submitVideo](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L22>)
+
+```go
+func submitVideo(ctx context.Context, api *catalog.VideoAPI, apiKey string, run *generation.Generation, stringParams ...params.FlagType) ([]artifact.Media, error)
+```
+
+submitVideo prepares and submits a video job, waits for completion, and downloads its artifact. It updates the request's preparation and records the provider lifecycle.
+
+<a name="videoJobFields"></a>
+## func [videoJobFields](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L216>)
+
+```go
+func videoJobFields(model *catalog.Model, prompt string, parameterValues params.Values, stringParams ...params.FlagType) map[string]string
+```
+
+videoJobFields returns the text fields for a multipart video job request.
+
+<a name="walkURL"></a>
+## func [walkURL](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L339>)
+
+```go
+func walkURL(pollBody []byte, segments []string) string
+```
+
+walkURL follows object keys and numeric array indices to a string in a polling response. It returns an empty string for invalid JSON, missing paths, or type mismatches.
+
+<a name="writeMediaPart"></a>
+## func [writeMediaPart](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L252>)
+
+```go
+func writeMediaPart(multipartWriter *multipart.Writer, field string, mediaIndex int, mediaInput *media.Input) error
+```
+
+writeMediaPart writes one local image as a multipart file part.
+
+<a name="imageDataItem"></a>
+## type [imageDataItem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L285-L287>)
+
+imageDataItem contains one normalized image response item.
+
+- base64: the optional base64\-encoded image data
+- url: the optional image download URL
+- mime: the optional declared MIME type
+
+```go
+type imageDataItem struct {
+    base64, url, mime params.Nullable[string]
 }
 ```
 
-<a name="Provider.AdjustParams"></a>
-### func \(\*Provider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L39>)
+<a name="parseRespImages"></a>
+### func [parseRespImages](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L291>)
 
 ```go
-func (p *Provider) AdjustParams(model *core.Model, inputs parameters.FlagInputs, mediaInputs []media.Input) (parameters.Params, []parameters.ParamChange, error)
+func parseRespImages(body []byte) ([]imageDataItem, error)
 ```
 
-AdjustParams returns model\-compatible generation parameters and records describing each adjustment. It reconciles frame prefixes with the video API's frame support, and checks whether retained local video\-model image inputs require resizing.
+parseRespImages decodes image response data while preserving absent and empty fields. It rejects null image records and prefers mime\_type over media\_type when both are strings.
 
-<a name="Provider.Generate"></a>
-### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L71>)
+<a name="sharedProvider"></a>
+## type [sharedProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L21-L26>)
+
+sharedProvider holds independent request settings for a descriptor\-class provider.
+
+- providerID: the provider identity used in errors
+- imageAPI: optional image request settings
+- videoAPI: optional video request settings
+- stringParams: parameters that must be encoded as strings
 
 ```go
-func (p *Provider) Generate(ctx context.Context, run *core.Generation) (core.Result, error)
+type sharedProvider struct {
+    providerID   string
+    imageAPI     *catalog.ImageAPI
+    videoAPI     *catalog.VideoAPI
+    stringParams []params.FlagType
+}
 ```
 
-Generate sends run to the configured image or video API and returns its artifacts.
+<a name="sharedProvider.AdjustParams"></a>
+### func \(\*sharedProvider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L68>)
+
+```go
+func (provider *sharedProvider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error)
+```
+
+AdjustParams returns adjusted parameters, retained media, and change records. Video API settings determine frame handling and image resizing.
+
+<a name="sharedProvider.Generate"></a>
+### func \(\*sharedProvider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L104>)
+
+```go
+func (provider *sharedProvider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error)
+```
+
+Generate submits the selected image or video request and returns its artifacts. It copies the request preparation and returns any preparation completed before a failure.
+
+<a name="videoJobProbe"></a>
+## type [videoJobProbe](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L260-L266>)
+
+videoJobProbe holds the values needed to inspect a video job.
+
+- credential: the credential sent with each status request
+- api: the video API settings used to inspect the job
+- jobID: the video job identifier
+- record: optional retention of every status response
+- completed: the response retained after successful completion
+
+```go
+type videoJobProbe struct {
+    credential httpapi.AuthCredential
+    api        *catalog.VideoAPI
+    jobID      string
+    record     *metadata.Record
+    completed  []byte
+}
+```
+
+<a name="videoJobProbe.Poll"></a>
+### func \(\*videoJobProbe\) [Poll](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/videoapi.go#L269>)
+
+```go
+func (probe *videoJobProbe) Poll(ctx context.Context) (isDone bool, pollErr error)
+```
+
+Poll retrieves the video job status and stores the successful response in the probe.
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

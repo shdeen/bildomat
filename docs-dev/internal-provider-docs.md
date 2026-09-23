@@ -6,63 +6,106 @@
 import "github.com/shdeen/bildomat/internal/provider"
 ```
 
-Package provider constructs generators whose behavior is defined by embedded provider configurations.
+Package provider executes image and video requests defined by provider descriptions.
 
 ## Index
 
 - [Constants](<#constants>)
-- [func NewProvider\(prov \*core.Provider\) core.Generator](<#NewProvider>)
-- [type Provider](<#Provider>)
-  - [func \(p \*Provider\) AdjustParams\(model \*core.Model, inputs parameters.FlagInputs, mediaInputs \[\]media.Input\) \(parameters.Params, \[\]parameters.ParamChange, error\)](<#Provider.AdjustParams>)
-  - [func \(p \*Provider\) Generate\(ctx context.Context, run \*core.Generation\) \(core.Result, error\)](<#Provider.Generate>)
+- [func APIErr\(provModelLabel string, status int, body \[\]byte\) error](<#APIErr>)
+- [func AdapterSettings\(providerDescription \*catalog.Provider, providerID string\) \(\*catalog.AdapterAPI, error\)](<#AdapterSettings>)
+- [func CheckOwnedPaths\(providerID string, model \*catalog.Model, ownedPaths ...string\) error](<#CheckOwnedPaths>)
+- [func NewProvider\(providerDescription \*catalog.Provider\) \(generation.Generator, error\)](<#NewProvider>)
+- [func PollResponseError\(identity string, status int, body \[\]byte, transportErr error\) error](<#PollResponseError>)
+- [func WireParamValues\(model \*catalog.Model, gp params.Values, stringParams ...params.FlagType\) map\[string\]any](<#WireParamValues>)
 
 
 ## Constants
+
+<a name="CreationResponseContext"></a>Response labels provide context for failed decoding.
+
+- CreationResponseContext: the response that creates a job or task
+- PollResponseContext: a status response for a running job or task
+
+```go
+const (
+    CreationResponseContext = "creation response"
+    PollResponseContext     = "poll response"
+)
+```
 
 <a name="APISectionMissing"></a>The internal/provider section of the copy catalog, one constant per entry.
 
 ```go
 const (
-    APISectionMissing = "%s.json: no %s for the resolved medium"
+    APISectionMissing         = "%s.json: no %s for the resolved medium"
+    DownloadURLMissing        = "%s: %s: no download url in the completed poll"
+    FieldContextForm          = "field %s"
+    FrameFieldUnavailable     = "a frame prefix reached a request with no frame field"
+    FrameMediaUndescribed     = "provider has no frame-media request description"
+    FrameRoleDuplicate        = "duplicate frame role %s"
+    FrameTimeUnresolved       = "unresolved frame time on %s"
+    JSONMediaPartsUnsupported = "JSON requests cannot contain multipart file parts"
+    JobDecodeErrorForm        = "jobID %q: %w"
+    MissingResponseValue      = "missing"
+    RespEntryForm             = "%s: entry %d"
+    SingleMediaNoVideo        = "single-or-array request does not accept video"
+    StartContextForm          = "%s start"
+    UnknownStatusForm         = "%s (%s): %s"
 )
 ```
 
+<a name="APIErr"></a>
+## func [APIErr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/apierr.go#L23>)
+
+```go
+func APIErr(provModelLabel string, status int, body []byte) error
+```
+
+APIErr classifies an unsuccessful HTTP response and preserves a recognized server message. Otherwise it includes a bounded body excerpt. Statuses 429, 502, 503, and 504 are temporary.
+
+<a name="AdapterSettings"></a>
+## func [AdapterSettings](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L56>)
+
+```go
+func AdapterSettings(providerDescription *catalog.Provider, providerID string) (*catalog.AdapterAPI, error)
+```
+
+AdapterSettings returns an owned copy of the selected provider's adapter settings. A missing description or adapter section returns a configuration error naming providerID.
+
+<a name="CheckOwnedPaths"></a>
+## func [CheckOwnedPaths](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/requestpath.go#L14>)
+
+```go
+func CheckOwnedPaths(providerID string, model *catalog.Model, ownedPaths ...string) error
+```
+
+CheckOwnedPaths rejects configured assignments that overlap fields an adapter must construct. The adapter supplies its own protocol paths; generic configured\-path consistency is checked when the catalog is decoded.
+
 <a name="NewProvider"></a>
-## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L27>)
+## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L30>)
 
 ```go
-func NewProvider(prov *core.Provider) core.Generator
+func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error)
 ```
 
-NewProvider returns the generator for one descriptor\-class provider, built over the decoded provider. It never returns a nil pointer.
+NewProvider validates the API sections required by the models and returns a generator with independent copies of the request settings.
 
-<a name="Provider"></a>
-## type [Provider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L20-L23>)
-
-Provider generates media according to one decoded provider.
+<a name="PollResponseError"></a>
+## func [PollResponseError](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/apierr.go#L43>)
 
 ```go
-type Provider struct {
-    // contains filtered or unexported fields
-}
+func PollResponseError(identity string, status int, body []byte, transportErr error) error
 ```
 
-<a name="Provider.AdjustParams"></a>
-### func \(\*Provider\) [AdjustParams](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L39>)
+PollResponseError combines an unsuccessful HTTP status with any transport error. A successful or unavailable status returns the transport error unchanged.
+
+<a name="WireParamValues"></a>
+## func [WireParamValues](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/payload.go#L89>)
 
 ```go
-func (p *Provider) AdjustParams(model *core.Model, inputs parameters.FlagInputs, mediaInputs []media.Input) (parameters.Params, []parameters.ParamChange, error)
+func WireParamValues(model *catalog.Model, gp params.Values, stringParams ...params.FlagType) map[string]any
 ```
 
-AdjustParams returns model\-compatible generation parameters and records describing each adjustment. It reconciles frame prefixes with the video API's frame support, and checks whether retained local video\-model image inputs require resizing.
-
-<a name="Provider.Generate"></a>
-### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/provider.go#L71>)
-
-```go
-func (p *Provider) Generate(ctx context.Context, run *core.Generation) (core.Result, error)
-```
-
-Generate sends run to the configured image or video API and returns its artifacts.
+WireParamValues returns supplied parameters under their configured request paths. It omits parameters without paths and formats the selected parameters as strings. Dotted paths create nested objects shared by parameters with the same parent.
 
 Generated by [gomarkdoc](<https://github.com/princjef/gomarkdoc>)

@@ -12,10 +12,11 @@ Package media owns media sources, formats, and local image transformations.
 
 - [Constants](<#constants>)
 - [Variables](<#variables>)
-- [func ExtForMime\(mimeType string\) string](<#ExtForMime>)
+- [func ExtForData\(mime string, byteHead \[\]byte, fallbackExt string\) string](<#ExtForData>)
 - [func ExtForMimeOr\(mimeType, fallback string\) string](<#ExtForMimeOr>)
 - [func IsURLSource\(source string\) bool](<#IsURLSource>)
 - [func centerCrop\(bounds image.Rectangle, width, height int\) image.Rectangle](<#centerCrop>)
+- [func extForMime\(mimeType string\) string](<#extForMime>)
 - [func isURL\(source string\) bool](<#isURL>)
 - [func mimeSubtype\(mimeValue string\) string](<#mimeSubtype>)
 - [func splitFramePrefix\(source string\) \(bareSource string, frameTime \*float64, anchor string, err error\)](<#splitFramePrefix>)
@@ -23,6 +24,7 @@ Package media owns media sources, formats, and local image transformations.
 - [type Input](<#Input>)
   - [func ReadInputs\(sources \[\]string\) \(\[\]Input, error\)](<#ReadInputs>)
   - [func Resize\(width, height int, mediaInputs \[\]Input\) \(\[\]Input, error\)](<#Resize>)
+  - [func SplitInputs\(inputs \[\]Input\) \(imageInputs, videoInputs \[\]Input\)](<#SplitInputs>)
   - [func readLocal\(path string\) \(Input, error\)](<#readLocal>)
   - [func readSource\(source string\) \(Input, error\)](<#readSource>)
   - [func resizeItem\(mediaInput \*Input, width, height int, position string\) \(Input, error\)](<#resizeItem>)
@@ -34,13 +36,18 @@ Package media owns media sources, formats, and local image transformations.
   - [func \(mediaInput Input\) SourceName\(\) string](<#Input.SourceName>)
   - [func \(mediaInput Input\) URLOrBase64\(\) string](<#Input.URLOrBase64>)
 - [type Kind](<#Kind>)
+  - [func MIMEKind\(mimeType string\) Kind](<#MIMEKind>)
 - [type format](<#format>)
   - [func formatForMIME\(mimeType string\) \(format, bool\)](<#formatForMIME>)
 
 
 ## Constants
 
-<a name="schemeHTTP"></a>Source schemes accepted for remote media.
+<a name="schemeHTTP"></a>Remote media source syntax.
+
+- schemeHTTP: unencrypted HTTP
+- schemeHTTPS: encrypted HTTP
+- schemeSeparator: the delimiter between scheme and address
 
 ```go
 const (
@@ -50,7 +57,10 @@ const (
 )
 ```
 
-<a name="FrameFirst"></a>FrameFirst and FrameLast identify the opening and closing frames.
+<a name="FrameFirst"></a>Frame anchors identify the requested position in a generated video.
+
+- FrameFirst: the opening frame
+- FrameLast: the closing frame
 
 ```go
 const (
@@ -59,19 +69,32 @@ const (
 )
 ```
 
-<a name="MimePNG"></a>Known MIME values for supported local inputs and generated SVG output.
+<a name="mimePNG"></a>MIME types recognized for local input or generated output.
+
+- mimePNG: PNG images
+- mimeJPEG: JPEG images
+- mimeWebP: WebP images
+- mimeMP4: MP4 video
+- mimeSVG: SVG output, which is not accepted as local input
 
 ```go
 const (
-    MimePNG  = "image/png"
-    MimeJPEG = "image/jpeg"
-    MimeWebP = "image/webp"
-    MimeMP4  = "video/mp4"
+    mimePNG  = "image/png"
+    mimeJPEG = "image/jpeg"
+    mimeWebP = "image/webp"
+    mimeMP4  = "video/mp4"
     mimeSVG  = "image/svg+xml"
 )
 ```
 
-<a name="FormatPNG"></a>Format tokens used in provider requests and file extensions.
+<a name="FormatPNG"></a>Format names used in provider requests and file extensions.
+
+- FormatPNG: PNG encoding
+- FormatJPEG: JPEG encoding
+- FormatJPG: the canonical JPEG extension
+- FormatWebP: WebP encoding
+- FormatMP4: MP4 encoding
+- formatSVG: SVG encoding
 
 ```go
 const (
@@ -80,7 +103,7 @@ const (
     FormatJPG  = "jpg"
     FormatWebP = "webp"
     FormatMP4  = "mp4"
-    FormatSVG  = "svg"
+    formatSVG  = "svg"
 )
 ```
 
@@ -90,7 +113,7 @@ const (
 const (
     FrameTimeInvalid = "The input media %s has invalid keyframe timing."
     ImageIndexForm   = "image %d"
-    MediaIndexForm   = "media %d"
+    IndexForm        = "media %d"
 )
 ```
 
@@ -118,25 +141,25 @@ const mimeJPG = "image/jpg"
 
 ```go
 var formats = []format{
-    {mime: MimePNG, extension: FormatPNG, localInput: true},
-    {mime: MimeJPEG, extension: FormatJPG, aliases: []string{mimeJPG}, localInput: true},
-    {mime: MimeWebP, extension: FormatWebP, localInput: true},
-    {mime: MimeMP4, extension: FormatMP4, localInput: true},
-    {mime: mimeSVG, extension: FormatSVG},
+    {mime: mimePNG, extension: FormatPNG, localInput: true},
+    {mime: mimeJPEG, extension: FormatJPG, aliases: []string{mimeJPG}, localInput: true},
+    {mime: mimeWebP, extension: FormatWebP, localInput: true},
+    {mime: mimeMP4, extension: FormatMP4, localInput: true},
+    {mime: mimeSVG, extension: formatSVG},
 }
 ```
 
-<a name="ExtForMime"></a>
-## func [ExtForMime](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L77>)
+<a name="ExtForData"></a>
+## func [ExtForData](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L153>)
 
 ```go
-func ExtForMime(mimeType string) string
+func ExtForData(mime string, byteHead []byte, fallbackExt string) string
 ```
 
-ExtForMime returns a canonical media extension or a bare dot when unavailable. Valid unknown image/video subtypes retain their existing extension fallback.
+ExtForData returns an extension inferred from a MIME type, leading bytes, or a fallback extension in that order.
 
 <a name="ExtForMimeOr"></a>
-## func [ExtForMimeOr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L91>)
+## func [ExtForMimeOr](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L119>)
 
 ```go
 func ExtForMimeOr(mimeType, fallback string) string
@@ -145,16 +168,16 @@ func ExtForMimeOr(mimeType, fallback string) string
 ExtForMimeOr returns the MIME extension or the supplied fallback extension.
 
 <a name="IsURLSource"></a>
-## func [IsURLSource](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L216>)
+## func [IsURLSource](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L220>)
 
 ```go
 func IsURLSource(source string) bool
 ```
 
-IsURLSource recognizes a remote source even when its frame prefix is invalid. Keeping the complete flag value lets readSource report that prefix's error.
+IsURLSource recognizes an HTTP\(S\) source even when its optional frame prefix is invalid.
 
 <a name="centerCrop"></a>
-## func [centerCrop](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/conform.go#L68>)
+## func [centerCrop](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/conform.go#L69>)
 
 ```go
 func centerCrop(bounds image.Rectangle, width, height int) image.Rectangle
@@ -162,8 +185,17 @@ func centerCrop(bounds image.Rectangle, width, height int) image.Rectangle
 
 centerCrop returns the largest centered source rectangle at the target ratio.
 
+<a name="extForMime"></a>
+## func [extForMime](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L105>)
+
+```go
+func extForMime(mimeType string) string
+```
+
+extForMime returns a known encoding's canonical extension or a parsed image/video subtype. It returns a bare dot when no usable extension is present.
+
 <a name="isURL"></a>
-## func [isURL](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L223>)
+## func [isURL](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L227>)
 
 ```go
 func isURL(source string) bool
@@ -172,7 +204,7 @@ func isURL(source string) bool
 isURL recognizes the two supported schemes without interpreting remote content.
 
 <a name="mimeSubtype"></a>
-## func [mimeSubtype](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L110>)
+## func [mimeSubtype](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L139>)
 
 ```go
 func mimeSubtype(mimeValue string) string
@@ -181,7 +213,7 @@ func mimeSubtype(mimeValue string) string
 mimeSubtype returns the leading valid subtype token, excluding parameters.
 
 <a name="splitFramePrefix"></a>
-## func [splitFramePrefix](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L232>)
+## func [splitFramePrefix](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L236>)
 
 ```go
 func splitFramePrefix(source string) (bareSource string, frameTime *float64, anchor string, err error)
@@ -190,18 +222,25 @@ func splitFramePrefix(source string) (bareSource string, frameTime *float64, anc
 splitFramePrefix separates a source from its numeric time or first/last anchor. Invalid numeric times retain their source and classified error. Ordinary filenames, including colons, pass through when no frame prefix is present.
 
 <a name="splitMIME"></a>
-## func [splitMIME](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L100>)
+## func [splitMIME](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L129>)
 
 ```go
 func splitMIME(mimeType string) (category, subtype string, valid bool)
 ```
 
-splitMIME normalizes a media category and its leading subtype token.
+splitMIME normalizes an image/video category and its leading subtype token. The boolean validates the category; the subtype may still be empty.
 
 <a name="Input"></a>
-## type [Input](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L39-L46>)
+## type [Input](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L48-L55>)
 
-Input contains local bytes or a remote URL and an optional frame request. A nil Time means no numeric time; a pointer to zero requests the opening time. Copies share immutable bytes and time values. Transformations replace those values rather than modifying their backing storage.
+Input contains local bytes or a remote URL and an optional frame request. Copies share immutable bytes and time values; transformations replace them.
+
+- Bytes: local or downloaded media content
+- MIME: the identified media type, or empty while unresolved
+- Filepath: the local path or source URL retained after download
+- URL: the remote source while it remains a URL reference
+- Time: numeric frame seconds; nil means absent and zero requests the opening time
+- FrameAnchor: first or last; takes precedence over Time when formatting a source
 
 ```go
 type Input struct {
@@ -215,16 +254,16 @@ type Input struct {
 ```
 
 <a name="ReadInputs"></a>
-### func [ReadInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L132>)
+### func [ReadInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L137>)
 
 ```go
 func ReadInputs(sources []string) ([]Input, error)
 ```
 
-ReadInputs validates sources and retains their supplied order.
+ReadInputs reads local media and retains validated HTTP\(S\) sources in supplied order. Remote sources remain unresolved; any invalid source fails the entire read.
 
 <a name="Resize"></a>
-### func [Resize](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/conform.go#L22>)
+### func [Resize](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/conform.go#L23>)
 
 ```go
 func Resize(width, height int, mediaInputs []Input) ([]Input, error)
@@ -232,8 +271,17 @@ func Resize(width, height int, mediaInputs []Input) ([]Input, error)
 
 Resize center\-crops local images and returns replacement PNG bytes at concrete dimensions. The original byte buffers and optional timestamps remain unchanged.
 
+<a name="SplitInputs"></a>
+### func [SplitInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L268>)
+
+```go
+func SplitInputs(inputs []Input) (imageInputs, videoInputs []Input)
+```
+
+SplitInputs groups video references separately, retaining the relative order of each group. Unresolved media keeps the image treatment used by adapters.
+
 <a name="readLocal"></a>
-### func [readLocal](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L182>)
+### func [readLocal](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L187>)
 
 ```go
 func readLocal(path string) (Input, error)
@@ -242,7 +290,7 @@ func readLocal(path string) (Input, error)
 readLocal reads and validates local image or MP4 bytes within the input limit.
 
 <a name="readSource"></a>
-### func [readSource](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L147>)
+### func [readSource](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L152>)
 
 ```go
 func readSource(source string) (Input, error)
@@ -251,7 +299,7 @@ func readSource(source string) (Input, error)
 readSource reads local media or preserves a validated, unresolved HTTP\(S\) URL.
 
 <a name="resizeItem"></a>
-### func [resizeItem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/conform.go#L49>)
+### func [resizeItem](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/conform.go#L50>)
 
 ```go
 func resizeItem(mediaInput *Input, width, height int, position string) (Input, error)
@@ -260,7 +308,7 @@ func resizeItem(mediaInput *Input, width, height int, position string) (Input, e
 resizeItem returns a replacement image with the requested centered crop and dimensions.
 
 <a name="Input.DataURI"></a>
-### func \(Input\) [DataURI](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L108>)
+### func \(Input\) [DataURI](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L112>)
 
 ```go
 func (mediaInput Input) DataURI() string
@@ -269,7 +317,7 @@ func (mediaInput Input) DataURI() string
 DataURI returns a remote URL unchanged or local bytes encoded with their MIME type. Without a MIME type, a local input has no data URI.
 
 <a name="Input.FrameTime"></a>
-### func \(Input\) [FrameTime](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L70>)
+### func \(Input\) [FrameTime](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L74>)
 
 ```go
 func (mediaInput Input) FrameTime() (float64, bool)
@@ -278,7 +326,7 @@ func (mediaInput Input) FrameTime() (float64, bool)
 FrameTime returns the numeric frame time and distinguishes absence from zero.
 
 <a name="Input.HasFrame"></a>
-### func \(Input\) [HasFrame](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L63>)
+### func \(Input\) [HasFrame](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L67>)
 
 ```go
 func (mediaInput Input) HasFrame() bool
@@ -287,7 +335,7 @@ func (mediaInput Input) HasFrame() bool
 HasFrame reports whether a numeric time or anchor was supplied.
 
 <a name="Input.Kind"></a>
-### func \(Input\) [Kind](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L51>)
+### func \(Input\) [Kind](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L60>)
 
 ```go
 func (mediaInput Input) Kind() Kind
@@ -296,7 +344,7 @@ func (mediaInput Input) Kind() Kind
 Kind returns the kind established by the MIME type, or empty when unresolved.
 
 <a name="Input.Source"></a>
-### func \(Input\) [Source](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L92>)
+### func \(Input\) [Source](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L96>)
 
 ```go
 func (mediaInput Input) Source() string
@@ -305,7 +353,7 @@ func (mediaInput Input) Source() string
 Source returns the source including its optional frame prefix.
 
 <a name="Input.SourceName"></a>
-### func \(Input\) [SourceName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L81>)
+### func \(Input\) [SourceName](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L85>)
 
 ```go
 func (mediaInput Input) SourceName() string
@@ -314,7 +362,7 @@ func (mediaInput Input) SourceName() string
 SourceName returns the bare local path or remote URL.
 
 <a name="Input.URLOrBase64"></a>
-### func \(Input\) [URLOrBase64](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L123>)
+### func \(Input\) [URLOrBase64](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/input.go#L127>)
 
 ```go
 func (mediaInput Input) URLOrBase64() string
@@ -323,7 +371,7 @@ func (mediaInput Input) URLOrBase64() string
 URLOrBase64 returns a remote URL unchanged or local bytes as raw Base64.
 
 <a name="Kind"></a>
-## type [Kind](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L9>)
+## type [Kind](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L10>)
 
 Kind identifies an image or video. An empty kind has not been established.
 
@@ -331,7 +379,10 @@ Kind identifies an image or video. An empty kind has not been established.
 type Kind string
 ```
 
-<a name="Image"></a>Image and Video are the supported media kinds.
+<a name="Image"></a>Supported media kinds.
+
+- Image: still images
+- Video: moving images
 
 ```go
 const (
@@ -340,10 +391,24 @@ const (
 )
 ```
 
-<a name="format"></a>
-## type [format](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L37-L42>)
+<a name="MIMEKind"></a>
+### func [MIMEKind](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L77>)
 
-format describes a known encoding, its canonical extension, and input support.
+```go
+func MIMEKind(mimeType string) Kind
+```
+
+MIMEKind returns the image or video category of a MIME value, or empty when unresolved.
+
+<a name="format"></a>
+## type [format](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L55-L60>)
+
+format describes a recognized media encoding.
+
+- mime: the canonical MIME type
+- extension: the canonical extension without a leading dot
+- aliases: accepted alternate MIME types
+- localInput: whether local files of this type are accepted
 
 ```go
 type format struct {
@@ -355,7 +420,7 @@ type format struct {
 ```
 
 <a name="formatForMIME"></a>
-### func [formatForMIME](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L59>)
+### func [formatForMIME](<https://github.com/shdeen/bildomat-dev/blob/main/internal/media/mime.go#L87>)
 
 ```go
 func formatForMIME(mimeType string) (format, bool)
