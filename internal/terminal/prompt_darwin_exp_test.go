@@ -1,6 +1,8 @@
 //go:build darwin
 
-package main
+package terminal
+
+// Platform support for the prompt tests in prompt_exp_test.go.
 
 import (
 	"bytes"
@@ -11,19 +13,18 @@ import (
 	"unsafe"
 )
 
-// The pseudo-terminal requests of the darwin kernel, as creack/pty names them.
-//   - ptyGrant: grant access to the slave
-//   - ptyUnlock: unlock the slave
-//   - ptyGetName: copy the slave's device path into the buffer
-//   - termiosGet, termiosSet: read and write the terminal settings
-//   - inputPendingCount: the count of unread input bytes
-//
 // ptyOpenAttempts and ptyOpenRetryPause bound the wait for a free pseudo-terminal.
 const (
 	ptyOpenAttempts   = 200
 	ptyOpenRetryPause = 5 * time.Millisecond
 )
 
+// The pseudo-terminal requests of the darwin kernel, as creack/pty names them.
+//   - ptyGrant: grant access to the slave
+//   - ptyUnlock: unlock the slave
+//   - ptyGetName: copy the slave's device path into the buffer
+//   - termiosGet, termiosSet: read and write the terminal settings
+//   - inputPendingCount: the count of unread input bytes
 const (
 	ptyGrant          = 0x20007454
 	ptyUnlock         = 0x20007452
@@ -33,12 +34,7 @@ const (
 	inputPendingCount = 0x4004667f
 )
 
-// openPTY opens a pseudo-terminal pair and returns its master and slave ends,
-// with input and output processing off; the caller closes them. What a
-// test writes to the master, a program reads from the slave as terminal input; what the program writes to the
-// slave, the test reads from the master.
-//
-// Test class: Core: Helper.
+// openPTY returns a raw pseudo-terminal pair; the caller closes both ends.
 func openPTY(test testing.TB) (master, slave *os.File) {
 	test.Helper()
 
@@ -67,10 +63,7 @@ func openPTY(test testing.TB) (master, slave *os.File) {
 	return master, slave
 }
 
-// rawInput takes the slave end of a pseudo-terminal and turns off its input
-// and output processing, so a test's bytes reach the program unchanged
-// (no carriage-return conversion, echo, line editing, or signal keys) and
-// the program's bytes reach the test unchanged.
+// rawInput disables terminal processing so test bytes pass unchanged.
 func rawInput(test testing.TB, slave *os.File) {
 	test.Helper()
 
@@ -95,9 +88,7 @@ func rawInput(test testing.TB, slave *os.File) {
 	}
 }
 
-// inputPending takes the slave end of a pseudo-terminal and returns how many
-// bytes written to its master the program has not read yet, and false once
-// the terminal is closed.
+// inputPending reports unread slave input, or false if the terminal query fails.
 func inputPending(test testing.TB, slave *os.File) (int32, bool) {
 	test.Helper()
 
@@ -111,12 +102,8 @@ func inputPending(test testing.TB, slave *os.File) (int32, bool) {
 	return pending, true
 }
 
-// ioctl takes a terminal file, a request, and the request's argument (a
-// pointer to the value the request reads or writes, or nil), and runs the
-// request through the file's raw connection, so the file stays with the
-// runtime's poller and its write deadline keeps working. The argument stays a
-// pointer until the call expression itself, as the unsafe rules require, so
-// a moved stack cannot leave the kernel writing to a stale address.
+// ioctl runs a terminal request through the runtime poller to preserve deadlines. The argument
+// stays a pointer until the syscall so stack movement cannot invalidate it.
 func ioctl(test testing.TB, file *os.File, request uintptr, argument unsafe.Pointer) error {
 	test.Helper()
 
@@ -141,9 +128,7 @@ func ioctl(test testing.TB, file *os.File, request uintptr, argument unsafe.Poin
 	return nil
 }
 
-// openPTYMaster opens the pseudo-terminal master, retrying for up to a second
-// while the system has no free pseudo-terminal: a fuzz run opens and closes
-// one per iteration faster than the kernel reclaims them.
+// openPTYMaster retries opening the master while the kernel reclaims recently closed terminals.
 func openPTYMaster(test testing.TB) *os.File {
 	test.Helper()
 

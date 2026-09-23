@@ -2,14 +2,16 @@
 
 package main
 
+// Invariants tested:
+// This file contains test support only and no test or fuzz function.
+
 import (
 	"os"
 	"runtime"
 	"testing"
 )
 
-// openPTY fails the test: the pseudo-terminal helper is written for darwin
-// and linux, and a test that needs a terminal cannot run without one.
+// openPTY fails the test because this platform has no pseudo-terminal helper.
 //
 // Test class: Core: Helper.
 func openPTY(test testing.TB) (master, slave *os.File) {
@@ -19,7 +21,9 @@ func openPTY(test testing.TB) (master, slave *os.File) {
 	return nil, nil
 }
 
-// inputPending is never reached: openPTY fails the test first.
+// inputPending returns zero and false on platforms without a pseudo-terminal helper.
+//
+// Test class: Core: Helper.
 func inputPending(_ testing.TB, _ *os.File) (int32, bool) {
 	return 0, false
 }
