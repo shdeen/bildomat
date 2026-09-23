@@ -25,18 +25,19 @@ import (
 	"github.com/shdeen/bildomat/internal/output"
 	"github.com/shdeen/bildomat/internal/params"
 	tmpl "github.com/shdeen/bildomat/internal/templates"
+	"github.com/shdeen/bildomat/internal/terminal"
 	"github.com/urfave/cli/v3"
 )
 
-// bildApp owns the loaded settings and command state for each invocation.
-// The selected command prepares them after parsing the command line.
+// bildApp owns the loaded settings and command state for each invocation. The selected command
+// prepares them after parsing the command line.
 //   - invocation: the command's streams, presentation choices, and generation facts
 //   - catalog: the decoded provider configs and the parameter flag records
 //   - apiKeys: configured API keys owned by the command
-//   - defaultModel: the user config's default model, used when --model is omitted;
-//     empty when the config names none, in which case the catalog's provider default applies
-//   - defaultOutDir: the directory used when no output location is given;
-//     empty for the working directory
+//   - defaultModel: the user config's default model, used when --model is omitted; empty when the
+//     config names none, in which case the catalog's provider default applies
+//   - defaultOutDir: the directory used when no output location is given; empty for the working
+//     directory
 type bildApp struct {
 	invocation    commandInvocation
 	catalog       *catalog.Catalog
@@ -45,8 +46,8 @@ type bildApp struct {
 	defaultOutDir string
 }
 
-// load reads settings and the catalog once for a fresh invocation. Optional
-// setting faults remain warnings; failed warning delivery is an output failure.
+// load reads user settings and the provider catalog and applies configured API keys. It prints
+// configuration faults as warnings and returns any warning-write or catalog-load error.
 func (bild *bildApp) load() error {
 	settings, configPath, configFaults := userconfig.Load()
 	for _, fault := range configFaults {
@@ -79,10 +80,11 @@ func (bild *bildApp) load() error {
 	return nil
 }
 
-// cliPrepareRoot establishes one invocation after parsing. Valid generation
-// destinations precede loading; standalone version requests require neither catalog nor settings.
+// cliPrepareRoot captures the parsed command streams and output modes. For root requests, it opens
+// the requested results file before loading settings and the catalog. Standalone version requests
+// skip both loading and file creation; selected subcommands perform their own preparation.
 func (bild *bildApp) cliPrepareRoot(ctx context.Context, root *cli.Command) (context.Context, error) {
-	bild.invocation = newInvocation(root.Writer, root.ErrWriter)
+	bild.invocation = newInvocation(root.Reader, root.Writer, root.ErrWriter)
 	selectedCommand := root.Command(root.Args().First())
 
 	flagSource := root
@@ -119,8 +121,8 @@ func (bild *bildApp) cliPrepareRoot(ctx context.Context, root *cli.Command) (con
 	return ctx, nil
 }
 
-// cliPrepareCommand validates subcommand placement, then loads its settings
-// and catalog using the already selected invocation streams.
+// cliPrepareCommand validates subcommand placement, then loads its settings and catalog using the
+// already selected invocation streams.
 func (bild *bildApp) cliPrepareCommand(ctx context.Context, command *cli.Command) (context.Context, error) {
 	bild.invocation.selectMode(command)
 
@@ -141,8 +143,8 @@ func (bild *bildApp) cliPrepareCommand(ctx context.Context, command *cli.Command
 	return ctx, nil
 }
 
-// resolveGenerator resolves the model and records its identity before constructing
-// the provider, so construction failures retain the provider and model context.
+// resolveGenerator resolves the model and records its identity before constructing the provider, so
+// construction failures retain the provider and model context.
 func (bild *bildApp) resolveGenerator(genInputs *RunFlags) (catalog.ProvModelPair, generation.Generator, error) {
 	modelInput, supplied := bild.runModelInput(genInputs)
 	if !supplied {
@@ -161,8 +163,8 @@ func (bild *bildApp) resolveGenerator(genInputs *RunFlags) (catalog.ProvModelPai
 	return pair, generator, err
 }
 
-// cliRunGenerate serves standalone help/version requests or one generation.
-// Every generation return closes its owned result file and retains all causes.
+// cliRunGenerate serves standalone help/version requests or one generation. Every generation return
+// closes its owned result file and retains all causes.
 func (bild *bildApp) cliRunGenerate(ctx context.Context, command *cli.Command) error {
 	if command.Bool(HelpFlag) {
 		return bild.invocation.finish(bild.showHelpPage(command))
@@ -175,8 +177,8 @@ func (bild *bildApp) cliRunGenerate(ctx context.Context, command *cli.Command) e
 	return bild.invocation.finish(bild.runGeneration(ctx, command))
 }
 
-// runGeneration validates the prompt, retains complete generation facts in every
-// mode, and reports only after generation, persistence, and cleanup have finished.
+// runGeneration validates and confirms the prompt, collects the generation outcome, and reports it.
+// When generation runs, final reporting follows artifact saving, record persistence, and cleanup.
 func (bild *bildApp) runGeneration(ctx context.Context, command *cli.Command) error {
 	if command.Args().Len() > 1 {
 		return bild.invocation.fail(argCountError(command.Name, 1, command.Args().Len()))
@@ -193,7 +195,7 @@ func (bild *bildApp) runGeneration(ctx context.Context, command *cli.Command) er
 	startedAt := time.Now()
 	bild.invocation.outcome = output.NewGenerationOutcome(startedAt, prompt, getGenFlagsInput(&genInputs, paramInputs))
 
-	canceled, err := output.ConfirmOneWordPrompt(bild.invocation.stderr, prompt, bild.invocation.interactive, bild.invocation.diagnosticStyled)
+	canceled, err := terminal.ConfirmOneWordPrompt(bild.invocation.stdin, bild.invocation.stderr, prompt, bild.invocation.interactive, bild.invocation.diagnosticStyled)
 	if err == nil && canceled {
 		bild.invocation.outcome.Status = output.StatusCanceled
 	}
@@ -219,8 +221,8 @@ func (bild *bildApp) cliRunList(_ context.Context, command *cli.Command) error {
 	return bild.printListing(command, bild.selectedModels(command))
 }
 
-// cliRunSearch applies the search terms to one media selection and renders
-// the same listing forms as list, retaining search and output failures.
+// cliRunSearch filters models by media and search terms, then renders the selected listing form. It
+// returns validation, search, and output errors after reporting them.
 func (bild *bildApp) cliRunSearch(_ context.Context, command *cli.Command) error {
 	if command.Bool(HelpFlag) {
 		return bild.showHelpPage(command)
@@ -238,8 +240,8 @@ func (bild *bildApp) cliRunSearch(_ context.Context, command *cli.Command) error
 	return bild.printListing(command, matches)
 }
 
-// cliRunInfo resolves provider or model details and propagates every rendering
-// failure. Provider configuration failures retain their original identity.
+// cliRunInfo resolves provider or model details and propagates every rendering failure. Provider
+// configuration failures retain their original identity.
 func (bild *bildApp) cliRunInfo(_ context.Context, command *cli.Command) error {
 	if command.Bool(HelpFlag) {
 		return bild.showHelpPage(command)
@@ -251,13 +253,21 @@ func (bild *bildApp) cliRunInfo(_ context.Context, command *cli.Command) error {
 
 	modelInput := command.Args().Get(0)
 	if provider, found := bild.catalog.Provider(modelInput); found {
-		imageSelected, videoSelected := selectedMedia(command)
+		var providerModels []catalog.ProvModelPair
+
+		selectedModels := bild.selectedModels(command)
+
+		for index := range selectedModels {
+			if selectedModels[index].Provider.ID == provider.ID {
+				providerModels = append(providerModels, selectedModels[index])
+			}
+		}
 
 		var reportErr error
 		if bild.invocation.jsonOutput {
-			reportErr = output.PrintJSON(bild.invocation.results, output.ProviderInfoPage(&provider, bild.catalog.Flags, imageSelected, videoSelected))
+			reportErr = output.PrintJSON(bild.invocation.results, output.ProviderInfoPage(&provider, providerModels, bild.catalog.Flags))
 		} else {
-			reportErr = output.PrintProviderInfo(bild.invocation.results, &provider, bild.catalog.Flags, imageSelected, videoSelected, mediaFilterFlagNames, bild.invocation.styled)
+			reportErr = output.PrintProviderInfo(bild.invocation.results, &provider, providerModels, bild.catalog.Flags, mediaFilterFlagNames, bild.invocation.styled)
 		}
 
 		return bild.invocation.reportOutputError(reportErr, "", "")
@@ -285,10 +295,8 @@ func (bild *bildApp) cliRunInfo(_ context.Context, command *cli.Command) error {
 	return bild.invocation.reportOutputError(output.PrintModelInfo(bild.invocation.results, &pairs[0], bild.catalog.Flags, bild.invocation.styled), "", "")
 }
 
-// promptIgnored takes the run inputs and reports whether the model they name,
-// or the default they fall back to, is configured as ignoring the prompt, so
-// the run needs no prompt argument. Any input that names no single model
-// reports false and leaves the missing prompt to its own usage error.
+// promptIgnored reports whether the selected or default model requires no prompt. Unresolved or
+// ambiguous model input returns false.
 func (bild *bildApp) promptIgnored(genInputs *RunFlags) bool {
 	modelInput, ok := bild.runModelInput(genInputs)
 	if !ok {
@@ -300,9 +308,7 @@ func (bild *bildApp) promptIgnored(genInputs *RunFlags) bool {
 	return err == nil && len(provModelPairs) == 1 && provModelPairs[0].Model.PromptIgnored
 }
 
-// runModelInput takes the run inputs and returns the model input the run
-// resolves, and whether there is one: the --model value, else the default
-// model for the configured providers.
+// runModelInput returns the supplied or default model and whether one is available.
 func (bild *bildApp) runModelInput(genInputs *RunFlags) (string, bool) {
 	if modelInput, supplied := genInputs.Model.ValIf(); supplied {
 		return modelInput, true
@@ -311,11 +317,8 @@ func (bild *bildApp) runModelInput(genInputs *RunFlags) (string, bool) {
 	return bild.defaultModelKey()
 }
 
-// defaultModelKey returns the model the run uses when --model is omitted,
-// and whether there is one: the user config's default model, else the
-// catalog's provider default for the configured providers. The default is
-// never a fixed value: documentation points readers at `bild help`, whose
-// `-m, --model` entry shows it, rather than naming a model.
+// defaultModelKey prefers the configured default, then a catalog default with available
+// credentials.
 func (bild *bildApp) defaultModelKey() (string, bool) {
 	if bild.defaultModel != "" {
 		return bild.defaultModel, true
@@ -331,8 +334,8 @@ func (bild *bildApp) defaultModelKey() (string, bool) {
 	return bild.catalog.DefaultModelKey(availableProviders)
 }
 
-// generate resolves inputs, runs the provider, and persists its completed transaction.
-// It returns the resolved model even on failure so the final report retains context.
+// generate resolves inputs, calls the provider, writes artifacts, and optionally saves a record. It
+// returns any resolved provider and model even on failure for reporting context.
 //
 //nolint:funlen // Keep the ordered generation stages together; extracting the media-read error check creates a single-use pass-through.
 func (bild *bildApp) generate(ctx context.Context, genInputs *RunFlags, userInputs params.FlagInputs) (catalog.ProvModelPair, error) {
@@ -381,8 +384,8 @@ func (bild *bildApp) generate(ctx context.Context, genInputs *RunFlags, userInpu
 		record.Describe(suppliedJSON, inputMediaSources)
 	}
 
-	// Keep interrupt handling installed through record persistence. Cancellation
-	// stops network work but must still finalize responses already received.
+	// Keep interrupt handling installed through record persistence. Cancellation stops network
+	// work but must still finalize responses already received.
 	generationCtx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 
@@ -403,14 +406,8 @@ func (bild *bildApp) generate(ctx context.Context, genInputs *RunFlags, userInpu
 	return provModelPair, errors.Join(generationErr, persistErr)
 }
 
-// cliRenderFlagEntry takes a flag and returns its help page entry, rendered by
-// output over the flag's names, its value word, and its detail text. The
-// detail text is the flag's description, then the providers that support the
-// flag when not every provider does, then the flag's default: the resolved
-// default model for --model. The command calls it only while a help page
-// renders, which is after the selected command's hook loaded the catalog.
-// A flag that carries no documentation returns an empty string, and a flag
-// that accepts no value gets no value word.
+// cliRenderFlagEntry renders a flag with catalog support and default-model details. Flags without
+// documentation produce no entry.
 func (bild *bildApp) cliRenderFlagEntry(flag cli.Flag) string {
 	flagDoc, ok := flag.(cli.DocGenerationFlag)
 	if !ok {
@@ -424,8 +421,7 @@ func (bild *bildApp) cliRenderFlagEntry(flag cli.Flag) string {
 
 	flagDetailText := flagDoc.GetUsage()
 
-	// Only a generation parameter can have a support note: no model declares
-	// any other flag.
+	// Only a generation parameter can have a support note: no model declares any other flag.
 	if supportNote := output.FlagSupportNote(params.FlagType(flagNames[0]), bild.catalog.ModelDirectory()); supportNote != "" {
 		flagDetailText += " " + fmt.Sprintf(SupportedBySentence, supportNote)
 	}
@@ -451,7 +447,8 @@ func (bild *bildApp) cliRenderFlagEntry(flag cli.Flag) string {
 	return output.FlagEntry(flagNames, valueHint, flagDetailText)
 }
 
-// apiKey resolves a nonempty configured credential before the provider's environment variable.
+// apiKey returns the provider's nonempty configured credential, falling back to its environment
+// variable. If neither supplies a value, it returns a CredentialError naming both settings.
 func (bild *bildApp) apiKey(description *catalog.Provider) (string, error) {
 	if key := bild.apiKeys[description.ID]; key != "" {
 		return key, nil
@@ -481,9 +478,9 @@ func (bild *bildApp) applyAPIKeys(keys map[string]string) []string {
 	return unknownIDs
 }
 
-// identifyInputMedia fills unresolved media types for inputs the model will use.
-// Missing credentials prevent source requests; Generate reports that failure after
-// parameter adjustment. Discarded inputs remain available for adjustment notices.
+// identifyInputMedia resolves media types and updates inputMedia in place when credentials exist.
+// It may fetch remote sources. Without credentials, it returns nil without fetching so the later
+// generation step can report the missing key.
 func (bild *bildApp) identifyInputMedia(ctx context.Context, pair *catalog.ProvModelPair, inputMedia []media.Input) error {
 	if _, credentialErr := bild.apiKey(&pair.Provider); credentialErr == nil {
 		resolvedMedia, err := httpapi.ResolveInputMediaTypes(ctx, inputMedia)
@@ -497,12 +494,12 @@ func (bild *bildApp) identifyInputMedia(ctx context.Context, pair *catalog.ProvM
 	return nil
 }
 
-// runGenerator resolves credentials immediately before submission. Cosmetic
-// animation finishes before persistence and essential final reporting begin.
+// runGenerator assigns credentials and invokes the provider, recording its completion. Any progress
+// animation stops before the result returns for persistence and reporting.
 func (bild *bildApp) runGenerator(ctx context.Context, generator generation.Generator, run *generation.Generation) (generation.Result, error) {
-	var spinner *output.Spinner
+	var spinner *terminal.Spinner
 	if bild.invocation.animate {
-		spinner = output.StartSpinner(bild.invocation.results, run.Model.Media)
+		spinner = terminal.StartSpinner(ctx, bild.invocation.results, run.Model.Media)
 	}
 
 	result := generation.Result{Preparation: run.Clone()}
@@ -527,8 +524,9 @@ func (bild *bildApp) runGenerator(ctx context.Context, generator generation.Gene
 	return result, err
 }
 
-// executeGeneration prepares retained inputs, builds the request, and writes successful artifacts.
-// It returns the final artifact stem and completed files even when a later operation fails.
+// executeGeneration resolves any reuse selection, prepares provider inputs, and runs generation. It
+// saves generated artifacts and returns their final stem and completed file records, including
+// those saved before a later failure.
 func (bild *bildApp) executeGeneration(ctx context.Context, generator generation.Generator, pair *catalog.ProvModelPair, flags *RunFlags, inputs params.FlagInputs, inputMedia []media.Input, outPath artifact.Location, pathChanges []params.Adjustment, record *metadata.Record) (finalStem string, completedFiles []output.SavedFile, resultErr error) {
 	var reuse *metadata.Reuse
 
@@ -582,8 +580,8 @@ func (bild *bildApp) executeGeneration(ctx context.Context, generator generation
 	return finalStem, completedFiles, resultErr
 }
 
-// applyFinalPreparation adopts returned facts, including after generation
-// failure, and retains the changes not already present in the outcome.
+// applyFinalPreparation replaces the run's preparation and updates its optional record. It appends
+// newly reported changes to the invocation outcome, including after generation failure.
 func (bild *bildApp) applyFinalPreparation(run *generation.Generation, preparedGeneration *generation.Preparation) error {
 	earlyChangeCount := len(run.Changes)
 	run.Preparation = *preparedGeneration
@@ -599,19 +597,13 @@ func (bild *bildApp) applyFinalPreparation(run *generation.Generation, preparedG
 	return recordErr
 }
 
-// tipsHelpText takes the application and returns the tips section of the
-// general help page, its examples drawn from the provider helpExampleProvider
-// chooses; a catalog with no provider to draw from renders the section
-// without examples.
+// tipsHelpText renders general help tips with examples from an available provider.
 func (bild *bildApp) tipsHelpText() (string, error) {
 	return output.HelpTips(bild.helpExampleProvider(), bild.invocation.styled)
 }
 
-// helpExampleProvider takes the application and returns the provider the
-// general help page's examples draw from: one of the rotation providers the
-// catalog loaded, chosen at random, or otherwise the first loaded provider in
-// listing order that declares a model, an aggregator included, or otherwise an
-// empty provider.
+// helpExampleProvider chooses a loaded example provider at random from the rotation. It falls back
+// to the first provider with models, or an empty provider when none qualify.
 func (bild *bildApp) helpExampleProvider() *catalog.Provider {
 	var rotation []*catalog.Provider
 
@@ -637,15 +629,16 @@ func (bild *bildApp) helpExampleProvider() *catalog.Provider {
 	return &catalog.Provider{}
 }
 
-// selectedModels applies the shared inclusive media filters exactly once.
+// selectedModels returns catalog models matching the image and video flags. It selects both media
+// kinds when neither flag or both flags are set.
 func (bild *bildApp) selectedModels(command *cli.Command) []catalog.ProvModelPair {
-	imageSelected, videoSelected := selectedMedia(command)
+	imageSelected, videoSelected := inclusivePair(command.Bool(FilterFlagImage), command.Bool(FilterFlagVideo))
 
 	return catalog.SelectMedia(bild.catalog.ModelDirectory(), imageSelected, videoSelected)
 }
 
-// printListing prepares the shared list/search presentation choices and reports
-// failures through the command's own diagnostic destination.
+// printListing renders provider, model, media, alias, and JSON choices for list or search. It
+// reports output failures on the invocation's diagnostic stream and returns their causes.
 func (bild *bildApp) printListing(command *cli.Command, pairs []catalog.ProvModelPair) error {
 	providersSelected, modelsSelected := inclusivePair(command.Bool(FilterFlagProviders), command.Bool(FilterFlagModels))
 	page := output.ListingPage(pairs, modelsSelected || !providersSelected, command.Bool(ListingFlagAliases))
@@ -653,8 +646,10 @@ func (bild *bildApp) printListing(command *cli.Command, pairs []catalog.ProvMode
 	return bild.invocation.reportOutputError(output.PrintListing(bild.invocation.results, page, providersSelected, modelsSelected, bild.invocation.jsonOutput), "", "")
 }
 
-// resolveModelInput resolves ambiguous input through the invocation's explicit
-// diagnostic and interaction choices, retaining prompt and resolution failures.
+// resolveModelInput returns the uniquely matching provider and model. For ambiguous input, it shows
+// candidates unless JSON output is noninteractive, asks terminal users for a replacement, and
+// retries. It returns resolution, prompt, or diagnostic-write errors when correction cannot
+// continue.
 func (bild *bildApp) resolveModelInput(modelInput string) (catalog.ProvModelPair, error) {
 	for {
 		pairs, err := bild.catalog.ResolveModelInput(modelInput)
@@ -666,13 +661,13 @@ func (bild *bildApp) resolveModelInput(modelInput string) (catalog.ProvModelPair
 			return pairs[0], nil
 		}
 
-		if !bild.invocation.jsonOutput {
+		if !bild.invocation.jsonOutput || bild.invocation.interactive {
 			if err := output.PrintAmbiguity(bild.invocation.stderr, modelInput, pairs, bild.invocation.diagnosticStyled); err != nil {
 				return catalog.ProvModelPair{}, errors.Join(fmt.Errorf("%q, %w", modelInput, errs.ErrModelResolveConflict), err)
 			}
 		}
 
-		reply, asked, err := output.RepromptModel(bild.invocation.stderr, bild.invocation.interactive, bild.invocation.diagnosticStyled)
+		reply, asked, err := terminal.RepromptModel(bild.invocation.stdin, bild.invocation.stderr, bild.invocation.interactive, bild.invocation.diagnosticStyled)
 		if err != nil {
 			return catalog.ProvModelPair{}, err
 		}
@@ -701,6 +696,10 @@ func (bild *bildApp) showHelpPage(command *cli.Command) error {
 
 // cliRunHelp serves general or named command help and classifies unknown topics.
 func (bild *bildApp) cliRunHelp(_ context.Context, command *cli.Command) error {
+	if command.Args().Len() > 1 {
+		return bild.invocation.fail(fmt.Errorf(ArgCountForm, command.Name, errs.ErrCLIOneArgMax, command.Args().Len()))
+	}
+
 	topic := command.Args().Get(0)
 	if topic == "" {
 		return bild.showHelpPage(command.Root())
@@ -714,7 +713,6 @@ func (bild *bildApp) cliRunHelp(_ context.Context, command *cli.Command) error {
 }
 
 // optionsHelpText renders visible flags using this application's loaded catalog.
-// Another invocation cannot replace the renderer through a package-global callback.
 func (bild *bildApp) optionsHelpText(command *cli.Command) string {
 	flags := command.VisibleFlags()
 
@@ -726,10 +724,11 @@ func (bild *bildApp) optionsHelpText(command *cli.Command) string {
 	return strings.Join(rendered, "\n\n")
 }
 
-// cliClassifyUsageError handles parser failures, which happen before Before hooks.
-// Parsed generation routing still applies, and every owned file closes here.
+// cliClassifyUsageError reports parser failures using the output modes already parsed. For root
+// invocations it opens any requested results file, reports the classified usage error, and closes
+// the file while preserving output and parsing failures.
 func (bild *bildApp) cliClassifyUsageError(_ context.Context, command *cli.Command, err error, isSubcommand bool) error {
-	bild.invocation = newInvocation(command.Writer, command.ErrWriter)
+	bild.invocation = newInvocation(command.Reader, command.Writer, command.ErrWriter)
 	bild.invocation.selectMode(command)
 
 	var destinationErr error

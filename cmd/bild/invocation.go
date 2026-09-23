@@ -11,12 +11,24 @@ import (
 	"github.com/shdeen/bildomat/internal/artifact"
 	"github.com/shdeen/bildomat/internal/errs"
 	"github.com/shdeen/bildomat/internal/output"
+	"github.com/shdeen/bildomat/internal/terminal"
 	"github.com/urfave/cli/v3"
 )
 
-// commandInvocation owns the streams, result file, presentation choices, and
-// completed generation facts of one command.
+// commandInvocation owns the streams, result file, presentation choices, and completed generation
+// facts of one command.
+//   - stdin, stdout, stderr: the caller-owned process streams
+//   - results: the current destination for ordinary or JSON results
+//   - file: the results file owned and closed by this invocation, if any
+//   - outcome: accumulated generation facts for final reporting
+//   - generationElapsed: successful generation duration reported by the spinner
+//   - reportedAdjustments: number of adjustment notices already delivered
+//   - jsonOutput, printFilename, debug: selected presentation modes
+//   - styled, diagnosticStyled: whether result and diagnostic streams support terminal styling
+//   - interactive: whether stdin and stderr are terminals
+//   - animate: whether generation progress may be shown
 type commandInvocation struct {
+	stdin               io.Reader
 	stdout              io.Writer
 	stderr              io.Writer
 	results             io.Writer
@@ -33,22 +45,18 @@ type commandInvocation struct {
 	animate             bool
 }
 
-// newInvocation captures the command's streams and terminal choices before loading.
-func newInvocation(stdout, stderr io.Writer) commandInvocation {
-	invocation := commandInvocation{stdout: stdout, stderr: stderr, results: stdout, interactive: output.FileIsTTY(os.Stdin)}
-	if file, isFile := stdout.(*os.File); isFile {
-		invocation.styled = output.FileIsTTY(file)
+// newInvocation stores the supplied streams and detects terminal support for each one. It enables
+// interaction only when both input and diagnostics are terminals.
+func newInvocation(stdin io.Reader, stdout, stderr io.Writer) commandInvocation {
+	return commandInvocation{
+		stdin: stdin, stdout: stdout, stderr: stderr, results: stdout,
+		interactive:      terminal.IsTerminal(stdin) && terminal.IsTerminal(stderr),
+		styled:           terminal.IsTerminal(stdout),
+		diagnosticStyled: terminal.IsTerminal(stderr),
 	}
-
-	if file, isFile := stderr.(*os.File); isFile {
-		invocation.diagnosticStyled = output.FileIsTTY(file)
-	}
-
-	return invocation
 }
 
-// selectMode reads parsed presentation flags without opening a file. Invalid
-// argument combinations are checked before the ordinary destination is opened.
+// selectMode stores parsed presentation choices without opening a results file.
 func (invocation *commandInvocation) selectMode(command *cli.Command) {
 	root := command.Root()
 	invocation.debug = command.Bool(RunFlagDebug) || root.Bool(RunFlagDebug)
@@ -57,8 +65,8 @@ func (invocation *commandInvocation) selectMode(command *cli.Command) {
 	invocation.animate = invocation.styled && !invocation.jsonOutput && !invocation.printFilename
 }
 
-// openResults selects the regular result destination. Filename mode suppresses
-// regular results unless a file was explicitly requested.
+// openResults creates missing parent directories, then creates or truncates the requested results
+// file. Without a path, filename mode discards ordinary results; other modes keep stdout.
 func (invocation *commandInvocation) openResults(path string) error {
 	if path == "" {
 		if invocation.printFilename {
@@ -89,8 +97,8 @@ func (invocation *commandInvocation) openResults(path string) error {
 	return nil
 }
 
-// finish closes the owned result file and retains every operation and delivery
-// cause. A late close failure is diagnostic only; an earlier document stays intact.
+// finish closes the owned results file and restores stdout as the result destination. It joins
+// close and diagnostic-delivery failures with commandErr without rewriting results.
 func (invocation *commandInvocation) finish(commandErr error) error {
 	file := invocation.file
 	invocation.file = nil
@@ -110,14 +118,14 @@ func (invocation *commandInvocation) finish(commandErr error) error {
 	return commandErr
 }
 
-// fail renders a command failure before a generation has resolved its provider.
-// The returned error retains the command cause and any failed delivery.
+// fail renders a command failure before a generation has resolved its provider. The returned error
+// retains the command cause and any failed delivery.
 func (invocation *commandInvocation) fail(err error) error {
 	return errors.Join(err, invocation.printFailure(err, "", ""))
 }
 
-// printFailure renders a failure with its available provider and model context.
-// It returns delivery errors separately from the primary failure being described.
+// printFailure renders a failure with its available provider and model context. It returns delivery
+// errors separately from the primary failure being described.
 func (invocation *commandInvocation) printFailure(err error, providerName, modelName string) error {
 	usageError := errors.Is(err, errs.ErrCLI)
 	switch {
@@ -135,8 +143,8 @@ func (invocation *commandInvocation) printFailure(err error, providerName, model
 	}
 }
 
-// reportOutputError reports an essential output failure through the diagnostic
-// stream. It retains completed artifact and sidecar facts even if that stream fails too.
+// reportOutputError writes the output error and any completed file reports to diagnostics. It
+// returns the original error joined with failures from either diagnostic write.
 func (invocation *commandInvocation) reportOutputError(err error, providerName, modelName string) error {
 	if err == nil {
 		return nil
@@ -163,9 +171,9 @@ func (invocation *commandInvocation) printSavedFiles(destination io.Writer, styl
 	return nil
 }
 
-// reportGeneration completes and renders a generation after persistence and cleanup.
-// Failed delivery is reported separately so a generation's filesystem error cannot
-// be mistaken for failure of its JSON destination.
+// reportGeneration completes the outcome and writes its text or JSON report and requested
+// filenames. If reporting fails, it reports that error on diagnostics and joins it with the
+// generation error.
 func (invocation *commandInvocation) reportGeneration(startedAt time.Time, providerName, modelName string, generationErr error) error {
 	invocation.outcome.Complete(startedAt, providerName, modelName, generationErr, invocation.debug)
 
@@ -193,8 +201,8 @@ func (invocation *commandInvocation) reportGeneration(startedAt time.Time, provi
 	return generationErr
 }
 
-// reportText renders the completed notices, duration, files, and primary error.
-// Each destination is attempted so a diagnostic failure cannot hide saved media.
+// reportText writes adjustments and file notices, the available elapsed time, saved-file reports,
+// and any generation error. It attempts each report even if an earlier write fails.
 func (invocation *commandInvocation) reportText(providerName, modelName string, generationErr error) error {
 	reportErr := invocation.printAdjustments()
 	if len(invocation.outcome.Notices) > 0 {
@@ -213,8 +221,8 @@ func (invocation *commandInvocation) reportText(providerName, modelName string, 
 	return reportErr
 }
 
-// printAdjustments delivers the text notices not yet reported. Successful delivery
-// advances the count so final reporting prints only changes discovered during generation.
+// printAdjustments delivers the text notices not yet reported. Successful delivery advances the
+// count so final reporting prints only changes discovered during generation.
 func (invocation *commandInvocation) printAdjustments() error {
 	if invocation.jsonOutput || invocation.reportedAdjustments == len(invocation.outcome.Adjustments) {
 		return nil

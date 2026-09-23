@@ -1,7 +1,3 @@
-// File: cmd/bild/generate.go
-// The stages of one generation, from the model input to the written files,
-// as the generate command runs them in order.
-
 package main
 
 import (
@@ -20,7 +16,8 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// adjustRequest preserves completed preparation and records early changes, including on failure.
+// adjustRequest prepares provider inputs and appends their changes to outcome. It also updates
+// record, when present, even when preparation returns partial results and an error.
 func adjustRequest(generator generation.Generator, pair *catalog.ProvModelPair, inputs params.FlagInputs, inputMedia []media.Input, pathChanges []params.Adjustment, paramFlags []params.Flag, outcome *output.GenerationOutcome, record *metadata.Record, reuse *metadata.Reuse) (generation.Preparation, error) {
 	preparedGeneration, err := generator.AdjustParams(&pair.Model, inputs, inputMedia, reuse)
 
@@ -35,7 +32,7 @@ func adjustRequest(generator generation.Generator, pair *catalog.ProvModelPair, 
 	return preparedGeneration, errors.Join(err, recordErr)
 }
 
-// recordPreparation saves final descriptive facts separately from the captured provider payloads.
+// recordPreparation copies adjusted inputs and changes into the optional in-memory record.
 //
 //nolint:nilaway // Callers pass the address of an owned Preparation value, which cannot be nil.
 func recordPreparation(preparedGeneration *generation.Preparation, record *metadata.Record) error {
@@ -59,9 +56,9 @@ func recordPreparation(preparedGeneration *generation.Preparation, record *metad
 	return nil
 }
 
-// writeRunResults recreates the output directory, writes media and any requested
-// thoughts sidecar, and retains every saved path for final reporting. Returned files
-// contain only media because record persistence must not treat a sidecar as media.
+// writeRunResults creates the output directory if missing and saves media and any requested
+// thoughts sidecar. It adds every saved file to outcome but returns only media files for record
+// persistence.
 //
 //nolint:nilaway // Callers pass the address of an owned Result value, which cannot be nil.
 func writeRunResults(result *generation.Result, outDir, stem, extOverride string, run *generation.Generation, paramFlags []params.Flag, outcome *output.GenerationOutcome) (finalStem string, completedFiles []output.SavedFile, resultErr error) {
@@ -78,9 +75,9 @@ func writeRunResults(result *generation.Result, outDir, stem, extOverride string
 	}
 
 	resolvedStem, savedFiles, err := artifact.WriteMedia(outDir, stem, run.Model.Media, result.Artifacts, thoughtsRequested)
-	// Artifact names are final here, after extension and collision handling.
-	// Later naming changes must preserve this stem and these paths for the
-	// generation record; retained-only files never enter artifact reporting.
+	// Extension and collision handling have determined the final artifact names. Record
+	// persistence must use this stem and these paths without reporting the record as an
+	// artifact.
 	outcome.Artifacts = append(outcome.Artifacts, savedFiles...)
 
 	if len(savedFiles) != len(result.Artifacts) || !thoughtsRequested {
@@ -99,8 +96,7 @@ func writeRunResults(result *generation.Result, outDir, stem, extOverride string
 	return resolvedStem, savedFiles, err
 }
 
-// cleanupGeneration joins owned cleanup with the return error. The error pointer
-// lets the early defer preserve failures from stages that return before persistence.
+// cleanupGeneration removes owned temporary artifacts and joins failures into generationErr.
 func cleanupGeneration(artifacts []artifact.Media, generationErr *error) { //nolint:gocritic // A deferred cleanup must update the named return error before it leaves the function.
 	*generationErr = errors.Join(*generationErr, artifact.Cleanup(artifacts))
 }

@@ -24,11 +24,8 @@ type RunFlags struct {
 	Reuse         params.Nullable[string]
 }
 
-// createRunInputs takes the root command and returns the run-surface inputs
-// (RunFlags) that it carries: the model, output path, and prompt. The
-// prompt is the first argument without its surrounding whitespace. A flag
-// that the user did not pass stays unset, which is distinct from being set
-// to its zero value.
+// createRunInputs captures generation controls and trims the prompt. Optional string flags retain
+// the distinction between omitted and explicitly empty.
 func createRunInputs(cmd *cli.Command) RunFlags {
 	return RunFlags{
 		Model:         params.GetSetIf(cmd.IsSet(RunFlagModel), cmd.String(RunFlagModel)),
@@ -39,9 +36,7 @@ func createRunInputs(cmd *cli.Command) RunFlags {
 	}
 }
 
-// createParamInputs takes a command and the parameter-flag enumeration, and
-// returns the parameter values (params.FlagInputs) that the user supplied, keyed
-// by flag ID. Presence means supplied, so an explicit zero value is preserved.
+// createParamInputs collects supplied parameter flags, preserving explicit zero values.
 func createParamInputs(cmd *cli.Command, paramFlags []params.Flag) params.FlagInputs {
 	paramFlagInputs := params.FlagInputs{}
 
@@ -59,8 +54,8 @@ func createParamInputs(cmd *cli.Command, paramFlags []params.Flag) params.FlagIn
 	return paramFlagInputs
 }
 
-// getGenFlagsInput takes root generation inputs and parameter inputs and returns
-// only the user-facing flags explicitly supplied on the command line.
+// getGenFlagsInput copies supplied model, output-path, and parameter flags for reporting. It omits
+// nonfinite numbers, which cannot be encoded as JSON.
 func getGenFlagsInput(runFlags *RunFlags, paramInputs params.FlagInputs) map[string]any {
 	flags := make(map[string]any, len(paramInputs)+2)
 
@@ -77,8 +72,8 @@ func getGenFlagsInput(runFlags *RunFlags, paramInputs params.FlagInputs) map[str
 			flagValue = slices.Clone(repeatedValues)
 		}
 
-		// A nonfinite number has no JSON form; its drop is reported among the
-		// adjustments, so the record leaves it out rather than fail to encode.
+		// JSON cannot encode nonfinite numbers. Omit them from submitted flags; parameter
+		// adjustment reports why they were rejected.
 		if number, ok := flagValue.(float64); ok && (math.IsNaN(number) || math.IsInf(number, 0)) {
 			continue
 		}
@@ -89,10 +84,7 @@ func getGenFlagsInput(runFlags *RunFlags, paramInputs params.FlagInputs) map[str
 	return flags
 }
 
-// parsedFlagValue takes a command and one parameter flag, and returns that
-// flag's value in the type that the command parsed it into: a string slice for
-// a repeatable flag, and otherwise the string, number, integer, or boolean that
-// the flag's declared data type names.
+// parsedFlagValue reads a flag in its declared type and expands local input-media lists.
 func parsedFlagValue(cmd *cli.Command, paramFlag *params.Flag, flagID string) any {
 	if paramFlag.AllowMultiple {
 		values := cmd.StringSlice(flagID)
@@ -116,8 +108,8 @@ func parsedFlagValue(cmd *cli.Command, paramFlag *params.Flag, flagID string) an
 	return cmd.String(flagID)
 }
 
-// inputMediaFlagValues expands comma-separated local source lists while
-// preserving complete HTTP(S) sources. A frame prefix may precede a URL.
+// inputMediaFlagValues expands comma-separated local source lists while preserving complete HTTP(S)
+// sources. A frame prefix may precede a URL.
 func inputMediaFlagValues(values []string) []string {
 	var sources []string
 

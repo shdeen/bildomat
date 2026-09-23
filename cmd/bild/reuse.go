@@ -18,8 +18,8 @@ const reuseFlag = "reuse"
 // reuseURIScheme distinguishes a supplied provider reference from a record path.
 const reuseURIScheme = "https"
 
-// parseReuse reads one experimental provider reuse selection. The option and
-// generation-record format are provisional and subject to change.
+// parseReuse validates an experimental <id>=<source> selection for the provider. An HTTPS source
+// supplies a provider reference; any other source is read as a retained record.
 func parseReuse(selection, providerID string) (*metadata.Reuse, error) {
 	identifier, value, separated := strings.Cut(selection, "=")
 	if !separated || identifier == "" || value == "" {

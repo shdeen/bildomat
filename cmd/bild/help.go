@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-// Help template function names.
+// Help template callbacks for the command, option, and tips sections.
 const (
 	pageFuncCommands = "commandsText"
 	pageFuncOptions  = "optionsText"
@@ -21,8 +21,7 @@ const (
 //nolint:gochecknoglobals // Immutable provider identifiers used by help rendering.
 var helpExampleProviderIDs = []string{config.IDOpenAI, google.ProviderID, config.IDXAI}
 
-// pageFuncs takes the application and returns the functions the help page
-// templates call by name: layout, command and flag descriptions, and examples.
+// pageFuncs supplies the template callbacks for this application's help pages.
 func pageFuncs(bild *bildApp) map[string]any {
 	return map[string]any{
 		output.PageFuncIndent: output.IndentText,
@@ -33,9 +32,7 @@ func pageFuncs(bild *bildApp) map[string]any {
 	}
 }
 
-// commandsHelpText takes a command and returns the command section of its help
-// page: one indented entry per subcommand that is not hidden, giving the
-// subcommand's names padded to a common width, then its usage summary.
+// commandsHelpText formats visible subcommands with aligned names and usage summaries.
 func commandsHelpText(cmd *cli.Command) string {
 	var shown []*cli.Command
 

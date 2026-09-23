@@ -1,14 +1,5 @@
-// Command bild generates images and videos from a text prompt via
-// supported AI providers behind a unified command-line interface.
-//
-// The main package performs orchestration only: parsing the command line,
-// dispatching to the appropriate subcommand, and reporting results or
-// errors.
-//
-// Usage: bild [options] <prompt>
+// Command bild generates and edits images and videos through supported AI providers.
 package main
-
-// The command registers provider descriptions and adapter constructors.
 
 import (
 	"context"
@@ -32,7 +23,8 @@ const devVersion = "0.0.0-dev"
 
 // Release metadata that the build script injects with -ldflags "-X".
 //   - AppName: the application name, which no code reads
-//   - AppVersion: the version that the command reports, or devVersion when the build injects nothing; see appVersion
+//   - AppVersion: the version that the command reports, or devVersion when the build injects
+//     nothing; see appVersion
 //   - AppBuildDate: the date of the build, which no code reads
 //
 //nolint:gochecknoglobals // set by the build script through -ldflags "-X", which writes only to a package-level variable.
@@ -41,7 +33,10 @@ var (
 )
 
 // providerRegistration binds a provider's description to its executable operations.
-// This is the command's single source for catalog loading, construction, and accepted reuse IDs.
+//   - ProviderID: the canonical catalog identifier
+//   - ConfigBytes: the embedded provider description
+//   - New: the adapter constructor
+//   - ReuseIDs: the provider's accepted experimental reuse operations
 type providerRegistration struct {
 	ProviderID  string
 	ConfigBytes []byte
@@ -63,20 +58,14 @@ func providerRegistrations() []providerRegistration {
 	}
 }
 
-// main builds the command surface, hands the process arguments to the
-// command-line library, and exits with the run's code. It is the program's
-// only exit point and the only place that reads os.Args. Everything else the
-// program does, reading the user config and loading the catalog included,
-// happens after the library has parsed the command line.
+// main runs the command and exits with its classified status.
 func main() {
 	command := createCommand(&bildApp{})
 	runErr := command.Run(context.Background(), os.Args)
 	os.Exit(runExitCode(runErr))
 }
 
-// runExitCode takes the command run's error and returns the process exit
-// code: 0 for no error, 2 for a command-line usage error, and 1 for every
-// other failure.
+// runExitCode returns 0 for success, 2 for usage errors, and 1 for other failures.
 func runExitCode(runErr error) int {
 	switch {
 	case runErr == nil:
@@ -88,8 +77,7 @@ func runExitCode(runErr error) int {
 	}
 }
 
-// appVersion returns the version the command reports: the one the build
-// script injects, or devVersion when the build injects nothing.
+// appVersion returns the injected release version, falling back to devVersion.
 func appVersion() string {
 	if AppVersion == "" {
 		return devVersion
@@ -98,7 +86,7 @@ func appVersion() string {
 	return AppVersion
 }
 
-// newGenerator constructs only a successfully loaded provider and rejects unusable constructors.
+// newGenerator constructs a registered, loaded provider and rejects unusable constructors.
 func newGenerator(loadedCatalog *catalog.Catalog, providerID string, registrations []providerRegistration) (generation.Generator, error) {
 	description, loaded := loadedCatalog.Provider(providerID)
 	if !loaded {

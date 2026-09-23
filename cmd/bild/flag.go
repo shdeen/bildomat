@@ -6,10 +6,7 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// Run-surface, filter, and help flag names: the command flags declared
-// outside the parameter enumeration, each with the one-letter alias it
-// carries. A flag's dashed spelling is never stored; the site that needs one
-// prefixes the name with DoubleDash and the alias with Dash.
+// Command flag names and aliases, stored without their leading dashes.
 //   - RunFlagModel: the root command's model specifier
 //   - RunFlagOutputPath: the root command's output path
 //   - RunFlagPrintFilename: the switch that prints only the saved file paths
@@ -73,6 +70,9 @@ const (
 )
 
 // Presentation inputs for flags owned by the command.
+//   - runFlagNames: display names used in generation adjustments
+//   - runFlagHints: placeholders for values in flag help
+//   - mediaFilterFlagNames: media kinds mapped to their filter flags
 //
 //nolint:gochecknoglobals // These flag descriptions are immutable after package initialization.
 var (

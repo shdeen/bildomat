@@ -1,7 +1,3 @@
-// File: cmd/bild/cli.go
-// The bild command surface: the root command and its flags, the informational
-// commands and their shared media filters, and the subcommand dispatch.
-
 package main
 
 import (
@@ -15,7 +11,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-// The command and help tokens the surface references by name.
+// Command names used when constructing the CLI and its help pages.
 //   - cmdNameBild: the root command
 //   - cmdNameList: the listing command
 //   - cmdNameInfo: the details command
@@ -29,15 +25,7 @@ const (
 	cmdNameHelp   = HelpFlag
 )
 
-// createSharedFlags returns new instances of the three flags every
-// flag-accepting command carries: the public switch that selects one JSON
-// result document instead of regular command output, the hidden debug
-// diagnostic switch, and the help flag. Each command places the first two
-// among its ordinary flags, where its help page lists them, and the help flag
-// in an alternative of its own. The library rejects a help flag typed twice.
-//
-// Note: the debug flag is to be officially "undocumented" and hidden from the help output.
-// However, it is not "secret," and mention should not be avoided in doc comments.
+// createSharedFlags returns fresh JSON, hidden debug, and standalone help flags.
 func createSharedFlags() (jsonFlag, debugFlag, helpFlag cli.Flag) {
 	jsonFlag = &cli.BoolFlag{
 		Name:    RunFlagJSON,
@@ -45,8 +33,8 @@ func createSharedFlags() (jsonFlag, debugFlag, helpFlag cli.Flag) {
 		Local:   true,
 		Usage:   JSONFlagHelp,
 	}
-	// Debug and its automatic record retention are experimental, provisional,
-	// and subject to change. They remain outside public help and documentation.
+	// Debug and its automatic record retention are experimental, provisional, and subject to
+	// change. They remain outside public help and documentation.
 	debugFlag = &cli.BoolFlag{Name: RunFlagDebug, Local: true, Hidden: true}
 	helpFlag = &cli.BoolFlag{
 		Name:     HelpFlag,
@@ -59,12 +47,8 @@ func createSharedFlags() (jsonFlag, debugFlag, helpFlag cli.Flag) {
 	return jsonFlag, debugFlag, helpFlag
 }
 
-// createFlagGroup takes a command's ordinary flags and the flags that must
-// each stand alone, and returns the command's one flag group: the ordinary
-// flags as one alternative, then each stand-alone flag as an alternative of
-// its own. The library lets flags of only one alternative be set, so it
-// rejects a stand-alone flag beside any other flag. A help page lists the
-// flags in this order.
+// createFlagGroup allows ordinaryFlags together and makes each aloneFlags member exclusive of every
+// other flag. The returned group also determines the flags' order in help.
 func createFlagGroup(ordinaryFlags []cli.Flag, aloneFlags ...cli.Flag) []cli.MutuallyExclusiveFlags {
 	alternatives := make([][]cli.Flag, 0, 1+len(aloneFlags))
 	alternatives = append(alternatives, ordinaryFlags)
@@ -76,8 +60,8 @@ func createFlagGroup(ordinaryFlags []cli.Flag, aloneFlags ...cli.Flag) []cli.Mut
 	return []cli.MutuallyExclusiveFlags{{Flags: alternatives}}
 }
 
-// createMediaFlags returns the info command's flag group: the shared flags
-// and the image and video filters.
+// createMediaFlags returns the info command's flag group: the shared flags and the image and video
+// filters.
 func createMediaFlags() []cli.MutuallyExclusiveFlags {
 	jsonFlag, debugFlag, helpFlag := createSharedFlags()
 
@@ -97,10 +81,8 @@ func createMediaFlags() []cli.MutuallyExclusiveFlags {
 	}, helpFlag)
 }
 
-// createSearchFlags returns the search command's flag group: the shared
-// flags, the listing controls, the regular-expression switch, and the
-// exclusion flag, whose value is the exclusion term. The library has no flag
-// with an optional value, so the exclusion flag always takes the next token.
+// createSearchFlags adds search controls to the shared presentation flags. The exclusion flag
+// always consumes a value, including when that value resembles a flag.
 func createSearchFlags() []cli.MutuallyExclusiveFlags {
 	jsonFlag, debugFlag, helpFlag := createSharedFlags()
 
@@ -142,8 +124,8 @@ func createSearchFlags() []cli.MutuallyExclusiveFlags {
 	}, helpFlag)
 }
 
-// createListingFlags returns the list command's flag group: the shared flags,
-// the alias display switch, and the provider, model, and media filters.
+// createListingFlags returns the list command's flag group: the shared flags, the alias display
+// switch, and the provider, model, and media filters.
 func createListingFlags() []cli.MutuallyExclusiveFlags {
 	jsonFlag, debugFlag, helpFlag := createSharedFlags()
 
@@ -183,16 +165,7 @@ func createAliasesFlag() cli.Flag {
 	}
 }
 
-// selectedMedia takes the list command and reports which media its filters
-// select. The filters are inclusive: neither media switch, and both together,
-// each select both media; one alone selects that medium.
-func selectedMedia(c *cli.Command) (imageSelected, videoSelected bool) {
-	return inclusivePair(c.Bool(FilterFlagImage), c.Bool(FilterFlagVideo))
-}
-
-// inclusivePair takes the two switches of one inclusive filter pair and
-// returns the selection they express: both when neither or both are set, and
-// otherwise the one that is.
+// inclusivePair selects both alternatives when neither or both switches are set.
 func inclusivePair(firstSet, secondSet bool) (first, second bool) {
 	if firstSet == secondSet {
 		return true, true
@@ -201,13 +174,8 @@ func inclusivePair(firstSet, secondSet bool) (first, second bool) {
 	return firstSet, secondSet
 }
 
-// createFlags takes the parameter flag records and returns the root command's
-// flag group, ordered as the help page prints it: first the run's own model
-// and output flags with the shared flags, then one flag for each enumerated
-// parameter, sorted by long name, then the help flag and the version flag,
-// each of which must stand alone. The library rejects a version flag typed
-// twice. Every root flag is local: a root flag is set only when typed ahead
-// of a command word, which the flags-before-command rule depends on.
+// createFlags builds root flags in help-page order, sorting parameter flags by name. Root flags are
+// local so their position relative to a subcommand remains observable.
 func createFlags(paramFlags []params.Flag) []cli.MutuallyExclusiveFlags {
 	sortedFlags := slices.Clone(paramFlags)
 	slices.SortFunc(sortedFlags, func(a, b params.Flag) int {
@@ -261,7 +229,7 @@ func createFlags(paramFlags []params.Flag) []cli.MutuallyExclusiveFlags {
 	return createFlagGroup(flags, helpFlag, versionFlag)
 }
 
-// paramCLIFlag takes one parameter flag and returns the corresponding CLI flag.
+// paramCLIFlag converts a parameter definition into a typed, local CLI flag.
 func paramCLIFlag(paramFlag *params.Flag) cli.Flag {
 	flagID := string(paramFlag.FlagID)
 
@@ -312,9 +280,8 @@ func paramCLIFlag(paramFlag *params.Flag) cli.Flag {
 	}
 }
 
-// paramFlagUsage takes a parameter flag and returns its help text, which
-// combines the flag's description, comment, and example values. The
-// provider-support note needs the catalog, so the help page renderer adds it.
+// paramFlagUsage combines a parameter description, guidance, and examples. The help renderer adds
+// provider support after the catalog loads.
 func paramFlagUsage(paramFlag *params.Flag) string {
 	usage := paramFlag.Description
 	if paramFlag.Comment != "" {
@@ -328,11 +295,8 @@ func paramFlagUsage(paramFlag *params.Flag) string {
 	return usage
 }
 
-// newSubcommand takes the application, a subcommand's name, usage summary,
-// usage form, and flag group, and returns a cli.Command carrying them
-// together with the shared usage-error handler and the hook that loads the
-// application. The library's own help handling is off; the command's help
-// flag is in its flag group. The caller assigns the command's action.
+// newSubcommand attaches shared preparation and usage-error handling. The caller supplies its
+// action; bild handles help instead of the CLI library.
 func newSubcommand(bild *bildApp, name, summary, usageForm string, flagGroup []cli.MutuallyExclusiveFlags) *cli.Command {
 	return &cli.Command{
 		Name:                   name,
@@ -345,15 +309,8 @@ func newSubcommand(bild *bildApp, name, summary, usageForm string, flagGroup []c
 	}
 }
 
-// createCommand takes the application and returns the bild command surface:
-// the root command with its flags, the list, info, search, and help
-// subcommands, and their page-rendering actions. It reads nothing but the
-// generated parameter flag records, so it cannot fail. The library's built-in
-// help and version handling is off: help and version are ordinary flags in
-// each command's flag group, and the hooks and actions serve them. The
-// surface declares its own help command rather than leaving the library to
-// append one, because the library's carries an h alias that this surface does
-// not offer. The help command accepts the debug switch and no other flag.
+// createCommand builds the CLI without loading configuration or providers. It disables the
+// library's global help flag so bild can enforce its own help and version rules.
 func createCommand(bild *bildApp) *cli.Command {
 	// The library must not intercept our ordinary, mutually exclusive help flag.
 	cli.HelpFlag = nil
