@@ -11,4 +11,9 @@ require github.com/BurntSushi/toml v1.6.0
 
 require github.com/goccy/go-yaml v1.19.2
 
-require github.com/quasilyte/go-ruleguard/dsl v0.3.23
+require (
+	github.com/quasilyte/go-ruleguard/dsl v0.3.23
+	golang.org/x/term v0.46.0
+)
+
+require golang.org/x/sys v0.48.0 // indirect
