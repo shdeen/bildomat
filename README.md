@@ -400,8 +400,6 @@ All configuration keys in this table belong under `api-keys` in config. yml. See
 
 **Note:** An OpenRouter API key allows access to models from many of the above providers with a single API key. Use `bild list -m` to see which models are available through each provider.
 
-[MIT license](LICENSE).
-
 ## Configuration
 
 All settings in `~/.bildomat/config.yml` are optional. `default-model` applies when `-m` is omitted; `output-dir` applies when `-o` is omitted. Without a configured model, Bildomat uses its built-in default, which may change between releases. Keys in this file take precedence over environment variables.
@@ -420,3 +418,7 @@ api-keys:
   kling: your-kling-api-key
   openrouter: your-openrouter-api-key
 ```
+
+---
+
+[MIT license](LICENSE).
