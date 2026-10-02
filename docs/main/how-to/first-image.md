@@ -2,7 +2,7 @@
 
 Create an image of a paper city, make a wide version, and edit its lighting. Each command saves a separate file so you can compare the results.
 
-You need `bild` on your `PATH`, network access, and a Google API key. Generation requests may incur provider charges.
+You need `bild` on your `PATH`, network access, and a Google API key. See [install and configure Bildomat](../get-started/install-and-configure.md) to install `bild` or create a key. Generation requests may incur provider charges.
 
 ## Set the Credential
 
@@ -51,6 +51,6 @@ bild --model google/gemini-3.1-flash-image --input-media ./paper-city-wide.png -
 
 Open the edited file. The source remains available beside it. You have generated an image, selected its shape, inspected a model, and used an image as the starting point for an edit.
 
-Continue with [processing images in scripts](../how-to/use-bild-in-scripts.md), [using an agent](../how-to/use-bild-with-agents.md), or [animating an image](../how-to/generate-video.md).
+Continue with [processing images in scripts](use-bild-in-scripts.md), [using an agent](use-bild-with-agents.md), or [animating an image](generate-video.md).
 
-Revised 2026-10-01
+Revised 2026-10-02

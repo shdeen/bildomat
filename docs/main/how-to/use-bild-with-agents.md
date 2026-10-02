@@ -4,7 +4,7 @@ Give a terminal-capable agent access to `bild` so it can create images and video
 
 ## Prepare the environment
 
-Install `bild` in the environment where the agent runs and configure the required provider credentials there. A remote agent or sandbox may have a different `PATH`, home directory, and configuration file from your interactive shell.
+Install `bild` in the environment where the agent runs and configure the required provider credentials there, as described in [install and configure Bildomat](../get-started/install-and-configure.md). A remote agent or sandbox may have a different `PATH`, home directory, and configuration file from your interactive shell.
 
 Confirm catalog access:
 
@@ -54,4 +54,4 @@ Give the agent opening and closing images and ask it to use a model that support
 
 For regular refreshes, have the agent prepare a [script](use-bild-in-scripts.md) and invoke it with your scheduler. Generating, choosing, and publishing an asset are separate actions. State which of those actions the agent should perform.
 
-Revised 2026-10-01
+Revised 2026-10-02

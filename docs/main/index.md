@@ -2,20 +2,17 @@
 
 Bildomat (`bild`) generates and edits images and videos from the terminal. Use the same command options across providers, supply local files or URLs as references, and save the results where a script or agent can use them.
 
-Generation requires an installed `bild` executable, network access, and credentials for the selected provider. Catalog commands require no API key and make no generation requests.
+Generation requires an [installed](get-started/install-and-configure.md) `bild` executable, network access, and credentials for the selected provider. Catalog commands require no API key and make no generation requests.
 
-## Start here
+## Get Started
 
-[Generate and edit your first image](tutorials/first-image.md) follows one image from a prompt to a saved file and an edited version.
-
-```sh
-bild --model gemini --output-path ./paper-city.png "A paper city photographed in soft window light"
-```
-
-Generation options can come before or after the prompt. Quote a prompt containing spaces. Check [configuration and credentials](reference/configuration.md) for provider keys and default settings.
+- [Quickstart](get-started/quickstart.md).
+- [Install and configure Bildomat](get-started/install-and-configure.md).
+- [Concepts](get-started/concepts.md).
 
 ## How-to Guides
 
+- [Generate and edit your first image](how-to/first-image.md).
 - [Find a model](how-to/find-a-model.md).
 - [Choose image dimensions and format](how-to/control-size-and-format.md).
 - [Edit an image or use references](how-to/use-input-media.md).
@@ -25,7 +22,6 @@ Generation options can come before or after the prompt. Quote a prompt containin
 - [Process images in scripts](how-to/use-bild-in-scripts.md).
 - [Use Bildomat with an agent](how-to/use-bild-with-agents.md).
 - [Save a model’s thoughts](how-to/keep-model-thoughts.md).
-- [Set defaults and credentials](how-to/configure-bild.md).
 
 ## Reference
 
@@ -40,8 +36,4 @@ Generation options can come before or after the prompt. Quote a prompt containin
 - [Configuration, environment, and network limits](reference/configuration.md).
 - [Providers and models](reference/providers-and-models.md).
 
-## Explanation
-
-[One command across different models](explanation/one-command-many-models.md) explains what stays consistent when you change providers, what the selected model controls, and how adjustments affect automation.
-
-Revised 2026-10-01
+Revised 2026-10-02

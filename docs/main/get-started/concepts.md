@@ -1,4 +1,4 @@
-# One command across different models
+# Concepts
 
 Image and video models differ in the shapes they accept, the number and kinds of references they use, and how they interpret a request. Bildomat provides one vocabulary for asking for those things. The selected model still determines which capabilities are available.
 

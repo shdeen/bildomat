@@ -16,6 +16,7 @@ First public release. A `bild` command for generating and editing images and vid
 - Ensure safe saving of media; for filenames in use, append a suffix beginning with a 2-digit '02',  and report the path of every file saved.
 - Output options for better scriptability and agentic use. Specifying `-j`/`--json` returns a JSON structured result, `--print-filename` prints only saved paths, and `--save-results` writes the result to a file. Exit codes distinguish usage errors from other failures.
 - Save thought text from supporting Gemini image models in a Markdown file beside the image by adding `--include-thoughts` flag.
+- Install scripts for macOS and Linux (`install.sh`) and Windows (`install.ps1`).
 - Configuration file in `~/.bildomat/config.yml` sets a default model, a default output directory, and provider API keys. Keys can also be set in environment variables. YAML keys and env vars are listed on each provider's info page.
 
 [Unreleased]: https://github.com/shdeen/bildomat/compare/v0.0.5...HEAD

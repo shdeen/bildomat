@@ -182,6 +182,20 @@ For a more advanced workflow, such as creating a fashion ensemble product shot, 
 
 ### Install
 
+**Install script**:
+
+On macOS or Linux:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/shdeen/bildomat/main/scripts/install/install.sh | sh
+```
+
+On Windows, in PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/shdeen/bildomat/main/scripts/install/install.ps1 | iex
+```
+
 **Go Installer**:
 
 With [Go 1.26.5 or later](https://go.dev/dl/) on macOS, Linux, or Windows:
