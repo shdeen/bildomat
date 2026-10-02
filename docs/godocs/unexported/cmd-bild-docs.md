@@ -239,10 +239,10 @@ const (
 )
 ```
 
-<a name="devVersion"></a>devVersion is the version reported when the build supplies no version.
+<a name="irregularVersionFallback"></a>irregularBuildVersion is reported when the build information is unavailable at runtime.
 
 ```go
-const devVersion = "0.0.0-dev"
+const irregularVersionFallback = "(irregular-build)"
 ```
 
 <a name="persistRecordFlag"></a>persistRecordFlag selects provisional, experimental transaction retention. Its name, record format, and reuse mechanism are subject to change and are intentionally absent from public help and documentation.
@@ -263,6 +263,12 @@ const reuseFlag = "reuse"
 const reuseURIScheme = "https"
 ```
 
+<a name="versionTagPrefix"></a>versionTagPrefix is the "v" that Go module versions carry and that the reported version drops.
+
+```go
+const versionTagPrefix = "v"
+```
+
 ## Variables
 
 <a name="runFlagNames"></a>Presentation inputs for flags owned by the command.
@@ -276,18 +282,6 @@ var (
     runFlagNames         = map[params.FlagType]string{RunFlagOutputPath: output.OutPathDisplayName}
     runFlagHints         = map[string]string{RunFlagModel: "model", RunFlagOutputPath: "path", RunFlagSaveResults: "path", FilterFlagExclude: "term"} //nolint:goconst // The value hint and flag identifier have independent meanings despite equal spelling.
     mediaFilterFlagNames = map[media.Kind]string{media.Image: FilterFlagImage, media.Video: FilterFlagVideo}
-)
-```
-
-<a name="AppName"></a>Release metadata that the build script injects with \-ldflags "\-X".
-
-- AppName: the application name, which no code reads
-- AppVersion: the version that the command reports, or devVersion when the build injects nothing; see appVersion
-- AppBuildDate: the date of the build, which no code reads
-
-```go
-var (
-    AppName, AppVersion, AppBuildDate string
 )
 ```
 
@@ -307,13 +301,13 @@ func adjustRequest(generator generation.Generator, pair *catalog.ProvModelPair, 
 adjustRequest prepares provider inputs and appends their changes to outcome. It also updates record, when present, even when preparation returns partial results and an error.
 
 <a name="appVersion"></a>
-## func [appVersion](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L81>)
+## func [appVersion](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L77>)
 
 ```go
 func appVersion() string
 ```
 
-appVersion returns the injected release version, falling back to devVersion.
+appVersion returns the main module version that the Go toolchain recorded in the binary, without its leading "v". Go derives that version from the git tag or commit the binary was built from, so no build flag sets it.
 
 <a name="applyLandingExt"></a>
 ## func [applyLandingExt](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/outpath.go#L55>)
@@ -496,7 +490,7 @@ func landingExt(parts artifact.Location, adjusted params.Values) (string, error)
 landingExt prefers the path's extension, then the adjusted format for a named file. An unnamed output or unavailable format leaves the extension unspecified.
 
 <a name="main"></a>
-## func [main](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L62>)
+## func [main](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L56>)
 
 ```go
 func main()
@@ -505,7 +499,7 @@ func main()
 main runs the command and exits with its classified status.
 
 <a name="newGenerator"></a>
-## func [newGenerator](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L90>)
+## func [newGenerator](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L87>)
 
 ```go
 func newGenerator(loadedCatalog *catalog.Catalog, providerID string, registrations []providerRegistration) (generation.Generator, error)
@@ -586,7 +580,7 @@ func resolveOutputTarget(genInputs *RunFlags, model *catalog.Model, userInputs p
 resolveOutputTarget resolves the output directory and applies the output path's format to userInputs. It uses the configured directory only when the run omitted an output path.
 
 <a name="runExitCode"></a>
-## func [runExitCode](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L69>)
+## func [runExitCode](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L63>)
 
 ```go
 func runExitCode(runErr error) int
@@ -1060,7 +1054,7 @@ func (invocation *commandInvocation) selectMode(command *cli.Command)
 selectMode stores parsed presentation choices without opening a results file.
 
 <a name="providerRegistration"></a>
-## type [providerRegistration](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L40-L45>)
+## type [providerRegistration](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L34-L39>)
 
 providerRegistration binds a provider's description to its executable operations.
 
@@ -1079,7 +1073,7 @@ type providerRegistration struct {
 ```
 
 <a name="providerRegistrations"></a>
-### func [providerRegistrations](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L48>)
+### func [providerRegistrations](<https://github.com/shdeen/bildomat-dev/blob/main/cmd/bild/main.go#L42>)
 
 ```go
 func providerRegistrations() []providerRegistration

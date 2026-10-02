@@ -11,7 +11,6 @@ Command bild generates and edits images and videos through supported AI provider
 ## Index
 
 - [Constants](<#constants>)
-- [Variables](<#variables>)
 - [type RunFlags](<#RunFlags>)
 
 
@@ -128,20 +127,6 @@ const (
     SupportedBySentence          = "Supported by %s."
     VersionFlagHelp              = "print the version"
     VersionReport                = "%s version %s"
-)
-```
-
-## Variables
-
-<a name="AppName"></a>Release metadata that the build script injects with \-ldflags "\-X".
-
-- AppName: the application name, which no code reads
-- AppVersion: the version that the command reports, or devVersion when the build injects nothing; see appVersion
-- AppBuildDate: the date of the build, which no code reads
-
-```go
-var (
-    AppName, AppVersion, AppBuildDate string
 )
 ```
 

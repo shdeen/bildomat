@@ -1,11 +1,11 @@
-<h1>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo/bildomat-horizontal-dark-transparent.svg">
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo/bildomat-horizontal-dark-transparent.png">
-    <source srcset="assets/logo/bildomat-horizontal-light-transparent.svg">
-    <img src="assets/logo/bildomat-horizontal-light-transparent.png" alt="bildomat" width="280">
-  </picture>
-</h1>
+<!-- markdownlint-disable MD033 MD041 -->
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo/bildomat-horizontal-dark-transparent.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/logo/bildomat-horizontal-dark-transparent.png">
+  <source srcset="assets/logo/bildomat-horizontal-light-transparent.svg">
+  <img src="assets/logo/bildomat-horizontal-light-transparent.png" alt="bildomat" width="280">
+</picture>
 
 # Multiple providers. 150+ models. One `bild` command
 
@@ -24,7 +24,7 @@ Bildomat provides a single unified interface to multiple image and video generat
 - **Black Forest Labs**: 22 models (21 image models · 1 video model)
 - **xAI**: 6 models (4 image models · 2 video models)
 - **Sourceful**: 2 models (2 image models)
-- **Recraft**: 20 models (16 image models)
+- **Recraft**: 20 models (20 image models)
 - **Kling**: 10 models (4 image models · 6 video models)
 - **OpenRouter** (multi-provider aggregator): 80 models (51 image models · 29 video models)
 
@@ -77,7 +77,6 @@ A rainbow spinner becomes a wind turbine, then a papercut illustration, then a l
 <p align="center">
   <a href="assets/windspin/motion.mp4" download="windspin-motion.mp4">Download the video</a>
 </p>
-
 
 ---
 
@@ -183,6 +182,8 @@ For a more advanced workflow, such as creating a fashion ensemble product shot, 
 
 ### Install
 
+**Go Installer**:
+
 With [Go 1.26.5 or later](https://go.dev/dl/) on macOS, Linux, or Windows:
 
 ```sh
@@ -196,6 +197,10 @@ For a standard Bash or Zsh setup, add this to `~/.bashrc` or `~/.zshrc`:
 ```sh
 export PATH="$HOME/go/bin:$PATH"
 ```
+
+**Binaries**:
+
+Precompiled binaries for Bildomat (`bild`) are available for [Windows, macOS and Linux](https://github.com/shdeen/bildomat/releases).
 
 ### Set up a provider API key
 
@@ -244,7 +249,7 @@ Alternatively, you can set an output directory in the configuration file to have
 
 You may also set up a default model by setting it in the configuration file. Specifying the `-m`/`--model` option overrides both the system's default model and any model you set up in config.yml.
 
-To see the default model, run `bild help` and check the `-m`/`--model` option. Note: to use the program's default model, you must have an API key set up for that model provider.
+Without a model in the configuration file, `bild` uses the default model of the first provider, in the order that `bild list` shows, whose API key is set up. To see which model that is, run `bild help` and check the `-m`/`--model` option. If no provider has an API key set up, a run without `-m` fails and asks for a model.
 
 <details>
 <summary>Windows PowerShell</summary>
@@ -322,7 +327,7 @@ bild info -j google              # All info about google and its models, in JSON
 | Output option | Meaning |
 | --- | --- |
 | `-o images/` | Save to a specific directory; create it and any missing parents. |
-| `-o images/fox.png` | Save to a specific directory, with a specific filename and format. Note: specifying a file extension is the same as setting the `-f`/`--output-format` option |
+| `-o images/fox.png` | Save to a specific directory, with a specific filename and format. Note: on models that accept `-f`/`--output-format`, a `.png`, `.jpg`, `.jpeg`, or `.webp` extension passed to `-o` sets that option and takes precedence over a different `-f` value. |
 | `-o images/fox` | Use `fox` as the filename stem and the provider's default output format as the extension, unless that path is to an existing directory; if that directory exists, the media is saved to that directory with the default filename and returned format (e.g. bild-image.jpg). |
 | No `-o` | Use the default output directory and default filename. The default directory is the current directory or, if set, the output-dir setting in the config file. |
 
@@ -385,7 +390,7 @@ To create an API key, see the list below and the API key URL for each provider. 
 
 An API key is usually associated with a billing account, which may require a payment method and/or the purchase of API usage credits. Image generation costs vary widely, so check the provider's pricing page carefully before using. For a very rough range, image generations may cost anywhere from $0.01–$0.25 per generated image; video generation is typically higher cost. Your exact usage cost will depend on the provider, model, generation type, and other factors. Be sure to monitor your usage and to track costs for your image and video generations.
 
-All configuration keys in this table belong under `api-keys` in config. yml. See below for a config file example.
+All configuration keys in this table belong under `api-keys` in config.yml. See below for a config file example.
 
 | Provider | Website & API keys | Config key | Environment variable |
 | --- | --- | --- | --- |
@@ -394,7 +399,7 @@ All configuration keys in this table belong under `api-keys` in config. yml. See
 | **xAI** | [API keys](https://console.x.ai/team/default/api-keys) | `xai` | `XAI_API_KEY` |
 | **Black Forest Labs** | [Dashboard](https://dashboard.bfl.ai/) (project → **API Keys**) | `bfl` | `BFL_API_KEY` |
 | **Sourceful / Riverflow** | [API keys](https://www.riverflow.ai/app/team-settings/api) | `sourceful` | `SOURCEFUL_API_KEY` |
-| **Recraft** | [Profile → **API**](https://app.recraft.ai/profile/api) | `recraft` | `RECRAFT_API_KEY`
+| **Recraft** | [Profile → **API**](https://app.recraft.ai/profile/api) | `recraft` | `RECRAFT_API_KEY` |
 | **Kling** | [API keys](https://kling.ai/dev/api-key) | `kling` | `KLING_API_KEY` |
 | **OpenRouter** | [API keys](https://openrouter.ai/settings/keys) | `openrouter` | `OPENROUTER_API_KEY` |
 
@@ -402,7 +407,7 @@ All configuration keys in this table belong under `api-keys` in config. yml. See
 
 ## Configuration
 
-All settings in `~/.bildomat/config.yml` are optional. `default-model` applies when `-m` is omitted; `output-dir` applies when `-o` is omitted. Without a configured model, Bildomat uses its built-in default, which may change between releases. Keys in this file take precedence over environment variables.
+All settings in `~/.bildomat/config.yml` are optional. `default-model` applies when `-m` is omitted; `output-dir` applies when `-o` is omitted. Without a configured model, Bildomat uses the default model of the first provider in `bild list` that has an API key. A provider's default model may change between releases. Keys in this file take precedence over environment variables.
 
 ```yaml
 default-model: google/gemini-3.1-flash-image
