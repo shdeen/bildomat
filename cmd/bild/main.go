@@ -6,6 +6,8 @@ import (
 	"errors"
 	"os"
 	"reflect"
+	"runtime/debug"
+	"strings"
 
 	"github.com/shdeen/bildomat/internal/catalog"
 	"github.com/shdeen/bildomat/internal/errs"
@@ -18,19 +20,11 @@ import (
 	"github.com/shdeen/bildomat/internal/provider/sourceful"
 )
 
-// devVersion is the version reported when the build supplies no version.
-const devVersion = "0.0.0-dev"
+// versionTagPrefix is the "v" that Go module versions carry and that the reported version drops.
+const versionTagPrefix = "v"
 
-// Release metadata that the build script injects with -ldflags "-X".
-//   - AppName: the application name, which no code reads
-//   - AppVersion: the version that the command reports, or devVersion when the build injects
-//     nothing; see appVersion
-//   - AppBuildDate: the date of the build, which no code reads
-//
-//nolint:gochecknoglobals // set by the build script through -ldflags "-X", which writes only to a package-level variable.
-var (
-	AppName, AppVersion, AppBuildDate string
-)
+// irregularBuildVersion is reported when the build information is unavailable at runtime.
+const irregularVersionFallback = "(irregular-build)"
 
 // providerRegistration binds a provider's description to its executable operations.
 //   - ProviderID: the canonical catalog identifier
@@ -77,13 +71,16 @@ func runExitCode(runErr error) int {
 	}
 }
 
-// appVersion returns the injected release version, falling back to devVersion.
+// appVersion returns the main module version that the Go toolchain recorded in the binary, without
+// its leading "v". Go derives that version from the git tag or commit the binary was built from, so
+// no build flag sets it.
 func appVersion() string {
-	if AppVersion == "" {
-		return devVersion
+	buildInfo, ok := debug.ReadBuildInfo()
+	if !ok {
+		return irregularVersionFallback
 	}
 
-	return AppVersion
+	return strings.TrimPrefix(buildInfo.Main.Version, versionTagPrefix)
 }
 
 // newGenerator constructs a registered, loaded provider and rejects unusable constructors.

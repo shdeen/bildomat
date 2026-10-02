@@ -16,11 +16,15 @@ package main
 //  5. Provider defaults resolve: For each declared provider default, ResolveModelInput must resolve
 //     the provider-qualified default to exactly one model belonging to that provider without an
 //     error. At least one built-in provider must declare a default.
+//  6. Reported version (permanent): appVersion must return the main module version that the Go toolchain
+//     recorded in the running binary, with a leading "v" removed and nothing else changed.
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"runtime/debug"
+	"strings"
 	"testing"
 
 	"github.com/shdeen/bildomat/internal/catalog"
@@ -176,6 +180,33 @@ func TestProviderDefaultsResolve(t *testing.T) {
 
 	if !t.Failed() {
 		t.Log("✓ every declared provider default names a model of that provider")
+	}
+}
+
+// TestAppVersion verifies invariant #6: Reported version. Kind: permanent.
+//
+// What is being tested:
+// appVersion must return the main module version that the Go toolchain recorded in the running
+// binary. When that recorded version starts with "v", the "v" must be removed; the rest must be
+// unchanged.
+//
+// Test class: Expanded.
+// Test layer: Coverage.
+func TestAppVersion(t *testing.T) {
+	buildInfo, ok := debug.ReadBuildInfo()
+	if !ok {
+		t.Fatalf("💣 setup failed: the test binary carries no build information")
+	}
+
+	recordedVersion := buildInfo.Main.Version
+	expected := strings.TrimPrefix(recordedVersion, "v")
+
+	if got := appVersion(); got != expected {
+		t.Errorf("✗ appVersion() = %q, want %q (Go recorded %q)", got, expected, recordedVersion)
+	}
+
+	if !t.Failed() {
+		t.Logf("✓ appVersion reports the recorded main module version %q as %q", recordedVersion, expected)
 	}
 }
 

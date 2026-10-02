@@ -7,3 +7,6 @@ logs
 *.log
 .rsync-filter
 scripts/roster/fal
+
+# Release binaries in Github workflow
+dist/

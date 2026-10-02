@@ -1,0 +1,296 @@
+name: release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15-intel, windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go test ./...
+        shell: bash
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - name: Cross-compile all targets
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="0.0.0-test"
+          fi
+          mkdir -p dist
+          for target in darwin/arm64 darwin/amd64 linux/arm64 linux/amd64 windows/arm64 windows/amd64; do
+            goos="${target%/*}"
+            goarch="${target#*/}"
+            suffix=""
+            if [[ "$goos" == "windows" ]]; then suffix=".exe"; fi
+            CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" go build -trimpath \
+              -o "dist/bild-$goos-$goarch$suffix" ./cmd/bild
+          done
+          echo "$version" > dist/version.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-darwin
+          path: dist/bild-darwin-*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-windows
+          path: dist/bild-windows-*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: linux
+          path: |
+            dist/bild-linux-*
+            dist/version.txt
+
+  sign-macos:
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: unsigned-darwin
+          path: darwin
+      - name: Import the Developer ID certificate
+        shell: bash
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          keychain_password="$(openssl rand -hex 24)"
+          echo "$MACOS_CERTIFICATE_P12_BASE64" | base64 --decode > certificate.p12
+          security create-keychain -p "$keychain_password" signing.keychain-db
+          security set-keychain-settings -lut 21600 signing.keychain-db
+          security unlock-keychain -p "$keychain_password" signing.keychain-db
+          curl -fsSL -o developer-id-g2.cer https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer
+          security import developer-id-g2.cer -k signing.keychain-db
+          security import certificate.p12 -k signing.keychain-db -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$keychain_password" signing.keychain-db
+          security list-keychains -d user -s signing.keychain-db login.keychain-db
+          rm certificate.p12
+      - name: Sign and notarize
+        shell: bash
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          for binary in darwin/bild-darwin-arm64 darwin/bild-darwin-amd64; do
+            chmod +x "$binary"
+            codesign --force --sign "Developer ID Application" --keychain signing.keychain-db \
+              --identifier com.shdeen.bild --options runtime --timestamp "$binary"
+            codesign --verify --strict --verbose=2 "$binary"
+            ditto -c -k --keepParent "$binary" notarize.zip
+            xcrun notarytool submit notarize.zip --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" \
+              --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait | tee notary-result.txt
+            grep -q "status: Accepted" notary-result.txt
+            rm notarize.zip notary-result.txt
+          done
+      - uses: actions/upload-artifact@v7
+        with:
+          name: signed-darwin
+          path: darwin/bild-darwin-*
+
+  sign-windows:
+    needs: build
+    runs-on: windows-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: unsigned-windows
+          path: windows
+      - uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: ${{ vars.AZURE_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.AZURE_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.AZURE_CERTIFICATE_PROFILE }}
+          files-folder: ${{ github.workspace }}\windows
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+      - name: Confirm both signatures are valid
+        shell: pwsh
+        run: |
+          Get-ChildItem windows\*.exe | ForEach-Object {
+            $signature = Get-AuthenticodeSignature $_.FullName
+            if ($signature.Status -ne 'Valid') { throw "$($_.Name): $($signature.Status)" }
+            Write-Output "$($_.Name): $($signature.SignerCertificate.Subject)"
+          }
+      - uses: actions/upload-artifact@v7
+        with:
+          name: signed-windows
+          path: windows/bild-windows-*
+
+  package:
+    needs: [sign-macos, sign-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: signed-*
+          path: binaries
+          merge-multiple: true
+      - uses: actions/download-artifact@v8
+        with:
+          name: linux
+          path: binaries
+      - name: Create archives and checksums
+        shell: bash
+        run: |
+          version="$(cat binaries/version.txt)"
+          mkdir -p release
+          for target in darwin_arm64 darwin_amd64 linux_arm64 linux_amd64 windows_arm64 windows_amd64; do
+            goos="${target%_*}"
+            goarch="${target#*_}"
+            staging="staging/$target"
+            mkdir -p "$staging"
+            cp LICENSE README.md "$staging/"
+            if [[ "$goos" == "windows" ]]; then
+              cp "binaries/bild-$goos-$goarch.exe" "$staging/bild.exe"
+              (cd "$staging" && zip -q "../../release/bild_${version}_${target}.zip" bild.exe LICENSE README.md)
+            else
+              cp "binaries/bild-$goos-$goarch" "$staging/bild"
+              chmod +x "$staging/bild"
+              tar -czf "release/bild_${version}_${target}.tar.gz" -C "$staging" bild LICENSE README.md
+            fi
+          done
+          (cd release && sha256sum -- * > "bild_${version}_checksums.txt")
+          ls -l release
+      - name: Extract the release notes from CHANGELOG.md
+        shell: bash
+        run: |
+          version="$(cat binaries/version.txt)"
+          heading="$(grep -m1 -E '^## \[[0-9]' CHANGELOG.md)" || { echo "CHANGELOG.md has no version section"; exit 1; }
+          changelog_version="$(echo "$heading" | sed -E 's/^## \[([^]]+)\].*/\1/')"
+          if [[ "$GITHUB_REF_TYPE" == "tag" && "$changelog_version" != "$version" ]]; then
+            echo "The newest version in CHANGELOG.md is $changelog_version, but the tag is v$version"
+            exit 1
+          fi
+          awk -v heading="$heading" '
+            $0 == heading { in_section = 1; next }
+            in_section && (/^## / || /^\[.*\]: /) { exit }
+            in_section { print }
+          ' CHANGELOG.md > release-notes.md
+          grep -q '[^[:space:]]' release-notes.md || { echo "The CHANGELOG.md section for $changelog_version is empty"; exit 1; }
+          cat release-notes.md
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-files
+          path: release/*
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: release-notes.md
+
+  smoke-test:
+    needs: package
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            target: linux_amd64
+          - runner: ubuntu-24.04-arm
+            target: linux_arm64
+          - runner: macos-latest
+            target: darwin_arm64
+          - runner: macos-15-intel
+            target: darwin_amd64
+          - runner: windows-latest
+            target: windows_amd64
+          - runner: windows-11-arm
+            target: windows_arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-files
+          path: release
+      - name: Extract the archive
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          mkdir extracted
+          tar -xzf release/bild_*_${{ matrix.target }}.tar.gz -C extracted
+      - name: Extract the archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $archive = Get-ChildItem "release\bild_*_${{ matrix.target }}.zip"
+          Expand-Archive -Path $archive.FullName -DestinationPath extracted
+      - name: Run the binary
+        shell: bash
+        run: |
+          version_report="$(./extracted/bild --version)"
+          echo "$version_report"
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            reported_version="$(echo "$version_report" | awk '{print $NF}')"
+            if [[ "$reported_version" != "${GITHUB_REF_NAME#v}" ]]; then
+              echo "bild reports version $reported_version, but the tag is $GITHUB_REF_NAME"
+              exit 1
+            fi
+          fi
+          ./extracted/bild list > /dev/null
+      - name: Check the macOS signature
+        if: runner.os == 'macOS'
+        shell: bash
+        run: codesign --verify --strict --verbose=2 extracted/bild
+
+  release:
+    needs: smoke-test
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-files
+          path: release
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: notes
+      - name: Create the GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" release/* \
+            --verify-tag \
+            --title "bild $version" \
+            --notes-file notes/release-notes.md
