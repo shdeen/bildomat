@@ -1,159 +1,155 @@
-# Kling models
+# Kling Models
 
-Provider ID: `kling`. Credential: `api-keys.kling` in the configuration file, or else the `KLING_API_KEY` environment variable. Default model: `kling-v3`. Provider documentation: <https://kling.ai/document-api>.
+Every model that `bild` offers from Kling (provider ID `kling`, key variable `KLING_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info kling/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-[All providers](../providers-and-models.md) · [Flag types and shorthands](../generation-flags.md) · [Input and frame rules](../input-media.md)
+4 image models, 6 video models.
 
-Options default to unset unless supplied or derived. An unlisted option is unsupported by that model in Bildomat. Constraints below govern Bildomat’s adjustments; provider requirements can also apply.
+## Contents
 
-Every Kling model takes images only as `--input-media`. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Image models remove frame prefixes with a notice. On `kling-3.0`, `kling-3.0-turbo`, `kling-2.6`, and `kling-2.5-turbo`, `first:` and `last:` select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order. On `kling-3.0-omni` and `kling-o1`, `first:`, `last:`, and numeric times select the opening and closing frames in the same way, and unprefixed images are references. See [opening and closing frames](../input-media.md#opening-and-closing-frames) and [provider input behavior](../input-media.md#provider-input-behavior).
+- [Kling Image 3.0](#kling-image-30)
+- [Kling Image 3.0 Omni](#kling-image-30-omni)
+- [Kling Image O1](#kling-image-o1)
+- [Kling Image 2.1](#kling-image-21)
+- [Kling 3.0](#kling-30)
+- [Kling 3.0 Turbo](#kling-30-turbo)
+- [Kling 3.0 Omni](#kling-30-omni)
+- [Kling O1](#kling-o1)
+- [Kling 2.6](#kling-26)
+- [Kling 2.5 Turbo](#kling-25-turbo)
 
-## Models
+## Kling Image 3.0
 
-- [`kling/kling-v3`](#kling-v3) — image.
-- [`kling/kling-v3-omni`](#kling-v3-omni) — image.
-- [`kling/kling-image-o1`](#kling-image-o1) — image.
-- [`kling/kling-v2-1`](#kling-v2-1) — image.
-- [`kling/kling-3.0`](#kling-30) — video.
-- [`kling/kling-3.0-turbo`](#kling-30-turbo) — video.
-- [`kling/kling-3.0-omni`](#kling-30-omni) — video.
-- [`kling/kling-o1`](#kling-o1) — video.
-- [`kling/kling-2.6`](#kling-26) — video.
-- [`kling/kling-2.5-turbo`](#kling-25-turbo) — video.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling Image 3.0 | image | `kling-3` | `kling/kling-v3`
 
-## kling-v3
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9
+`--resolution` | Allowed values: 1k, 2k
+`--num-images` | Allowed range: 1 to 9
+`--input-media` | Repeat maximum: 1
+`--negative-prompt` | Kling refuses --negative-prompt when --input-media is supplied.
 
-Kling Image 3.0. Output: image.
+## Kling Image 3.0 Omni
 
-Full key: `kling/kling-v3`. Aliases: `kling-3`.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling Image 3.0 Omni | image | `kling-3-omni` | `kling/kling-v3-omni`
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `21:9` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `9` |
-| `--negative-prompt` | Optional | Kling refuses --negative-prompt when --input-media is supplied. |
-| `--input-media` | Optional | Maximum inputs: `1` |
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9, auto
+`--resolution` | Allowed values: 1k, 2k, 4k
+`--num-images` | Allowed range: 1 to 9
+`--input-media` | Repeat maximum: 10
 
-## kling-v3-omni
+## Kling Image O1
 
-Kling Image 3.0 Omni. Output: image.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling Image O1 | image | `kling-1` | `kling/kling-image-o1`
 
-Full key: `kling/kling-v3-omni`. Family: `omni`. Aliases: `kling-3-omni`.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9, auto
+`--resolution` | Allowed values: 1k, 2k
+`--num-images` | Allowed range: 1 to 9
+`--input-media` | Repeat maximum: 10
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1k`, `2k`, `4k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `9` |
-| `--input-media` | Optional | Maximum inputs: `10` |
+## Kling Image 2.1
 
-## kling-image-o1
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling Image 2.1 | image | `kling-2.1` | `kling/kling-v2-1`
 
-Kling Image O1. Output: image.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9
+`--resolution` | Allowed values: 1k, 2k
+`--num-images` | Allowed range: 1 to 9
+`--input-media` | Repeat maximum: 1
+`--negative-prompt` | Kling refuses --negative-prompt when --input-media is supplied.
 
-Full key: `kling/kling-image-o1`. Family: `omni`. Aliases: `kling-1`.
+## Kling 3.0
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `9` |
-| `--input-media` | Optional | Maximum inputs: `10` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling 3.0 | video | `kling-3-video`, `kling-video` | `kling/kling-3.0`
 
-## kling-v2-1
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p, 4k
+`--duration` | Allowed range: 3 to 15
+`--input-media` | Repeat maximum: 2
+`--generate-audio` | 
 
-Kling Image 2.1. Output: image.
+## Kling 3.0 Turbo
 
-Full key: `kling/kling-v2-1`. Aliases: `kling-2.1`.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling 3.0 Turbo | video | `kling-3-turbo-video` | `kling/kling-3.0-turbo`
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `21:9` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `9` |
-| `--negative-prompt` | Optional | Kling refuses --negative-prompt when --input-media is supplied. |
-| `--input-media` | Optional | Maximum inputs: `1` |
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed range: 3 to 15
+`--input-media` | Repeat maximum: 1
 
-## kling-3.0
+## Kling 3.0 Omni
 
-Kling 3.0. Output: video.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling 3.0 Omni | video | `kling-3-omni-video` | `kling/kling-3.0-omni`
 
-Full key: `kling/kling-3.0`. Aliases: `kling-3-video`, `kling-video`.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p, 4k
+`--duration` | Allowed range: 3 to 15
+`--input-media` | Repeat maximum: 7
+`--generate-audio` | 
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--resolution` | Optional | Allowed: `720p`, `1080p`, `4k` |
-| `--duration` | Optional | Minimum: `3`; Maximum: `15` |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `2` |
+## Kling O1
 
-## kling-3.0-turbo
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling O1 | video | `kling-o1-video`, `kling-1-video` | `kling/kling-o1`
 
-Kling 3.0 Turbo. Output: video.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed range: 3 to 10
+`--input-media` | Repeat maximum: 7
 
-Full key: `kling/kling-3.0-turbo`. Aliases: `kling-3-turbo-video`.
+## Kling 2.6
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Minimum: `3`; Maximum: `15` |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--input-media` | Optional | Maximum inputs: `1` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling 2.6 | video | `kling-2.6-video` | `kling/kling-2.6`
 
-## kling-3.0-omni
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 5, 10
+`--input-media` | Repeat maximum: 2
+`--generate-audio` | Kling 2.6 requires 1080p for generated audio and frame input.
 
-Kling 3.0 Omni. Output: video.
+## Kling 2.5 Turbo
 
-Full key: `kling/kling-3.0-omni`. Family: `omni`. Aliases: `kling-3-omni-video`.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling 2.5 Turbo | video | `kling-2.5-turbo-video` | `kling/kling-2.5-turbo`
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--resolution` | Optional | Allowed: `720p`, `1080p`, `4k` |
-| `--duration` | Optional | Minimum: `3`; Maximum: `15` |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `7` |
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 5, 10
+`--input-media` | Repeat maximum: 1
 
-## kling-o1
-
-Kling O1. Output: video.
-
-Full key: `kling/kling-o1`. Family: `omni`. Aliases: `kling-o1-video`, `kling-1-video`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Minimum: `3`; Maximum: `10` |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--input-media` | Optional | Maximum inputs: `7` |
-
-## kling-2.6
-
-Kling 2.6. Output: video.
-
-Full key: `kling/kling-2.6`. Aliases: `kling-2.6-video`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `5`, `10` |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--generate-audio` | Optional | Kling 2.6 requires 1080p for generated audio and frame input. |
-| `--input-media` | Optional | Maximum inputs: `2` |
-
-## kling-2.5-turbo
-
-Kling 2.5 Turbo. Output: video.
-
-Full key: `kling/kling-2.5-turbo`. Aliases: `kling-2.5-turbo-video`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `5`, `10` |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-
-Revised 2026-10-01
+Revised 2026-10-02

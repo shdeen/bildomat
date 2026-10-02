@@ -1,184 +1,198 @@
-# OpenAI models
+# OpenAI Models
 
-Provider ID: `openai`. Credential: `api-keys.openai` in the configuration file, or else the `OPENAI_API_KEY` environment variable. Default model: `gpt-image-2.5-flare`. Provider documentation: <https://developers.openai.com/api/docs/guides/image-generation>.
+Every model that `bild` offers from OpenAI (provider ID `openai`, key variable `OPENAI_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openai/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-[All providers](../providers-and-models.md) · [Flag types and shorthands](../generation-flags.md) · [Input and frame rules](../input-media.md)
+7 image models, 2 video models.
 
-Options default to unset unless supplied or derived. An unlisted option is unsupported by that model in Bildomat. Constraints below govern Bildomat’s adjustments; provider requirements can also apply.
+## Contents
 
-Every OpenAI model takes images only as `--input-media`; a video source fails the run. See [provider input behavior](../input-media.md#provider-input-behavior).
+- [GPT Image 2.5 Flare](#gpt-image-25-flare)
+- [GPT Image 2.5 Sunburst](#gpt-image-25-sunburst)
+- [GPT Image 2](#gpt-image-2)
+- [GPT Image 1.5](#gpt-image-15)
+- [GPT Image 1](#gpt-image-1)
+- [ChatGPT Image](#chatgpt-image)
+- [GPT Image 1 Mini](#gpt-image-1-mini)
+- [Sora 2](#sora-2)
+- [Sora 2 Pro](#sora-2-pro)
 
-## Models
+## GPT Image 2.5 Flare
 
-- [`openai/gpt-image-2.5-flare`](#gpt-image-25-flare) — image.
-- [`openai/gpt-image-2.5-sunburst`](#gpt-image-25-sunburst) — image.
-- [`openai/gpt-image-2`](#gpt-image-2) — image.
-- [`openai/gpt-image-1.5`](#gpt-image-15) — image.
-- [`openai/gpt-image-1`](#gpt-image-1) — image.
-- [`openai/chatgpt-image-latest`](#chatgpt-image-latest) — image.
-- [`openai/gpt-image-1-mini`](#gpt-image-1-mini) — image.
-- [`openai/sora-2`](#sora-2) — video.
-- [`openai/sora-2-pro`](#sora-2-pro) — video.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+GPT Image 2.5 Flare | image | `gpt`, `gpt-2.5-flare` | `openai/gpt-image-2.5-flare`
 
-## gpt-image-2.5-flare
+Fast image generation and editing for everyday creative work.
 
-GPT Image 2.5 Flare. Output: image.
+Option | Constraints
+-------|------------
+`--size` | <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, xhigh, max, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/gpt-image-2.5-flare`. Aliases: `gpt`, `gpt-2.5-flare`.
+## GPT Image 2.5 Sunburst
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `xhigh`, `max`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Maximum longer-to-shorter edge ratio: `3`; Maximum edge in pixels: `3840`; Minimum pixel count: `655360`; Maximum pixel count: `8294400`; Edge increment in pixels: `16`; Preferred derived long edge in pixels: `1536` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+GPT Image 2.5 Sunburst | image | `gpt-2.5-sunburst` | `openai/gpt-image-2.5-sunburst`
 
-## gpt-image-2.5-sunburst
+Generate images and make precise edits from text and image references.
 
-GPT Image 2.5 Sunburst. Output: image.
+Option | Constraints
+-------|------------
+`--size` | <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, xhigh, max, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/gpt-image-2.5-sunburst`. Aliases: `gpt-2.5-sunburst`.
+## GPT Image 2
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `xhigh`, `max`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Maximum longer-to-shorter edge ratio: `3`; Maximum edge in pixels: `3840`; Minimum pixel count: `655360`; Maximum pixel count: `8294400`; Edge increment in pixels: `16`; Preferred derived long edge in pixels: `1536` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+GPT Image 2 | image | `gpt-2` | `openai/gpt-image-2`
 
-## gpt-image-2
+State-of-the-art image generation model.
 
-GPT Image 2. Output: image.
+Option | Constraints
+-------|------------
+`--size` | <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/gpt-image-2`. Aliases: `gpt-2`.
+## GPT Image 1.5
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Maximum longer-to-shorter edge ratio: `3`; Maximum edge in pixels: `3840`; Minimum pixel count: `655360`; Maximum pixel count: `8294400`; Edge increment in pixels: `16`; Preferred derived long edge in pixels: `1536` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+GPT Image 1.5 | image | `gpt-1.5` | `openai/gpt-image-1.5`
 
-## gpt-image-1.5
+Previous image generation model, with better instruction following and adherence to prompts.
 
-GPT Image 1.5. Output: image.
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/gpt-image-1.5`. Aliases: `gpt-1.5`.
+## GPT Image 1
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Allowed: `1024x1024`, `1024x1536`, `1536x1024` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+GPT Image 1 | image | `gpt-1` | `openai/gpt-image-1`
 
-## gpt-image-1
+Generate or edit images with GPT Image 1.
 
-GPT Image 1. Output: image.
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/gpt-image-1`. Aliases: `gpt-1`.
+## ChatGPT Image
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Allowed: `1024x1024`, `1024x1536`, `1536x1024` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ChatGPT Image | image | `chatgpt` | `openai/chatgpt-image-latest`
 
-## chatgpt-image-latest
+Previous image model used in ChatGPT.
 
-ChatGPT Image. Output: image.
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/chatgpt-image-latest`. Aliases: `chatgpt`.
+## GPT Image 1 Mini
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Allowed: `1024x1024`, `1024x1536`, `1536x1024` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+GPT Image 1 Mini | image | `gpt-1-mini` | `openai/gpt-image-1-mini`
 
-## gpt-image-1-mini
+A cost-efficient version of GPT Image 1.
 
-GPT Image 1 Mini. Output: image.
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: low, medium, high, auto
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: transparent, opaque, auto
+`--output-compression` | Allowed range: 0 to 100
+`--moderation-level` | Allowed values: low, auto
 
-Full key: `openai/gpt-image-1-mini`. Aliases: `gpt-1-mini`.
+## Sora 2
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--size` | Optional | Allowed: `1024x1024`, `1024x1536`, `1536x1024` |
-| `--background` | Optional | Allowed: `transparent`, `opaque`, `auto` |
-| `--moderation-level` | Optional | Allowed: `low`, `auto` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Sora 2 | video | `sora` | `openai/sora-2`
 
-## sora-2
+Flagship video generation with synced audio, creating richly detailed, dynamic clips from natural language or images.
 
-Sora 2. Output: video.
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1280x720, 720x1280
+`--aspect-ratio` | 
+`--resolution` | 
+`--duration` | Allowed values: 4, 8, 12, 16, 20
+`--input-media` | Repeat maximum: 1
 
-Full key: `openai/sora-2`. Aliases: `sora`.
+## Sora 2 Pro
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--duration` | Optional | Allowed: `4`, `8`, `12`, `16`, `20` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--size` | Optional | Allowed: `1280x720`, `720x1280` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Sora 2 Pro | video | `sora-pro` | `openai/sora-2-pro`
 
-## sora-2-pro
+State-of-the-art, most advanced media generation model, generating videos with synced audio.
 
-Sora 2 Pro. Output: video.
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1280x720, 720x1280, 1792x1024, 1024x1792, 1920x1080, 1080x1920
+`--aspect-ratio` | 
+`--resolution` | 
+`--duration` | Allowed values: 4, 8, 12, 16, 20
+`--input-media` | Repeat maximum: 1
 
-Full key: `openai/sora-2-pro`. Aliases: `sora-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--duration` | Optional | Allowed: `4`, `8`, `12`, `16`, `20` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--size` | Optional | Allowed: `1280x720`, `720x1280`, `1792x1024`, `1024x1792`, `1920x1080`, `1080x1920` |
-
-Revised 2026-10-01
+Revised 2026-10-02

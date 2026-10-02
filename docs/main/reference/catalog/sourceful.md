@@ -1,46 +1,44 @@
-# Sourceful models
+# Sourceful Models
 
-Provider ID: `sourceful`. Credential: `api-keys.sourceful` in the configuration file, or else the `SOURCEFUL_API_KEY` environment variable. Default model: `riverflow-2.5-fast`. Provider documentation: <https://www.riverflow.ai/app/platform-api/docs>.
+Every model that `bild` offers from Sourceful (provider ID `sourceful`, key variable `SOURCEFUL_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info sourceful/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-[All providers](../providers-and-models.md) · [Flag types and shorthands](../generation-flags.md) · [Input and frame rules](../input-media.md)
+2 image models, 0 video models.
 
-Options default to unset unless supplied or derived. An unlisted option is unsupported by that model in Bildomat. Constraints below govern Bildomat’s adjustments; provider requirements can also apply.
+## Contents
 
-## Models
+- [Riverflow 2.5 Pro](#riverflow-25-pro)
+- [Riverflow 2.5 Fast](#riverflow-25-fast)
 
-- [`sourceful/riverflow-2.5-pro`](#riverflow-25-pro) — image.
-- [`sourceful/riverflow-2.5-fast`](#riverflow-25-fast) — image.
+## Riverflow 2.5 Pro
 
-## riverflow-2.5-pro
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Riverflow 2.5 Pro | image | `riverflow`, `riverflow-v2.5-pro`, `riverflow-pro` | `sourceful/riverflow-2.5-pro`
 
-Riverflow 2.5 Pro. Output: image.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: auto, 21:9, 16:9, 3:2, 4:3, 5:4, 1:1, 4:5, 3:4, 2:3, 9:16
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--output-format` | Allowed values: webp, png, jpg, jpeg
+`--thinking-level` | Allowed values: low, medium, high, xhigh
+`--input-media` | Repeat maximum: 10
+`--background` | Allowed values: original, transparent
+`--prompt-upsampling` | 
 
-Full key: `sourceful/riverflow-2.5-pro`. Aliases: `riverflow`, `riverflow-v2.5-pro`, `riverflow-pro`.
+## Riverflow 2.5 Fast
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `auto`, `21:9`, `16:9`, `3:2`, `4:3`, `5:4`, `1:1`, `4:5`, `3:4`, `2:3`, `9:16` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--output-format` | Optional | Allowed: `webp`, `png`, `jpg`, `jpeg` |
-| `--background` | Optional | Allowed: `original`, `transparent` |
-| `--thinking-level` | Optional | Allowed: `low`, `medium`, `high`, `xhigh` |
-| `--prompt-upsampling` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `10` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Riverflow 2.5 Fast | image | `riverflow-v2.5-fast` | `sourceful/riverflow-2.5-fast`
 
-## riverflow-2.5-fast
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: auto, 21:9, 16:9, 3:2, 4:3, 5:4, 1:1, 4:5, 3:4, 2:3, 9:16
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--output-format` | Allowed values: webp, png, jpg, jpeg
+`--thinking-level` | Allowed values: low, medium, high, xhigh
+`--input-media` | Repeat maximum: 10
+`--background` | Allowed values: original, transparent
+`--prompt-upsampling` | 
 
-Riverflow 2.5 Fast. Output: image.
-
-Full key: `sourceful/riverflow-2.5-fast`. Aliases: `riverflow-v2.5-fast`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `auto`, `21:9`, `16:9`, `3:2`, `4:3`, `5:4`, `1:1`, `4:5`, `3:4`, `2:3`, `9:16` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--output-format` | Optional | Allowed: `webp`, `png`, `jpg`, `jpeg` |
-| `--background` | Optional | Allowed: `original`, `transparent` |
-| `--thinking-level` | Optional | Allowed: `low`, `medium`, `high`, `xhigh` |
-| `--prompt-upsampling` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `10` |
-
-Revised 2026-10-01
+Revised 2026-10-02

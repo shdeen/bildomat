@@ -1,1347 +1,1505 @@
-# OpenRouter models
-
-Provider ID: `openrouter`. Credential: `api-keys.openrouter` in the configuration file, or else the `OPENROUTER_API_KEY` environment variable. Default model: `google/gemini-3.1-flash-image`. Provider documentation: <https://openrouter.ai/docs>.
-
-[All providers](../providers-and-models.md) · [Flag types and shorthands](../generation-flags.md) · [Input and frame rules](../input-media.md)
-
-Options default to unset unless supplied or derived. An unlisted option is unsupported by that model in Bildomat. Constraints below govern Bildomat’s adjustments; provider requirements can also apply.
-
-## Models
-
-- [`openrouter/openai/gpt-image-2.5-flare`](#openaigpt-image-25-flare) — image.
-- [`openrouter/openai/gpt-image-2.5-sunburst`](#openaigpt-image-25-sunburst) — image.
-- [`openrouter/black-forest-labs/flux.2-flex`](#black-forest-labsflux2-flex) — image.
-- [`openrouter/black-forest-labs/flux.2-klein-4b`](#black-forest-labsflux2-klein-4b) — image.
-- [`openrouter/black-forest-labs/flux.2-max`](#black-forest-labsflux2-max) — image.
-- [`openrouter/black-forest-labs/flux.2-pro`](#black-forest-labsflux2-pro) — image.
-- [`openrouter/black-forest-labs/flux-3-video`](#black-forest-labsflux-3-video) — video.
-- [`openrouter/bytedance-seed/seedream-4.5`](#bytedance-seedseedream-45) — image.
-- [`openrouter/bytedance-seed/seedream-5-0-pro`](#bytedance-seedseedream-5-0-pro) — image.
-- [`openrouter/bytedance-seed/seedream-5-0-lite`](#bytedance-seedseedream-5-0-lite) — image.
-- [`openrouter/google/gemini-2.5-flash-image`](#googlegemini-25-flash-image) — image.
-- [`openrouter/google/gemini-3-pro-image`](#googlegemini-3-pro-image) — image.
-- [`openrouter/google/gemini-3-pro-image-preview`](#googlegemini-3-pro-image-preview) — image.
-- [`openrouter/google/gemini-3.1-flash-image`](#googlegemini-31-flash-image) — image.
-- [`openrouter/google/gemini-3.1-flash-image-preview`](#googlegemini-31-flash-image-preview) — image.
-- [`openrouter/google/gemini-3.1-flash-lite-image`](#googlegemini-31-flash-lite-image) — image.
-- [`openrouter/krea/krea-2-large`](#kreakrea-2-large) — image.
-- [`openrouter/krea/krea-2-medium`](#kreakrea-2-medium) — image.
-- [`openrouter/krea/krea-2-medium-turbo`](#kreakrea-2-medium-turbo) — image.
-- [`openrouter/microsoft/mai-image-2.5`](#microsoftmai-image-25) — image.
-- [`openrouter/microsoft/mai-image-2.5-pro`](#microsoftmai-image-25-pro) — image.
-- [`openrouter/openai/gpt-5-image`](#openaigpt-5-image) — image.
-- [`openrouter/openai/gpt-5-image-mini`](#openaigpt-5-image-mini) — image.
-- [`openrouter/openai/gpt-5.4-image-2`](#openaigpt-54-image-2) — image.
-- [`openrouter/openai/gpt-image-1`](#openaigpt-image-1) — image.
-- [`openrouter/openai/gpt-image-1-mini`](#openaigpt-image-1-mini) — image.
-- [`openrouter/openai/gpt-image-2`](#openaigpt-image-2) — image.
-- [`openrouter/qwen/qwen-image-3`](#qwenqwen-image-3) — image.
-- [`openrouter/qwen/qwen-image-3-pro`](#qwenqwen-image-3-pro) — image.
-- [`openrouter/recraft/recraft-v3`](#recraftrecraft-v3) — image.
-- [`openrouter/recraft/recraft-v4`](#recraftrecraft-v4) — image.
-- [`openrouter/recraft/recraft-v4-pro`](#recraftrecraft-v4-pro) — image.
-- [`openrouter/recraft/recraft-v4-pro-vector`](#recraftrecraft-v4-pro-vector) — image.
-- [`openrouter/recraft/recraft-v4-styles`](#recraftrecraft-v4-styles) — image.
-- [`openrouter/recraft/recraft-v4-styles-pro`](#recraftrecraft-v4-styles-pro) — image.
-- [`openrouter/recraft/recraft-v4-styles-pro-vector`](#recraftrecraft-v4-styles-pro-vector) — image.
-- [`openrouter/recraft/recraft-v4-styles-vector`](#recraftrecraft-v4-styles-vector) — image.
-- [`openrouter/recraft/recraft-v4-vector`](#recraftrecraft-v4-vector) — image.
-- [`openrouter/recraft/recraft-v4.1`](#recraftrecraft-v41) — image.
-- [`openrouter/recraft/recraft-v4.1-pro`](#recraftrecraft-v41-pro) — image.
-- [`openrouter/recraft/recraft-v4.1-pro-vector`](#recraftrecraft-v41-pro-vector) — image.
-- [`openrouter/recraft/recraft-v4.1-utility`](#recraftrecraft-v41-utility) — image.
-- [`openrouter/recraft/recraft-v4.1-utility-pro`](#recraftrecraft-v41-utility-pro) — image.
-- [`openrouter/recraft/recraft-v4.1-vector`](#recraftrecraft-v41-vector) — image.
-- [`openrouter/sourceful/riverflow-v2-fast`](#sourcefulriverflow-v2-fast) — image.
-- [`openrouter/sourceful/riverflow-v2-pro`](#sourcefulriverflow-v2-pro) — image.
-- [`openrouter/sourceful/riverflow-v2.5-fast`](#sourcefulriverflow-v25-fast) — image.
-- [`openrouter/sourceful/riverflow-v2.5-pro`](#sourcefulriverflow-v25-pro) — image.
-- [`openrouter/x-ai/grok-imagine-image-2.0`](#x-aigrok-imagine-image-20) — image.
-- [`openrouter/x-ai/grok-imagine-image-quality`](#x-aigrok-imagine-image-quality) — image.
-- [`openrouter/alibaba/happyhorse-1.0`](#alibabahappyhorse-10) — video.
-- [`openrouter/alibaba/happyhorse-1.1`](#alibabahappyhorse-11) — video.
-- [`openrouter/alibaba/wan-2.6`](#alibabawan-26) — video.
-- [`openrouter/alibaba/wan-2.7`](#alibabawan-27) — video.
-- [`openrouter/alibaba/wan-3.0`](#alibabawan-30) — video.
-- [`openrouter/alibaba/wan-3.0-prime`](#alibabawan-30-prime) — video.
-- [`openrouter/bytedance/seedance-1-5-pro`](#bytedanceseedance-1-5-pro) — video.
-- [`openrouter/bytedance/seedance-2.0`](#bytedanceseedance-20) — video.
-- [`openrouter/bytedance/seedance-2.0-fast`](#bytedanceseedance-20-fast) — video.
-- [`openrouter/bytedance/seedance-2.0-mini`](#bytedanceseedance-20-mini) — video.
-- [`openrouter/bytedance/seedance-2.5`](#bytedanceseedance-25) — video.
-- [`openrouter/google/veo-3.1`](#googleveo-31) — video.
-- [`openrouter/google/veo-3.1-fast`](#googleveo-31-fast) — video.
-- [`openrouter/google/veo-3.1-lite`](#googleveo-31-lite) — video.
-- [`openrouter/kwaivgi/kling-v3.0-pro`](#kwaivgikling-v30-pro) — video.
-- [`openrouter/kwaivgi/kling-v3.0-std`](#kwaivgikling-v30-std) — video.
-- [`openrouter/kwaivgi/kling-video-o1`](#kwaivgikling-video-o1) — video.
-- [`openrouter/minimax/hailuo-2.3`](#minimaxhailuo-23) — video.
-- [`openrouter/minimax/hailuo-3`](#minimaxhailuo-3) — video.
-- [`openrouter/openai/sora-2-pro`](#openaisora-2-pro) — video.
-- [`openrouter/runway/aleph-2`](#runwayaleph-2) — video.
-- [`openrouter/runway/gen-4.5`](#runwaygen-45) — video.
-- [`openrouter/x-ai/grok-imagine-video`](#x-aigrok-imagine-video) — video.
-- [`openrouter/x-ai/grok-imagine-video-1.5`](#x-aigrok-imagine-video-15) — video.
-- [`openrouter/microsoft/mai-image-2.6`](#microsoftmai-image-26) — image.
-- [`openrouter/microsoft/mai-image-2.6-flash`](#microsoftmai-image-26-flash) — image.
-- [`openrouter/minimax/hailuo-3-max`](#minimaxhailuo-3-max) — video.
-- [`openrouter/black-forest-labs/flux-video-edit`](#black-forest-labsflux-video-edit) — video.
-- [`openrouter/black-forest-labs/flux-video-upscale`](#black-forest-labsflux-video-upscale) — video.
-- [`openrouter/heygen/avatar-iv`](#heygenavatar-iv) — video.
-
-## openai/gpt-image-2.5-flare
-
-OpenAI: GPT Image 2.5 Flare. Output: image.
-
-Full key: `openrouter/openai/gpt-image-2.5-flare`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:2`, `2:3`, `4:3`, `3:4`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `xhigh`, `max`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-image-2.5-sunburst
-
-OpenAI: GPT Image 2.5 Sunburst. Output: image.
-
-Full key: `openrouter/openai/gpt-image-2.5-sunburst`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:2`, `2:3`, `4:3`, `3:4`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--quality` | Optional | Allowed: `low`, `medium`, `high`, `xhigh`, `max`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## black-forest-labs/flux.2-flex
-
-Black Forest Labs: FLUX.2 Flex. Output: image.
-
-Full key: `openrouter/black-forest-labs/flux.2-flex`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg` |
-| `--input-media` | Optional | Maximum inputs: `8` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## black-forest-labs/flux.2-klein-4b
-
-Black Forest Labs: FLUX.2 Klein 4B. Output: image.
-
-Full key: `openrouter/black-forest-labs/flux.2-klein-4b`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg` |
-| `--input-media` | Optional | Maximum inputs: `4` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## black-forest-labs/flux.2-max
-
-Black Forest Labs: FLUX.2 Max. Output: image.
-
-Full key: `openrouter/black-forest-labs/flux.2-max`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg` |
-| `--input-media` | Optional | Maximum inputs: `8` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## black-forest-labs/flux.2-pro
-
-Black Forest Labs: FLUX.2 Pro. Output: image.
-
-Full key: `openrouter/black-forest-labs/flux.2-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg` |
-| `--input-media` | Optional | Maximum inputs: `8` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## black-forest-labs/flux-3-video
-
-Black Forest Labs: FLUX.3 Video. Output: video.
-
-Full key: `openrouter/black-forest-labs/flux-3-video`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, `18`, `19`, `20` |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance-seed/seedream-4.5
-
-ByteDance Seed: Seedream 4.5. Output: image.
-
-Full key: `openrouter/bytedance-seed/seedream-4.5`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:2`, `2:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `9:19.5`, `19.5:9`, `9:20`, `20:9`, `9:21`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance-seed/seedream-5-0-pro
-
-ByteDance Seed: Seedream 5.0 Pro. Output: image.
-
-Full key: `openrouter/bytedance-seed/seedream-5-0-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:2`, `2:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `9:19.5`, `19.5:9`, `9:20`, `20:9`, `9:21`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance-seed/seedream-5-0-lite
-
-ByteDance Seed: Seedream 5.0 Lite. Output: image.
-
-Full key: `openrouter/bytedance-seed/seedream-5-0-lite`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:2`, `2:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `9:19.5`, `19.5:9`, `9:20`, `20:9`, `9:21`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `2K`, `4K` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `4` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## google/gemini-2.5-flash-image
-
-Google: Nano Banana (Gemini 2.5 Flash Image). Output: image.
-
-Full key: `openrouter/google/gemini-2.5-flash-image`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `3` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## google/gemini-3-pro-image
-
-Google: Nano Banana Pro (Gemini 3 Pro Image). Output: image.
-
-Full key: `openrouter/google/gemini-3-pro-image`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## google/gemini-3-pro-image-preview
-
-Google: Nano Banana Pro (Gemini 3 Pro Image Preview). Output: image.
-
-Full key: `openrouter/google/gemini-3-pro-image-preview`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9`, `21:9` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## google/gemini-3.1-flash-image
-
-Google: Nano Banana 2 (Gemini 3.1 Flash Image). Output: image.
-
-Full key: `openrouter/google/gemini-3.1-flash-image`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9` |
-| `--resolution` | Optional | Allowed: `512`, `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## google/gemini-3.1-flash-image-preview
-
-Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview). Output: image.
-
-Full key: `openrouter/google/gemini-3.1-flash-image-preview`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9` |
-| `--resolution` | Optional | Allowed: `512`, `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## google/gemini-3.1-flash-lite-image
-
-Google: Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image). Output: image.
-
-Full key: `openrouter/google/gemini-3.1-flash-lite-image`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:4`, `1:8`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `8:1`, `9:16`, `16:9`, `21:9` |
-| `--resolution` | Optional | Allowed: `1K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `14` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## krea/krea-2-large
-
-Krea: Krea 2 Large. Output: image.
-
-Full key: `openrouter/krea/krea-2-large`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:2`, `16:9`, `4:5`, `2:3`, `9:16` |
-| `--resolution` | Optional | Allowed: `1K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## krea/krea-2-medium
-
-Krea: Krea 2 Medium. Output: image.
-
-Full key: `openrouter/krea/krea-2-medium`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:2`, `16:9`, `4:5`, `2:3`, `9:16` |
-| `--resolution` | Optional | Allowed: `1K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## krea/krea-2-medium-turbo
-
-Krea: Krea 2 Medium Turbo. Output: image.
-
-Full key: `openrouter/krea/krea-2-medium-turbo`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:2`, `16:9`, `4:5`, `2:3`, `9:16` |
-| `--resolution` | Optional | Allowed: `1K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## microsoft/mai-image-2.5
-
-Microsoft: MAI-Image-2.5. Output: image.
-
-Full key: `openrouter/microsoft/mai-image-2.5`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `3:2`, `2:3`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## microsoft/mai-image-2.5-pro
-
-Microsoft: MAI-Image-2.5 Pro. Output: image.
-
-Full key: `openrouter/microsoft/mai-image-2.5-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `3:2`, `2:3`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-5-image
-
-OpenAI: GPT-5 Image. Output: image.
-
-Full key: `openrouter/openai/gpt-5-image`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `auto`, `low`, `medium`, `high` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-5-image-mini
-
-OpenAI: GPT-5 Image Mini. Output: image.
-
-Full key: `openrouter/openai/gpt-5-image-mini`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `auto`, `low`, `medium`, `high` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-5.4-image-2
-
-OpenAI: GPT-5.4 Image 2. Output: image.
-
-Full key: `openrouter/openai/gpt-5.4-image-2`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `auto`, `low`, `medium`, `high` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-image-1
-
-OpenAI: GPT Image 1. Output: image.
-
-Full key: `openrouter/openai/gpt-image-1`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:2`, `2:3`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `auto`, `low`, `medium`, `high` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-image-1-mini
-
-OpenAI: GPT Image 1 Mini. Output: image.
-
-Full key: `openrouter/openai/gpt-image-1-mini`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:2`, `2:3`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `auto`, `low`, `medium`, `high` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## openai/gpt-image-2
-
-OpenAI: GPT Image 2. Output: image.
-
-Full key: `openrouter/openai/gpt-image-2`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:2`, `2:3`, `4:3`, `3:4`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | Allowed: `auto`, `low`, `medium`, `high` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `16` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## qwen/qwen-image-3
-
-Qwen: Qwen Image 3. Output: image.
-
-Full key: `openrouter/qwen/qwen-image-3`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:2`, `1:4`, `2:1`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9` |
-| `--resolution` | Optional | Allowed: `1K`, `2K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `4` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## qwen/qwen-image-3-pro
-
-Qwen: Qwen Image 3 Pro. Output: image.
-
-Full key: `openrouter/qwen/qwen-image-3-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `1:2`, `1:4`, `2:1`, `2:3`, `3:2`, `3:4`, `4:1`, `4:3`, `4:5`, `5:4`, `9:16`, `16:9` |
-| `--resolution` | Optional | Allowed: `1K`, `2K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `4` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## recraft/recraft-v3
-
-Recraft: Recraft V3. Output: image.
-
-Full key: `openrouter/recraft/recraft-v3`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4
-
-Recraft: Recraft V4. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4-pro
-
-Recraft: Recraft V4 Pro. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4-pro-vector
-
-Recraft: Recraft V4 Pro Vector. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-pro-vector`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4-styles
-
-Recraft: Recraft V4 Styles. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-styles`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:1`, `1:2`, `3:2`, `2:3`, `4:3`, `3:4`, `5:4`, `4:5`, `16:9`, `9:16`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--input-media` | Required | Maximum inputs: `10` |
-
-## recraft/recraft-v4-styles-pro
-
-Recraft: Recraft V4 Styles Pro. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-styles-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:1`, `1:2`, `3:2`, `2:3`, `4:3`, `3:4`, `5:4`, `4:5`, `16:9`, `9:16`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--input-media` | Required | Maximum inputs: `10` |
-
-## recraft/recraft-v4-styles-pro-vector
-
-Recraft: Recraft V4 Styles Pro Vector. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-styles-pro-vector`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:1`, `1:2`, `3:2`, `2:3`, `4:3`, `3:4`, `5:4`, `4:5`, `16:9`, `9:16`, `auto` |
-| `--output-format` | Optional | Allowed: `svg` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--input-media` | Required | Maximum inputs: `10` |
-
-## recraft/recraft-v4-styles-vector
-
-Recraft: Recraft V4 Styles Vector. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-styles-vector`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `2:1`, `1:2`, `3:2`, `2:3`, `4:3`, `3:4`, `5:4`, `4:5`, `16:9`, `9:16`, `auto` |
-| `--output-format` | Optional | Allowed: `svg` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--input-media` | Required | Maximum inputs: `10` |
-
-## recraft/recraft-v4-vector
-
-Recraft: Recraft V4 Vector. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4-vector`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4.1
-
-Recraft: Recraft V4.1. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4.1`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4.1-pro
-
-Recraft: Recraft V4.1 Pro. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4.1-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4.1-pro-vector
-
-Recraft: Recraft V4.1 Pro Vector. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4.1-pro-vector`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4.1-utility
-
-Recraft: Recraft V4.1 Utility. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4.1-utility`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4.1-utility-pro
-
-Recraft: Recraft V4.1 Utility Pro. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4.1-utility-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## recraft/recraft-v4.1-vector
-
-Recraft: Recraft V4.1 Vector. Output: image.
-
-Full key: `openrouter/recraft/recraft-v4.1-vector`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `auto` |
-| `--resolution` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `6` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## sourceful/riverflow-v2-fast
-
-Sourceful: Riverflow V2 Fast. Output: image.
-
-Full key: `openrouter/sourceful/riverflow-v2-fast`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `4` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## sourceful/riverflow-v2-pro
-
-Sourceful: Riverflow V2 Pro. Output: image.
-
-Full key: `openrouter/sourceful/riverflow-v2-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `10` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## sourceful/riverflow-v2.5-fast
-
-Sourceful: Riverflow V2.5 Fast. Output: image.
-
-Full key: `openrouter/sourceful/riverflow-v2.5-fast`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `jpeg` |
-| `--input-media` | Optional | Maximum inputs: `4` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## sourceful/riverflow-v2.5-pro
-
-Sourceful: Riverflow V2.5 Pro. Output: image.
-
-Full key: `openrouter/sourceful/riverflow-v2.5-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `3:2`, `2:3`, `16:9`, `9:16`, `21:9`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K`, `4K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `10` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## x-ai/grok-imagine-image-2.0
-
-xAI: Grok Imagine Image 2.0. Output: image.
-
-Full key: `openrouter/x-ai/grok-imagine-image-2.0`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:4`, `4:3`, `9:16`, `16:9`, `2:3`, `3:2`, `9:19.5`, `19.5:9`, `9:20`, `20:9`, `1:2`, `2:1`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K` |
-| `--quality` | Optional | Allowed: `low`, `medium` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--input-media` | Optional | Maximum inputs: `3` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## x-ai/grok-imagine-image-quality
-
-SpaceXAI: Grok Imagine Image Quality. Output: image.
-
-Full key: `openrouter/x-ai/grok-imagine-image-quality`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:4`, `4:3`, `9:16`, `16:9`, `2:3`, `3:2`, `9:19.5`, `19.5:9`, `9:20`, `20:9`, `1:2`, `2:1`, `auto` |
-| `--resolution` | Optional | Allowed: `1K`, `2K` |
-| `--quality` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--output-format` | Optional | Allowed: `png`, `jpeg`, `webp` |
-| `--input-media` | Optional | Maximum inputs: `3` |
-| `--background` | Optional | Allowed: `auto`, `transparent`, `opaque` |
-| `--output-compression` | Optional | Minimum: `0`; Maximum: `100` |
-
-## alibaba/happyhorse-1.0
-
-Alibaba: HappyHorse 1.0. Output: video.
-
-Full key: `openrouter/alibaba/happyhorse-1.0`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `21:9`, `9:21` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## alibaba/happyhorse-1.1
-
-Alibaba: HappyHorse 1.1. Output: video.
-
-Full key: `openrouter/alibaba/happyhorse-1.1`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `21:9`, `9:21` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## alibaba/wan-2.6
-
-Alibaba: Wan 2.6. Output: video.
-
-Full key: `openrouter/alibaba/wan-2.6`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `5`, `10` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## alibaba/wan-2.7
-
-Alibaba: Wan 2.7. Output: video.
-
-Full key: `openrouter/alibaba/wan-2.7`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## alibaba/wan-3.0
-
-Alibaba: Wan 3.0. Output: video.
-
-Full key: `openrouter/alibaba/wan-3.0`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `4:3`, `1:1`, `3:4`, `9:16` |
-| `--resolution` | Optional | Allowed: `480p`, `720p`, `1080p` |
-| `--duration` | Optional | Minimum: `2`; Maximum: `30` |
-| `--input-media` | Optional | Maximum inputs: `1`; Use `first:` for an opening image only. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## alibaba/wan-3.0-prime
-
-Alibaba: Wan 3.0 Prime. Output: video.
-
-Full key: `openrouter/alibaba/wan-3.0-prime`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `4:3`, `1:1`, `3:4`, `9:16` |
-| `--resolution` | Optional | Allowed: `480p`, `720p`, `1080p` |
-| `--duration` | Optional | Minimum: `2`; Maximum: `30` |
-| `--input-media` | Optional | Maximum inputs: `1`; Use `first:` for an opening image only. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance/seedance-1-5-pro
-
-ByteDance: Seedance 1.5 Pro. Output: video.
-
-Full key: `openrouter/bytedance/seedance-1-5-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:4`, `9:16`, `9:21`, `4:3`, `16:9`, `21:9` |
-| `--resolution` | Optional | Allowed: `480p`, `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance/seedance-2.0
-
-ByteDance: Seedance 2.0. Output: video.
-
-Full key: `openrouter/bytedance/seedance-2.0`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:4`, `9:16`, `4:3`, `16:9`, `21:9`, `9:21` |
-| `--resolution` | Optional | Allowed: `480p`, `720p`, `1080p`, `4K` |
-| `--duration` | Optional | Allowed: `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance/seedance-2.0-fast
-
-ByteDance: Seedance 2.0 Fast. Output: video.
-
-Full key: `openrouter/bytedance/seedance-2.0-fast`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:4`, `9:16`, `4:3`, `16:9`, `21:9`, `9:21` |
-| `--resolution` | Optional | Allowed: `480p`, `720p` |
-| `--duration` | Optional | Allowed: `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance/seedance-2.0-mini
-
-ByteDance: Seedance 2.0 Mini. Output: video.
-
-Full key: `openrouter/bytedance/seedance-2.0-mini`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `3:4`, `9:16`, `4:3`, `16:9`, `21:9`, `9:21` |
-| `--resolution` | Optional | Allowed: `480p`, `720p` |
-| `--duration` | Optional | Allowed: `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## bytedance/seedance-2.5
-
-ByteDance: Seedance 2.5. Output: video.
-
-Full key: `openrouter/bytedance/seedance-2.5`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `4:3`, `1:1`, `3:4`, `9:16`, `21:9` |
-| `--resolution` | Optional | Allowed: `480p`, `720p` |
-| `--duration` | Optional | Allowed: `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `17`, `18`, `19`, `20`, `21`, `22`, `23`, `24`, `25`, `26`, `27`, `28`, `29`, `30` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## google/veo-3.1
-
-Google: Veo 3.1. Output: video.
-
-Full key: `openrouter/google/veo-3.1`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p`, `4K` |
-| `--duration` | Optional | Allowed: `4`, `6`, `8` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## google/veo-3.1-fast
-
-Google: Veo 3.1 Fast. Output: video.
-
-Full key: `openrouter/google/veo-3.1-fast`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p`, `4K` |
-| `--duration` | Optional | Allowed: `4`, `6`, `8` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## google/veo-3.1-lite
-
-Google: Veo 3.1 Lite. Output: video.
-
-Full key: `openrouter/google/veo-3.1-lite`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `4`, `6`, `8` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## kwaivgi/kling-v3.0-pro
-
-Kling: Video v3.0 Pro. Output: video.
-
-Full key: `openrouter/kwaivgi/kling-v3.0-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--resolution` | Optional | Allowed: `720p` |
-| `--duration` | Optional | Allowed: `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## kwaivgi/kling-v3.0-std
-
-Kling: Video v3.0 Standard. Output: video.
-
-Full key: `openrouter/kwaivgi/kling-v3.0-std`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--resolution` | Optional | Allowed: `720p` |
-| `--duration` | Optional | Allowed: `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## kwaivgi/kling-video-o1
-
-Kling: Video O1. Output: video.
-
-Full key: `openrouter/kwaivgi/kling-video-o1`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--resolution` | Optional | Allowed: `720p` |
-| `--duration` | Optional | Allowed: `5`, `10` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## minimax/hailuo-2.3
-
-MiniMax: Hailuo 2.3. Output: video.
-
-Full key: `openrouter/minimax/hailuo-2.3`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9` |
-| `--resolution` | Optional | Allowed: `1080p` |
-| `--duration` | Optional | Allowed: `6`, `10` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-
-## minimax/hailuo-3
-
-MiniMax: H3. Output: video.
-
-Full key: `openrouter/minimax/hailuo-3`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` |
-| `--resolution` | Optional | Allowed: `2K` |
-| `--duration` | Optional | Allowed: `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## openai/sora-2-pro
-
-OpenAI: Sora 2 Pro. Output: video.
-
-Full key: `openrouter/openai/sora-2-pro`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `4`, `8`, `12`, `16`, `20` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--generate-audio` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## runway/aleph-2
-
-Runway: Aleph 2.0. Output: video.
-
-Full key: `openrouter/runway/aleph-2`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `4:3`, `3:2`, `1:1`, `2:3`, `3:4`, `9:16`, `21:9` |
-| `--input-media` | Required | Maximum inputs: `1` |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## runway/gen-4.5
-
-Runway: Gen-4.5. Output: video.
-
-Full key: `openrouter/runway/gen-4.5`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16` |
-| `--resolution` | Optional | Allowed: `720p` |
-| `--duration` | Optional | Allowed: `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--seed` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## x-ai/grok-imagine-video
-
-SpaceXAI: Grok Imagine Video. Output: video.
-
-Full key: `openrouter/x-ai/grok-imagine-video`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `3:2`, `2:3` |
-| `--resolution` | Optional | Allowed: `480p`, `720p` |
-| `--duration` | Optional | Allowed: `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-
-## x-ai/grok-imagine-video-1.5
-
-SpaceXAI: Grok Imagine Video 1.5. Output: video.
-
-Full key: `openrouter/x-ai/grok-imagine-video-1.5`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1`, `4:3`, `3:4`, `3:2`, `2:3` |
-| `--resolution` | Optional | Allowed: `480p`, `720p`, `1080p` |
-| `--duration` | Optional | Allowed: `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
-| `--input-media` | Optional | Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-
-## microsoft/mai-image-2.6
-
-Microsoft: MAI Image 2.6. Output: image.
-
-Full key: `openrouter/microsoft/mai-image-2.6`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `3:2`, `2:3`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--input-media` | Optional | Maximum inputs: `5` |
-
-## microsoft/mai-image-2.6-flash
-
-Microsoft: MAI Image 2.6 Flash. Output: image.
-
-Full key: `openrouter/microsoft/mai-image-2.6-flash`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `4:3`, `3:4`, `16:9`, `9:16`, `3:2`, `2:3`, `auto` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `1` |
-| `--input-media` | Optional | Maximum inputs: `5` |
-
-## minimax/hailuo-3-max
-
-MiniMax: Hailuo 3 Max. Output: video.
-
-Full key: `openrouter/minimax/hailuo-3-max`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` |
-| `--resolution` | Optional | Allowed: `768p`, `480p` |
-| `--duration` | Optional | Minimum: `5`; Maximum: `15` |
-| `--input-media` | Optional | Maximum inputs: `2`; Use `first:` for an opening image and `last:` for a closing image. See [frame rules and model limitations](../input-media.md#opening-and-closing-frames). |
-| `--watermark` | Optional | No declared value constraint; see the general flag and input rules. |
-
-## black-forest-labs/flux-video-edit
-
-Black Forest Labs: FLUX Video Edit. Output: video.
-
-Full key: `openrouter/black-forest-labs/flux-video-edit`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--input-media` | Required | Maximum inputs: `1`; Supply one public HTTPS video URL. Local video files are rejected by this route. See [OpenRouter’s video generation guide](https://openrouter.ai/docs/guides/overview/multimodal/video-generation). |
-| `--safety-tolerance` | Optional | Minimum: `0`; Maximum: `5` |
-
-## black-forest-labs/flux-video-upscale
-
-Black Forest Labs: FLUX Video Upscale. Output: video.
-
-Full key: `openrouter/black-forest-labs/flux-video-upscale`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--input-media` | Required | Maximum inputs: `1`; Supply one public HTTPS video URL. Local video files are rejected by this route. See [OpenRouter’s video generation guide](https://openrouter.ai/docs/guides/overview/multimodal/video-generation). |
-| `--upscale-factor` | Optional | Minimum: `1.5`; Maximum: `3` |
-| `--creativity` | Optional | Allowed: `0`, `1` |
-| `--safety-tolerance` | Optional | Minimum: `0`; Maximum: `5` |
-
-## heygen/avatar-iv
-
-HeyGen: Avatar IV. Output: video.
-
-Full key: `openrouter/heygen/avatar-iv`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--input-media` | Required | Maximum inputs: `1`; Supply one portrait image. The prompt is spoken using --voice-id. Audio input is not supported. |
-| `--voice-id` | Required | Examples: `16a09e4706f74997ba4ed05ea11470f6`, `6be73833ef9a4eb0aeee399b8fe9d62b`. The example IDs have been verified with this endpoint. Find other voice IDs in [HeyGen’s voice list reference](https://developers.heygen.com/reference/list-voices). |
-| `--aspect-ratio` | Optional | Allowed: `16:9`, `9:16`, `1:1` |
-| `--resolution` | Optional | Allowed: `720p`, `1080p` |
-| `--motion-prompt` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--expressiveness` | Optional | Examples: `low`, `medium`, `high`. |
-| `--image-fit` | Optional | Examples: `contain`, `cover`. |
-| `--remove-background` | Optional | No declared value constraint; see the general flag and input rules. |
-| `--voice-speed` | Optional | Minimum: `0.5`; Maximum: `1.5` |
-| `--voice-pitch` | Optional | Pitch adjustment from -50 to +50 semitones. |
-| `--voice-volume` | Optional | Minimum: `0`; Maximum: `1` |
-| `--voice-locale` | Optional | Examples: `en-US`, `en-GB`. |
-
-Revised 2026-10-01
+# OpenRouter Models
+
+Every model that `bild` offers from OpenRouter (provider ID `openrouter`, key variable `OPENROUTER_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openrouter/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
+
+51 image models, 29 video models.
+
+## Contents
+
+- [OpenAI: GPT Image 2.5 Flare](#openai-gpt-image-25-flare)
+- [OpenAI: GPT Image 2.5 Sunburst](#openai-gpt-image-25-sunburst)
+- [Black Forest Labs: FLUX.2 Flex](#black-forest-labs-flux2-flex)
+- [Black Forest Labs: FLUX.2 Klein 4B](#black-forest-labs-flux2-klein-4b)
+- [Black Forest Labs: FLUX.2 Max](#black-forest-labs-flux2-max)
+- [Black Forest Labs: FLUX.2 Pro](#black-forest-labs-flux2-pro)
+- [Black Forest Labs: FLUX.3 Video](#black-forest-labs-flux3-video)
+- [ByteDance Seed: Seedream 4.5](#bytedance-seed-seedream-45)
+- [ByteDance Seed: Seedream 5.0 Pro](#bytedance-seed-seedream-50-pro)
+- [ByteDance Seed: Seedream 5.0 Lite](#bytedance-seed-seedream-50-lite)
+- [Google: Nano Banana (Gemini 2.5 Flash Image)](#google-nano-banana-gemini-25-flash-image)
+- [Google: Nano Banana Pro (Gemini 3 Pro Image)](#google-nano-banana-pro-gemini-3-pro-image)
+- [Google: Nano Banana Pro (Gemini 3 Pro Image Preview)](#google-nano-banana-pro-gemini-3-pro-image-preview)
+- [Google: Nano Banana 2 (Gemini 3.1 Flash Image)](#google-nano-banana-2-gemini-31-flash-image)
+- [Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview)](#google-nano-banana-2-gemini-31-flash-image-preview)
+- [Google: Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)](#google-nano-banana-2-lite-gemini-31-flash-lite-image)
+- [Krea: Krea 2 Large](#krea-krea-2-large)
+- [Krea: Krea 2 Medium](#krea-krea-2-medium)
+- [Krea: Krea 2 Medium Turbo](#krea-krea-2-medium-turbo)
+- [Microsoft: MAI-Image-2.5](#microsoft-mai-image-25)
+- [Microsoft: MAI-Image-2.5 Pro](#microsoft-mai-image-25-pro)
+- [OpenAI: GPT-5 Image](#openai-gpt-5-image)
+- [OpenAI: GPT-5 Image Mini](#openai-gpt-5-image-mini)
+- [OpenAI: GPT-5.4 Image 2](#openai-gpt-54-image-2)
+- [OpenAI: GPT Image 1](#openai-gpt-image-1)
+- [OpenAI: GPT Image 1 Mini](#openai-gpt-image-1-mini)
+- [OpenAI: GPT Image 2](#openai-gpt-image-2)
+- [Qwen: Qwen Image 3](#qwen-qwen-image-3)
+- [Qwen: Qwen Image 3 Pro](#qwen-qwen-image-3-pro)
+- [Recraft: Recraft V3](#recraft-recraft-v3)
+- [Recraft: Recraft V4](#recraft-recraft-v4)
+- [Recraft: Recraft V4 Pro](#recraft-recraft-v4-pro)
+- [Recraft: Recraft V4 Pro Vector](#recraft-recraft-v4-pro-vector)
+- [Recraft: Recraft V4 Styles](#recraft-recraft-v4-styles)
+- [Recraft: Recraft V4 Styles Pro](#recraft-recraft-v4-styles-pro)
+- [Recraft: Recraft V4 Styles Pro Vector](#recraft-recraft-v4-styles-pro-vector)
+- [Recraft: Recraft V4 Styles Vector](#recraft-recraft-v4-styles-vector)
+- [Recraft: Recraft V4 Vector](#recraft-recraft-v4-vector)
+- [Recraft: Recraft V4.1](#recraft-recraft-v41)
+- [Recraft: Recraft V4.1 Pro](#recraft-recraft-v41-pro)
+- [Recraft: Recraft V4.1 Pro Vector](#recraft-recraft-v41-pro-vector)
+- [Recraft: Recraft V4.1 Utility](#recraft-recraft-v41-utility)
+- [Recraft: Recraft V4.1 Utility Pro](#recraft-recraft-v41-utility-pro)
+- [Recraft: Recraft V4.1 Vector](#recraft-recraft-v41-vector)
+- [Sourceful: Riverflow V2 Fast](#sourceful-riverflow-v2-fast)
+- [Sourceful: Riverflow V2 Pro](#sourceful-riverflow-v2-pro)
+- [Sourceful: Riverflow V2.5 Fast](#sourceful-riverflow-v25-fast)
+- [Sourceful: Riverflow V2.5 Pro](#sourceful-riverflow-v25-pro)
+- [xAI: Grok Imagine Image 2.0](#xai-grok-imagine-image-20)
+- [SpaceXAI: Grok Imagine Image Quality](#spacexai-grok-imagine-image-quality)
+- [Alibaba: HappyHorse 1.0](#alibaba-happyhorse-10)
+- [Alibaba: HappyHorse 1.1](#alibaba-happyhorse-11)
+- [Alibaba: Wan 2.6](#alibaba-wan-26)
+- [Alibaba: Wan 2.7](#alibaba-wan-27)
+- [Alibaba: Wan 3.0](#alibaba-wan-30)
+- [Alibaba: Wan 3.0 Prime](#alibaba-wan-30-prime)
+- [ByteDance: Seedance 1.5 Pro](#bytedance-seedance-15-pro)
+- [ByteDance: Seedance 2.0](#bytedance-seedance-20)
+- [ByteDance: Seedance 2.0 Fast](#bytedance-seedance-20-fast)
+- [ByteDance: Seedance 2.0 Mini](#bytedance-seedance-20-mini)
+- [ByteDance: Seedance 2.5](#bytedance-seedance-25)
+- [Google: Veo 3.1](#google-veo-31)
+- [Google: Veo 3.1 Fast](#google-veo-31-fast)
+- [Google: Veo 3.1 Lite](#google-veo-31-lite)
+- [Kling: Video v3.0 Pro](#kling-video-v30-pro)
+- [Kling: Video v3.0 Standard](#kling-video-v30-standard)
+- [Kling: Video O1](#kling-video-o1)
+- [MiniMax: Hailuo 2.3](#minimax-hailuo-23)
+- [MiniMax: H3](#minimax-h3)
+- [OpenAI: Sora 2 Pro](#openai-sora-2-pro)
+- [Runway: Aleph 2.0](#runway-aleph-20)
+- [Runway: Gen-4.5](#runway-gen-45)
+- [SpaceXAI: Grok Imagine Video](#spacexai-grok-imagine-video)
+- [SpaceXAI: Grok Imagine Video 1.5](#spacexai-grok-imagine-video-15)
+- [Microsoft: MAI Image 2.6](#microsoft-mai-image-26)
+- [Microsoft: MAI Image 2.6 Flash](#microsoft-mai-image-26-flash)
+- [MiniMax: Hailuo 3 Max](#minimax-hailuo-3-max)
+- [Black Forest Labs: FLUX Video Edit](#black-forest-labs-flux-video-edit)
+- [Black Forest Labs: FLUX Video Upscale](#black-forest-labs-flux-video-upscale)
+- [HeyGen: Avatar IV](#heygen-avatar-iv)
+
+## OpenAI: GPT Image 2.5 Flare
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT Image 2.5 Flare | image | none | `openrouter/openai/gpt-image-2.5-flare`
+
+Fast image generation and editing for everyday creative work.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, 4:3, 3:4, 16:9, 9:16, 21:9, auto
+`--quality` | Allowed values: low, medium, high, xhigh, max, auto
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT Image 2.5 Sunburst
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT Image 2.5 Sunburst | image | none | `openrouter/openai/gpt-image-2.5-sunburst`
+
+Generate images and make precise edits from text and image references.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, 4:3, 3:4, 16:9, 9:16, 21:9, auto
+`--quality` | Allowed values: low, medium, high, xhigh, max, auto
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Black Forest Labs: FLUX.2 Flex
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX.2 Flex | image | none | `openrouter/black-forest-labs/flux.2-flex`
+
+FLUX.2 [flex] excels at rendering complex text, typography, and fine details, and supports multi-reference editing in the same unified architecture. Pricing is [per the BFL docs](https://bfl.ai/pricing?category=flux.2).
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 8
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Black Forest Labs: FLUX.2 Klein 4B
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX.2 Klein 4B | image | none | `openrouter/black-forest-labs/flux.2-klein-4b`
+
+FLUX.2 [klein] 4B is the fastest and most cost-effective model in the FLUX.2 family, optimized for high-throughput use cases while maintaining excellent image quality.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 4
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Black Forest Labs: FLUX.2 Max
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX.2 Max | image | none | `openrouter/black-forest-labs/flux.2-max`
+
+FLUX.2 [max] is the new top-tier image model from Black Forest Labs, pushing image quality, prompt understanding, and editing consistency to the highest level yet.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 8
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Black Forest Labs: FLUX.2 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX.2 Pro | image | none | `openrouter/black-forest-labs/flux.2-pro`
+
+A high-end image generation and editing model focused on frontier-level visual quality and reliability. It delivers strong prompt adherence, stable lighting, sharp textures, and consistent character/style reproduction across multi-reference inputs.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 8
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Black Forest Labs: FLUX.3 Video
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX.3 Video | video | none | `openrouter/black-forest-labs/flux-3-video`
+
+FLUX.3 Video is a video generation model from Black Forest Labs. It supports text-to-video, image-guided generation with opening and closing keyframes, and video continuation workflows.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 21:9, 16:9, 4:3, 1:1, 3:4, 9:16
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+`--generate-audio` | 
+
+## ByteDance Seed: Seedream 4.5
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance Seed: Seedream 4.5 | image | none | `openrouter/bytedance-seed/seedream-4.5`
+
+Seedream 4.5 is the latest in-house image generation model developed by ByteDance. Compared with Seedream 4.0, it delivers comprehensive improvements, especially in editing consistency, including better preservation of subject details.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:2, 2:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 9:19.5, 19.5:9, 9:20, 20:9, 9:21, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 14
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## ByteDance Seed: Seedream 5.0 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance Seed: Seedream 5.0 Pro | image | none | `openrouter/bytedance-seed/seedream-5-0-pro`
+
+Seedream 5.0 Pro is an image generation and editing model from ByteDance Seed. It is suited for commercial visual-production workflows that require precise editing control, lifelike scenes, and natural rendering.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:2, 2:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 9:19.5, 19.5:9, 9:20, 20:9, 9:21, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K
+`--quality` | 
+`--output-format` | 
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## ByteDance Seed: Seedream 5.0 Lite
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance Seed: Seedream 5.0 Lite | image | none | `openrouter/bytedance-seed/seedream-5-0-lite`
+
+Seedream 5.0 Lite is an image generation and editing model from ByteDance Seed.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:2, 2:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 9:19.5, 19.5:9, 9:20, 20:9, 9:21, 21:9, auto
+`--resolution` | Allowed values: 2K, 4K
+`--num-images` | Allowed range: 1 to 4
+`--input-media` | Repeat maximum: 14
+`--seed` | 
+
+## Google: Nano Banana (Gemini 2.5 Flash Image)
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana (Gemini 2.5 Flash Image) | image | none | `openrouter/google/gemini-2.5-flash-image`
+
+Gemini 2.5 Flash Image, a.k.a. "Nano Banana," is now generally available. It is a state of the art image generation model with contextual understanding.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 3
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Google: Nano Banana Pro (Gemini 3 Pro Image)
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana Pro (Gemini 3 Pro Image) | image | none | `openrouter/google/gemini-3-pro-image`
+
+Nano Banana Pro is Google’s most advanced image-generation and editing model, built on Gemini 3 Pro. It extends the original Nano Banana with significantly improved multimodal reasoning and real-world grounding.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Google: Nano Banana Pro (Gemini 3 Pro Image Preview)
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana Pro (Gemini 3 Pro Image Preview) | image | none | `openrouter/google/gemini-3-pro-image-preview`
+
+Nano Banana Pro is Google’s most advanced image-generation and editing model, built on Gemini 3 Pro. It extends the original Nano Banana with significantly improved multimodal reasoning and real-world grounding.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Google: Nano Banana 2 (Gemini 3.1 Flash Image)
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana 2 (Gemini 3.1 Flash Image) | image | none | `openrouter/google/gemini-3.1-flash-image`
+
+Gemini 3.1 Flash Image, a.k.a. "Nano Banana 2," is Google’s latest state of the art image generation and editing model, delivering Pro-level visual quality at Flash speed.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
+`--resolution` | Allowed values: 512, 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview)
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview) | image | none | `openrouter/google/gemini-3.1-flash-image-preview`
+
+Gemini 3.1 Flash Image Preview, a.k.a. "Nano Banana 2," is Google’s latest state of the art image generation and editing model, delivering Pro-level visual quality at Flash speed.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
+`--resolution` | Allowed values: 512, 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Google: Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image) | image | none | `openrouter/google/gemini-3.1-flash-lite-image`
+
+Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image) is Google's fastest, most cost-efficient Gemini image model, built for high-velocity developer pipelines and rapid-fire visual exploration.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
+`--resolution` | Allowed values: 1K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Krea: Krea 2 Large
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Krea: Krea 2 Large | image | none | `openrouter/krea/krea-2-large`
+
+Krea 2 Large is Krea's high-capability image generation model, more than twice the size of Krea 2 Medium. Its lighter post-training gives images a rawer, more textured quality.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:2, 16:9, 4:5, 2:3, 9:16
+`--resolution` | Allowed values: 1K
+`--quality` | 
+`--output-format` | 
+`--input-media` | Repeat maximum: 1
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Krea: Krea 2 Medium
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Krea: Krea 2 Medium | image | none | `openrouter/krea/krea-2-medium`
+
+Krea 2 Medium is Krea's balanced, cost-efficient image generation model and a practical starting point for a broad range of use cases. Its extensive post-training supports stable, consistent generations.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:2, 16:9, 4:5, 2:3, 9:16
+`--resolution` | Allowed values: 1K
+`--quality` | 
+`--output-format` | 
+`--input-media` | Repeat maximum: 1
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Krea: Krea 2 Medium Turbo
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Krea: Krea 2 Medium Turbo | image | none | `openrouter/krea/krea-2-medium-turbo`
+
+Krea 2 Medium Turbo is a distilled, speed-focused variant of Krea 2 Medium from Krea. It is designed for rapid iteration and graphic design exploration where fast generation is the priority.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:2, 16:9, 4:5, 2:3, 9:16
+`--resolution` | Allowed values: 1K
+`--quality` | 
+`--output-format` | 
+`--input-media` | Repeat maximum: 1
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Microsoft: MAI-Image-2.5
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Microsoft: MAI-Image-2.5 | image | none | `openrouter/microsoft/mai-image-2.5`
+
+Microsoft's MAI-Image-2.5 is a high-quality image generation model available via Azure AI Foundry. It produces photorealistic and artistic images from text prompts with support for various aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Microsoft: MAI-Image-2.5 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Microsoft: MAI-Image-2.5 Pro | image | none | `openrouter/microsoft/mai-image-2.5-pro`
+
+Microsoft's MAI-Image-2.5 is a high-quality image generation model available via Azure AI Foundry. It produces photorealistic and artistic images from text prompts with support for various aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | 
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT-5 Image
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT-5 Image | image | none | `openrouter/openai/gpt-5-image`
+
+[GPT-5](https://openrouter.ai/openai/gpt-5) Image combines OpenAI's GPT-5 model with state-of-the-art image generation capabilities. It offers major improvements in reasoning, code quality, and user experience while incorporating GPT Image 1's superior instruction following.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: auto, low, medium, high
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT-5 Image Mini
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT-5 Image Mini | image | none | `openrouter/openai/gpt-5-image-mini`
+
+GPT-5 Image Mini combines OpenAI's advanced language capabilities, powered by [GPT-5 Mini](https://openrouter.ai/openai/gpt-5-mini), with GPT Image 1 Mini for efficient image generation. This natively multimodal model features superior instruction following.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: auto, low, medium, high
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT-5.4 Image 2
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT-5.4 Image 2 | image | none | `openrouter/openai/gpt-5.4-image-2`
+
+[GPT-5.4](https://openrouter.ai/openai/gpt-5.4) Image 2 combines OpenAI's GPT-5.4 model with state-of-the-art image generation capabilities from GPT Image 2. It enables rich multimodal workflows, allowing users to seamlessly move between reasoning, coding, and image generation.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | 
+`--resolution` | 
+`--quality` | Allowed values: auto, low, medium, high
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT Image 1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT Image 1 | image | none | `openrouter/openai/gpt-image-1`
+
+OpenAI's GPT Image 1 generates and edits images via the dedicated Images API. Features accurate text rendering, transparent backgrounds, and up to 16 reference images for edits.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, auto
+`--resolution` | 
+`--quality` | Allowed values: auto, low, medium, high
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT Image 1 Mini
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT Image 1 Mini | image | none | `openrouter/openai/gpt-image-1-mini`
+
+A cost-efficient variant of GPT Image 1 for high-quality image generation at reduced latency and cost via OpenAI's dedicated Images API.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, auto
+`--resolution` | 
+`--quality` | Allowed values: auto, low, medium, high
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## OpenAI: GPT Image 2
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: GPT Image 2 | image | none | `openrouter/openai/gpt-image-2`
+
+OpenAI's latest image generation model. Supports high-fidelity image generation and editing via the dedicated Images API.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, 4:3, 3:4, 16:9, 9:16, 21:9, auto
+`--resolution` | 
+`--quality` | Allowed values: auto, low, medium, high
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 16
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Qwen: Qwen Image 3
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Qwen: Qwen Image 3 | image | none | `openrouter/qwen/qwen-image-3`
+
+Qwen Image 3 is a unified image generation and editing model from Qwen. It supports precise rendering of text and details as small as 10px, along with a richer world knowledge.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:2, 1:4, 2:1, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 9:16, 16:9
+`--resolution` | Allowed values: 1K, 2K
+`--quality` | 
+`--output-format` | 
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 4
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Qwen: Qwen Image 3 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Qwen: Qwen Image 3 Pro | image | none | `openrouter/qwen/qwen-image-3-pro`
+
+Qwen Image 3 Pro is an image generation and editing model from Qwen. It supports precise rendering of text and details as small as 10px, along with richer world knowledge.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:2, 1:4, 2:1, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 9:16, 16:9
+`--resolution` | Allowed values: 1K, 2K
+`--quality` | 
+`--output-format` | 
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 4
+`--seed` | 
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V3
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V3 | image | none | `openrouter/recraft/recraft-v3`
+
+Recraft V3 is an image generation model from Recraft. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 | image | none | `openrouter/recraft/recraft-v4`
+
+Recraft V4 is an image generation model from Recraft. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Pro | image | none | `openrouter/recraft/recraft-v4-pro`
+
+Recraft V4 Pro is an image generation model from Recraft. It supports text and image inputs with image output at ~2K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4 Pro Vector
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Pro Vector | image | none | `openrouter/recraft/recraft-v4-pro-vector`
+
+Recraft V4 Pro Vector is the vector (SVG) variant of Recraft V4 Pro. It supports text and image inputs and produces vector image output across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4 Styles
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Styles | image | none | `openrouter/recraft/recraft-v4-styles`
+
+Recraft V4 Styles is a style-consistent image generation model from Recraft. Every request requires at least one style reference image.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:1, 1:2, 3:2, 2:3, 4:3, 3:4, 5:4, 4:5, 16:9, 9:16, auto
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | **Required.** Repeat maximum: 10
+
+## Recraft: Recraft V4 Styles Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Styles Pro | image | none | `openrouter/recraft/recraft-v4-styles-pro`
+
+Recraft V4 Styles Pro is a style-consistent image generation model from Recraft. Every request requires at least one style reference image.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:1, 1:2, 3:2, 2:3, 4:3, 3:4, 5:4, 4:5, 16:9, 9:16, auto
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | **Required.** Repeat maximum: 10
+
+## Recraft: Recraft V4 Styles Pro Vector
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Styles Pro Vector | image | none | `openrouter/recraft/recraft-v4-styles-pro-vector`
+
+Recraft V4 Styles Pro Vector is a style-consistent vector image generation model from Recraft. Every request requires at least one style reference image.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:1, 1:2, 3:2, 2:3, 4:3, 3:4, 5:4, 4:5, 16:9, 9:16, auto
+`--output-format` | Allowed values: svg
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | **Required.** Repeat maximum: 10
+
+## Recraft: Recraft V4 Styles Vector
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Styles Vector | image | none | `openrouter/recraft/recraft-v4-styles-vector`
+
+Recraft V4 Styles Vector is a style-consistent vector image generation model from Recraft. Every request requires at least one style reference image.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 2:1, 1:2, 3:2, 2:3, 4:3, 3:4, 5:4, 4:5, 16:9, 9:16, auto
+`--output-format` | Allowed values: svg
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | **Required.** Repeat maximum: 10
+
+## Recraft: Recraft V4 Vector
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4 Vector | image | none | `openrouter/recraft/recraft-v4-vector`
+
+Recraft V4 Vector is the vector (SVG) variant of Recraft V4. It supports text and image inputs and produces vector image output across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4.1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 | image | none | `openrouter/recraft/recraft-v4.1`
+
+Recraft V4.1 is an image generation model from Recraft tuned for high aesthetics. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4.1 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 Pro | image | none | `openrouter/recraft/recraft-v4.1-pro`
+
+Recraft V4.1 Pro is an image generation model from Recraft tuned for high aesthetics. It supports text and image inputs with image output at ~2K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4.1 Pro Vector
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 Pro Vector | image | none | `openrouter/recraft/recraft-v4.1-pro-vector`
+
+Recraft V4.1 Pro Vector is the vector (SVG) variant of Recraft V4.1 Pro, tuned for high aesthetics. It supports text and image inputs and produces higher-resolution SVG image output across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4.1 Utility
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 Utility | image | none | `openrouter/recraft/recraft-v4.1-utility`
+
+Recraft V4.1 Utility is a general-purpose image generation model from Recraft. It supports text and image inputs with image output at ~1K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4.1 Utility Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 Utility Pro | image | none | `openrouter/recraft/recraft-v4.1-utility-pro`
+
+Recraft V4.1 Utility Pro is a general-purpose image generation model from Recraft. It supports text and image inputs with image output at ~2K resolution across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Recraft: Recraft V4.1 Vector
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 Vector | image | none | `openrouter/recraft/recraft-v4.1-vector`
+
+Recraft V4.1 Vector is the vector (SVG) variant of Recraft V4.1, tuned for high aesthetics. It supports text and image inputs and produces SVG image output across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--resolution` | 
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 6
+`--input-media` | Repeat maximum: 1
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Sourceful: Riverflow V2 Fast
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Sourceful: Riverflow V2 Fast | image | none | `openrouter/sourceful/riverflow-v2-fast`
+
+Riverflow V2 Fast is the fastest variant of Sourceful's Riverflow 2.0 lineup, best for production deployments and latency-critical workflows. The Riverflow 2.0 series represents SOTA performance on image generation.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 4
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Sourceful: Riverflow V2 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Sourceful: Riverflow V2 Pro | image | none | `openrouter/sourceful/riverflow-v2-pro`
+
+Riverflow V2 Pro is the most powerful variant of Sourceful's Riverflow 2.0 lineup, best for top-tier control and perfect text rendering. The Riverflow 2.0 series represents SOTA performance on image generation.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 10
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Sourceful: Riverflow V2.5 Fast
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Sourceful: Riverflow V2.5 Fast | image | none | `openrouter/sourceful/riverflow-v2.5-fast`
+
+Riverflow V2.5 Fast is the speed-optimized variant of Sourceful's Riverflow 2.5 lineup, best for production deployments and latency-critical workflows. The Riverflow 2.5 series is a unified text-to-image and image-to-image family across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K
+`--quality` | 
+`--output-format` | Allowed values: jpeg
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 4
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Sourceful: Riverflow V2.5 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Sourceful: Riverflow V2.5 Pro | image | none | `openrouter/sourceful/riverflow-v2.5-pro`
+
+Riverflow V2.5 Pro is the most powerful variant of Sourceful's Riverflow 2.5 lineup, best for top-tier control and quality-sensitive outputs. The Riverflow 2.5 series is a unified text-to-image and image-to-image family across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 10
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## xAI: Grok Imagine Image 2.0
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+xAI: Grok Imagine Image 2.0 | image | none | `openrouter/x-ai/grok-imagine-image-2.0`
+
+Grok Imagine Image 2.0 is an image generation and editing model from xAI. It is suited for creating images from text prompts and editing images from references, with low and high fidelity options across multiple aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:4, 4:3, 9:16, 16:9, 2:3, 3:2, 9:19.5, 19.5:9, 9:20, 20:9, 1:2, 2:1, auto
+`--resolution` | Allowed values: 1K, 2K
+`--quality` | Allowed values: low, medium
+`--output-format` | 
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 3
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## SpaceXAI: Grok Imagine Image Quality
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+SpaceXAI: Grok Imagine Image Quality | image | none | `openrouter/x-ai/grok-imagine-image-quality`
+
+Grok Imagine Image Quality is SpaceXAI's fast, high-fidelity image generation and editing model. It accepts text prompts and optional reference images, producing photorealistic outputs at 1K or 2K across a range of aspect ratios.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:4, 4:3, 9:16, 16:9, 2:3, 3:2, 9:19.5, 19.5:9, 9:20, 20:9, 1:2, 2:1, auto
+`--resolution` | Allowed values: 1K, 2K
+`--quality` | 
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 3
+`--background` | Allowed values: auto, transparent, opaque
+`--output-compression` | Allowed range: 0 to 100
+
+## Alibaba: HappyHorse 1.0
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Alibaba: HappyHorse 1.0 | video | none | `openrouter/alibaba/happyhorse-1.0`
+
+HappyHorse 1.0 is a video generation model from Alibaba. It generates short videos from a text prompt, a single starting image, or a set of reference images.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 21:9, 9:21
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+
+## Alibaba: HappyHorse 1.1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Alibaba: HappyHorse 1.1 | video | none | `openrouter/alibaba/happyhorse-1.1`
+
+HappyHorse 1.1 is a video generation model from Alibaba. It generates short videos from a text prompt, a single starting image, or a set of reference images.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 21:9, 9:21
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+
+## Alibaba: Wan 2.6
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Alibaba: Wan 2.6 | video | none | `openrouter/alibaba/wan-2.6`
+
+Alibaba's most advanced video generation model, supporting over 10 visual creation capabilities in a unified system. Wan 2.6 generates 1080p video at 24fps from text, images, reference videos, or audio.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 5, 10
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Alibaba: Wan 2.7
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Alibaba: Wan 2.7 | video | none | `openrouter/alibaba/wan-2.7`
+
+Wan 2.7 is a video generation model from Alibaba. It supports text-to-video, image-to-video with first and last frame control, and reference-to-video, where multiple reference images guide the style and content.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 2, 3, 4, 5, 6, 7, 8, 9, 10
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Alibaba: Wan 3.0
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Alibaba: Wan 3.0 | video | none | `openrouter/alibaba/wan-3.0`
+
+Wan 3.0 is a video generation model from Alibaba for text-to-video, image-to-video, and reference-guided video generation. It produces 480p, 720p, or 1080p video with durations from 2 to 30 seconds.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 4:3, 1:1, 3:4, 9:16
+`--resolution` | Allowed values: 480p, 720p, 1080p
+`--duration` | Allowed range: 2 to 30
+`--input-media` | Repeat maximum: 1; Special usage: <[first:]media-file>. To use the image as the opening frame, add the 'first:' prefix (for example, first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Alibaba: Wan 3.0 Prime
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Alibaba: Wan 3.0 Prime | video | none | `openrouter/alibaba/wan-3.0-prime`
+
+Wan 3.0 Prime is a fast-mode variant of Wan 3.0 from Alibaba. It supports text-to-video and first-frame image-to-video generation.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 4:3, 1:1, 3:4, 9:16
+`--resolution` | Allowed values: 480p, 720p, 1080p
+`--duration` | Allowed range: 2 to 30
+`--input-media` | Repeat maximum: 1; Special usage: <[first:]media-file>. To use the image as the opening frame, add the 'first:' prefix (for example, first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## ByteDance: Seedance 1.5 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance: Seedance 1.5 Pro | video | none | `openrouter/bytedance/seedance-1-5-pro`
+
+ByteDance's next-generation audio-visual generation model with a 4.5B parameter Dual-Branch Diffusion Transformer architecture. Seedance 1.5 Pro generates video and audio simultaneously in a single unified pass — eliminating the timing issues between audio and video.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:4, 9:16, 9:21, 4:3, 16:9, 21:9
+`--resolution` | Allowed values: 480p, 720p, 1080p
+`--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## ByteDance: Seedance 2.0
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance: Seedance 2.0 | video | none | `openrouter/bytedance/seedance-2.0`
+
+Seedance 2.0 is a video generation model from ByteDance. It supports text-to-video, image-to-video with first and last frame control, and multimodal reference-to-video. It is particularly strong at preserving character consistency.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:4, 9:16, 4:3, 16:9, 21:9, 9:21
+`--resolution` | Allowed values: 480p, 720p, 1080p, 4K
+`--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## ByteDance: Seedance 2.0 Fast
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance: Seedance 2.0 Fast | video | none | `openrouter/bytedance/seedance-2.0-fast`
+
+Seedance 2.0 Fast is a video generation model from ByteDance. It supports text-to-video, image-to-video with first and last frame control, and multimodal reference-to-video. It prioritizes generation speed and lower cost.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:4, 9:16, 4:3, 16:9, 21:9, 9:21
+`--resolution` | Allowed values: 480p, 720p
+`--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## ByteDance: Seedance 2.0 Mini
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance: Seedance 2.0 Mini | video | none | `openrouter/bytedance/seedance-2.0-mini`
+
+Seedance 2.0 Mini is a video generation model from ByteDance. It supports text-to-video, image-to-video with first and last frame control, and multimodal reference-to-video with image, video, and audio inputs.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 3:4, 9:16, 4:3, 16:9, 21:9, 9:21
+`--resolution` | Allowed values: 480p, 720p
+`--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## ByteDance: Seedance 2.5
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance: Seedance 2.5 | video | none | `openrouter/bytedance/seedance-2.5`
+
+Seedance 2.5 is a video generation model from ByteDance. It is suited for long-form storytelling, multimodal reference-based generation, video editing, and video extension. It supports first-frame and first-and-last-frame control.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 4:3, 1:1, 3:4, 9:16, 21:9
+`--resolution` | Allowed values: 480p, 720p
+`--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Google: Veo 3.1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Veo 3.1 | video | none | `openrouter/google/veo-3.1`
+
+Google's state-of-the-art video generation model, built for maximum visual fidelity in final production cuts. Veo 3.1 generates high-quality 1080p video from text or image prompts with native synchronized audio —...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16
+`--resolution` | Allowed values: 720p, 1080p, 4K
+`--duration` | Allowed values: 4, 6, 8
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Google: Veo 3.1 Fast
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Veo 3.1 Fast | video | none | `openrouter/google/veo-3.1-fast`
+
+Google's mid-tier video generation model balancing speed and quality. Veo 3.1 Fast generates high-quality video from text or image prompts with native synchronized audio, offering faster turnaround than Veo 3.1...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16
+`--resolution` | Allowed values: 720p, 1080p, 4K
+`--duration` | Allowed values: 4, 6, 8
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Google: Veo 3.1 Lite
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Veo 3.1 Lite | video | none | `openrouter/google/veo-3.1-lite`
+
+Google's most cost-effective video generation model, designed for high-volume applications and rapid iteration. Veo 3.1 Lite generates 720p and 1080p video from text or image prompts with native synchronized audio...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 4, 6, 8
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+`--generate-audio` | 
+
+## Kling: Video v3.0 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling: Video v3.0 Pro | video | none | `openrouter/kwaivgi/kling-v3.0-pro`
+
+Kling v3.0 Pro is Kuaishou's premium video generation model, offering higher visual quality than the Standard tier. It supports text-to-video and image-to-video workflows, with first-frame and last-frame control for precise...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p
+`--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--generate-audio` | 
+
+## Kling: Video v3.0 Standard
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling: Video v3.0 Standard | video | none | `openrouter/kwaivgi/kling-v3.0-std`
+
+Kling v3.0 Standard is a video generation model from Kuaishou. It supports text-to-video and image-to-video workflows, with first-frame and last-frame control for guided scene composition. Clips range from 3 to...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p
+`--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--generate-audio` | 
+
+## Kling: Video O1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Kling: Video O1 | video | none | `openrouter/kwaivgi/kling-video-o1`
+
+Kling Video O1 is a video generation model from Kuaishou. It supports text and image inputs with video output, enabling text-to-video and image-to-video workflows. It is suited for cinematic content...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p
+`--duration` | Allowed values: 5, 10
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--generate-audio` | 
+
+## MiniMax: Hailuo 2.3
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+MiniMax: Hailuo 2.3 | video | none | `openrouter/minimax/hailuo-2.3`
+
+Hailuo 2.3 is a video generation model from MiniMax. It accepts text prompts and reference images as input and generates video output, supporting both text-to-video and image-to-video workflows. It is...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9
+`--resolution` | Allowed values: 1080p
+`--duration` | Allowed values: 6, 10
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+
+## MiniMax: H3
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+MiniMax: H3 | video | none | `openrouter/minimax/hailuo-3`
+
+MiniMax H3 is a lightweight, open-weights video generation model from MiniMax. It is designed for precise multimodal editing and controlled content generation, including instruction-guided edits, text and brand rendering, and...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 21:9, 16:9, 4:3, 1:1, 3:4, 9:16
+`--resolution` | Allowed values: 2K
+`--duration` | Allowed values: 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--generate-audio` | 
+
+## OpenAI: Sora 2 Pro
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+OpenAI: Sora 2 Pro | video | none | `openrouter/openai/sora-2-pro`
+
+OpenAI's flagship video generation model, delivering production-quality video with physics-accurate motion, synchronized audio, and world-state persistence across shots. Sora 2 Pro follows intricate multi-shot instructions while maintaining consistent spatial relationships...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16
+`--resolution` | Allowed values: 720p, 1080p
+`--duration` | Allowed values: 4, 8, 12, 16, 20
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--generate-audio` | 
+
+## Runway: Aleph 2.0
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Runway: Aleph 2.0 | video | none | `openrouter/runway/aleph-2`
+
+Runway Aleph 2.0 is an in-context video editing model from Runway. It applies text instructions to existing footage.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 4:3, 3:2, 1:1, 2:3, 3:4, 9:16, 21:9
+`--input-media` | **Required.** Repeat maximum: 1
+`--seed` | 
+
+## Runway: Gen-4.5
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Runway: Gen-4.5 | video | none | `openrouter/runway/gen-4.5`
+
+Runway Gen-4.5 is a video generation model from Runway for text-to-video and image-to-video workflows. It is designed for cinematic scene creation with strong motion quality, visual fidelity, and prompt adherence....
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16
+`--resolution` | Allowed values: 720p
+`--duration` | Allowed values: 2, 3, 4, 5, 6, 7, 8, 9, 10
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` | 
+
+## SpaceXAI: Grok Imagine Video
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+SpaceXAI: Grok Imagine Video | video | none | `openrouter/x-ai/grok-imagine-video`
+
+Grok Imagine Video is SpaceXAI's fast, text-, image-, and reference-conditioned video generation model. It produces short videos (1–15 seconds, 24 fps) at 480p or 720p across seven aspect ratios -...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3
+`--resolution` | Allowed values: 480p, 720p
+`--duration` | Allowed values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+
+## SpaceXAI: Grok Imagine Video 1.5
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+SpaceXAI: Grok Imagine Video 1.5 | video | none | `openrouter/x-ai/grok-imagine-video-1.5`
+
+Grok Imagine Video 1.5 is a video generation model from SpaceXAI. It creates videos from text prompts, with an optional starting image to guide the scene. It can direct subject...
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3
+`--resolution` | Allowed values: 480p, 720p, 1080p
+`--duration` | Allowed values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+`--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+
+## Microsoft: MAI Image 2.6
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Microsoft: MAI Image 2.6 | image | none | `openrouter/microsoft/mai-image-2.6`
+
+Generate or edit an image using up to five image references.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, auto
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 5
+
+## Microsoft: MAI Image 2.6 Flash
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Microsoft: MAI Image 2.6 Flash | image | none | `openrouter/microsoft/mai-image-2.6-flash`
+
+Generate or edit an image using up to five image references.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, auto
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 5
+
+## MiniMax: Hailuo 3 Max
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+MiniMax: Hailuo 3 Max | video | none | `openrouter/minimax/hailuo-3-max`
+
+Generate video from text or opening and closing frames.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 21:9, 16:9, 4:3, 1:1, 3:4, 9:16
+`--resolution` | Allowed values: 768p, 480p
+`--duration` | Allowed range: 5 to 15
+`--input-media` | Repeat maximum: 2; Prefix images with first: or last: to select the opening or closing frame. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation.
+`--watermark` | 
+
+## Black Forest Labs: FLUX Video Edit
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX Video Edit | video | none | `openrouter/black-forest-labs/flux-video-edit`
+
+Edit an input video using a text prompt.
+
+Option | Constraints
+-------|------------
+`--input-media` | **Required.** Repeat maximum: 1; Supply one public HTTPS video URL. Local video files are rejected by this route. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation.
+`--safety-tolerance` | Allowed range: 0 to 5
+
+## Black Forest Labs: FLUX Video Upscale
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX Video Upscale | video | none | `openrouter/black-forest-labs/flux-video-upscale`
+
+Increase an input video resolution.
+
+Option | Constraints
+-------|------------
+`--input-media` | **Required.** Repeat maximum: 1; Supply one public HTTPS video URL. Local video files are rejected by this route. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation.
+`--safety-tolerance` | Allowed range: 0 to 5
+`--upscale-factor` | Allowed range: 1.5 to 3
+`--creativity` | Allowed values: 0, 1
+
+## HeyGen: Avatar IV
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+HeyGen: Avatar IV | video | none | `openrouter/heygen/avatar-iv`
+
+Animate a portrait and speak the prompt using a selected provider voice.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
+`--resolution` | Allowed values: 720p, 1080p
+`--input-media` | **Required.** Repeat maximum: 1; Supply one portrait image. The prompt is spoken using --voice-id. Audio input is not supported.
+`--voice-id` | **Required.** The example IDs have been verified with this endpoint. Find other voice IDs at https://developers.heygen.com/reference/list-voices.
+`--motion-prompt` | 
+`--expressiveness` | 
+`--image-fit` | 
+`--remove-background` | 
+`--voice-speed` | Allowed range: 0.5 to 1.5
+`--voice-pitch` | Pitch adjustment from -50 to +50 semitones.
+`--voice-volume` | Allowed range: 0 to 1
+`--voice-locale` | 
+
+Revised 2026-10-02

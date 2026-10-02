@@ -1,99 +1,95 @@
-# xAI models
+# xAI Models
 
-Provider ID: `xai`. Credential: `api-keys.xai` in the configuration file, or else the `XAI_API_KEY` environment variable. Default model: `grok-imagine-image`. Provider documentation: <https://docs.x.ai/developers/model-capabilities/images/generation>.
+Every model that `bild` offers from xAI (provider ID `xai`, key variable `XAI_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info xai/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-[All providers](../providers-and-models.md) · [Flag types and shorthands](../generation-flags.md) · [Input and frame rules](../input-media.md)
+4 image models, 2 video models.
 
-Options default to unset unless supplied or derived. An unlisted option is unsupported by that model in Bildomat. Constraints below govern Bildomat’s adjustments; provider requirements can also apply.
+## Contents
 
-Every xAI model, including the video models, takes images only as `--input-media`; a video source fails the run. See [provider input behavior](../input-media.md#provider-input-behavior).
+- [Grok Imagine Image Quality](#grok-imagine-image-quality)
+- [Grok Imagine Image Quality Latest](#grok-imagine-image-quality-latest)
+- [Grok Imagine Image](#grok-imagine-image)
+- [Grok Imagine Image 2.0](#grok-imagine-image-20)
+- [Grok Imagine Video](#grok-imagine-video)
+- [Grok Imagine Video 1.5](#grok-imagine-video-15)
 
-## Models
+## Grok Imagine Image Quality
 
-- [`xai/grok-imagine-image-quality`](#grok-imagine-image-quality) — image.
-- [`xai/grok-imagine-image-quality-latest`](#grok-imagine-image-quality-latest) — image.
-- [`xai/grok-imagine-image`](#grok-imagine-image) — image.
-- [`xai/grok-imagine-image-2.0`](#grok-imagine-image-20) — image.
-- [`xai/grok-imagine-video`](#grok-imagine-video) — video.
-- [`xai/grok-imagine-video-1.5`](#grok-imagine-video-15) — video.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Image Quality | image | `grok` | `xai/grok-imagine-image-quality`
 
-## grok-imagine-image-quality
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 2:1, 1:2, 19.5:9, 9:19.5, 20:9, 9:20, auto
+`--resolution` | Allowed values: 1k, 2k
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 3
 
-Grok Imagine Image Quality. Output: image.
+## Grok Imagine Image Quality Latest
 
-Full key: `xai/grok-imagine-image-quality`. Aliases: `grok`.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Image Quality Latest | image | `grok-latest` | `xai/grok-imagine-image-quality-latest`
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`, `2:1`, `1:2`, `19.5:9`, `9:19.5`, `20:9`, `9:20`, `auto` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--input-media` | Optional | Maximum inputs: `3` |
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 2:1, 1:2, 19.5:9, 9:19.5, 20:9, 9:20, auto
+`--resolution` | Allowed values: 1k, 2k
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 3
 
-## grok-imagine-image-quality-latest
+## Grok Imagine Image
 
-Grok Imagine Image Quality Latest. Output: image.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Image | image | none | `xai/grok-imagine-image`
 
-Full key: `xai/grok-imagine-image-quality-latest`. Aliases: `grok-latest`.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 2:1, 1:2, 19.5:9, 9:19.5, 20:9, 9:20, auto
+`--resolution` | Allowed values: 1k, 2k
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 3
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`, `2:1`, `1:2`, `19.5:9`, `9:19.5`, `20:9`, `9:20`, `auto` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--input-media` | Optional | Maximum inputs: `3` |
+## Grok Imagine Image 2.0
 
-## grok-imagine-image
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Image 2.0 | image | `grok-2.0`, `grok-2` | `xai/grok-imagine-image-2.0`
 
-Grok Imagine Image. Output: image.
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 2:1, 1:2, 19.5:9, 9:19.5, 20:9, 9:20, auto
+`--resolution` | Allowed values: 1k, 2k
+`--quality` | Allowed values: low, medium
+`--num-images` | Allowed range: 1 to 10
+`--input-media` | Repeat maximum: 3
 
-Full key: `xai/grok-imagine-image`.
+## Grok Imagine Video
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`, `2:1`, `1:2`, `19.5:9`, `9:19.5`, `20:9`, `9:20`, `auto` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--input-media` | Optional | Maximum inputs: `3` |
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Video | video | `grok-video` | `xai/grok-imagine-video`
 
-## grok-imagine-image-2.0
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3
+`--resolution` | Allowed values: 480p, 720p
+`--duration` | Allowed range: 1 to 15
+`--input-media` | Repeat maximum: 1
 
-Grok Imagine Image 2.0. Output: image.
+## Grok Imagine Video 1.5
 
-Full key: `xai/grok-imagine-image-2.0`. Aliases: `grok-2.0`, `grok-2`.
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Video 1.5 | video | none | `xai/grok-imagine-video-1.5`
 
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3`, `2:1`, `1:2`, `19.5:9`, `9:19.5`, `20:9`, `9:20`, `auto` |
-| `--resolution` | Optional | Allowed: `1k`, `2k` |
-| `--quality` | Optional | Allowed: `low`, `medium` |
-| `--num-images` | Optional | Minimum: `1`; Maximum: `10` |
-| `--input-media` | Optional | Maximum inputs: `3` |
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3
+`--resolution` | Allowed values: 480p, 720p, 1080p
+`--duration` | Allowed range: 1 to 15
+`--input-media` | Repeat maximum: 1
 
-## grok-imagine-video
-
-Grok Imagine Video. Output: video.
-
-Full key: `xai/grok-imagine-video`. Aliases: `grok-video`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3` |
-| `--resolution` | Optional | Allowed: `480p`, `720p` |
-| `--duration` | Optional | Minimum: `1`; Maximum: `15` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-
-## grok-imagine-video-1.5
-
-Grok Imagine Video 1.5. Output: video.
-
-Full key: `xai/grok-imagine-video-1.5`.
-
-| Option | Requirement | Values and constraints |
-| --- | --- | --- |
-| `--aspect-ratio` | Optional | Allowed: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `3:2`, `2:3` |
-| `--resolution` | Optional | Allowed: `480p`, `720p`, `1080p` |
-| `--duration` | Optional | Minimum: `1`; Maximum: `15` |
-| `--input-media` | Optional | Maximum inputs: `1` |
-
-Revised 2026-10-01
+Revised 2026-10-02
