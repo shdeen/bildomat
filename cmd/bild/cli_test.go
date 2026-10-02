@@ -339,7 +339,10 @@ func TestCLIInfoCatalogDocument(t *testing.T) {
 // bild --help, bild list --help, and bild info --help must exit 0, leave stderr empty, and show -j,
 // --json on stdout. The output of bild help help must omit --json.
 // Test class: Core: Incidental.
+//
 // Pins the short/long flag separator in help.
+//
+//nolint:dupword // "bild help help" above is the literal command, not a repeated word.
 func TestCLIJSONFlags(t *testing.T) {
 	for _, args := range [][]string{{"--help"}, {"list", "--help"}, {"info", "--help"}} {
 		code, stdout, stderr := captureCLI(t, args...)
