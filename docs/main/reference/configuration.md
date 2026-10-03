@@ -66,7 +66,7 @@ Input URLs must be HTTP or HTTPS. Bildomat requests each one that the model will
 
 ## Home and Temporary Files
 
-On Unix systems, `HOME` determines the home directory used for configuration and home-relative output paths. `TMPDIR` selects the system temporary directory; without it, the system default applies. On Windows, `USERPROFILE` determines the home directory, so the configuration file is `%USERPROFILE%\.bildomat\config.yml`, and `TMP` or `TEMP` selects the temporary directory. Bildomat expands only a leading `~/` or `~` alone on every system; a path beginning `~\` is not expanded.
+On Unix systems, `HOME` determines the home directory used for configuration and home-relative output paths. `TMPDIR` selects the system temporary directory; without it, the system default applies. On Windows, `USERPROFILE` determines the home directory, so the configuration file is `%USERPROFILE%\.bildomat\config.yml`, and `TMP` or `TEMP` selects the temporary directory. Bildomat expands a leading `~/` or `~` alone on every system, and on Windows a leading `~\` as well.
 
 Downloaded results first occupy temporary files in that directory, using names beginning `bild-dl-`. Bildomat copies each downloaded result into its output file and then removes the temporary file, so both the temporary directory and the destination need free space. A failed run also removes its temporary downloads. If a removal fails, the run fails with exit code 1 and names the file; media already saved are kept and reported. An abrupt process termination can leave files behind.
 

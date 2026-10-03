@@ -1,1 +1,4 @@
+# Every text file is checked out with LF on every platform, so a Windows checkout compiles the same
+# embedded templates and generated files as every other platform. Binary files are detected by content.
+* text=auto eol=lf
 *.mp4 filter=lfs diff=lfs merge=lfs -text

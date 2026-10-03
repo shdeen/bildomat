@@ -516,7 +516,9 @@ func (bild *bildApp) runGenerator(ctx context.Context, generator generation.Gene
 
 	if spinner != nil {
 		elapsed := spinner.Finish()
+
 		if err == nil {
+			bild.invocation.generationCompleted = true
 			bild.invocation.generationElapsed = elapsed
 		}
 	}

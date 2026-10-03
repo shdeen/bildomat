@@ -21,6 +21,7 @@ import (
 //   - results: the current destination for ordinary or JSON results
 //   - file: the results file owned and closed by this invocation, if any
 //   - outcome: accumulated generation facts for final reporting
+//   - generationCompleted: whether a generation ran to completion under the spinner
 //   - generationElapsed: successful generation duration reported by the spinner
 //   - reportedAdjustments: number of adjustment notices already delivered
 //   - jsonOutput, printFilename, debug: selected presentation modes
@@ -34,6 +35,7 @@ type commandInvocation struct {
 	results             io.Writer
 	file                *os.File
 	outcome             *output.GenerationOutcome
+	generationCompleted bool
 	generationElapsed   time.Duration
 	reportedAdjustments int
 	jsonOutput          bool
@@ -46,13 +48,14 @@ type commandInvocation struct {
 }
 
 // newInvocation stores the supplied streams and detects terminal support for each one. It enables
-// interaction only when both input and diagnostics are terminals.
+// interaction only when both input and diagnostics are terminals, and styles an output stream only
+// when its terminal renders styling.
 func newInvocation(stdin io.Reader, stdout, stderr io.Writer) commandInvocation {
 	return commandInvocation{
 		stdin: stdin, stdout: stdout, stderr: stderr, results: stdout,
 		interactive:      terminal.IsTerminal(stdin) && terminal.IsTerminal(stderr),
-		styled:           terminal.IsTerminal(stdout),
-		diagnosticStyled: terminal.IsTerminal(stderr),
+		styled:           terminal.EnableStyling(stdout),
+		diagnosticStyled: terminal.EnableStyling(stderr),
 	}
 }
 
@@ -209,7 +212,9 @@ func (invocation *commandInvocation) reportText(providerName, modelName string, 
 		reportErr = errors.Join(reportErr, output.WriteText(invocation.stderr, "%s\n", strings.Join(invocation.outcome.Notices, "\n")))
 	}
 
-	if invocation.generationElapsed > 0 {
+	// The report follows completion itself, not a positive duration: a clock as coarse as the
+	// Windows one can measure a quick generation as zero.
+	if invocation.generationCompleted {
 		reportErr = errors.Join(reportErr, output.PrintGenerationCompleted(invocation.results, output.ElapsedText(invocation.generationElapsed)))
 	}
 

@@ -52,7 +52,7 @@ func Cleanup(artifacts []Media) error
 Cleanup attempts to remove every temporary source in the supplied artifacts. It clears their TmpPath fields even on failure and returns all removal errors.
 
 <a name="CreateDir"></a>
-## func [CreateDir](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L144>)
+## func [CreateDir](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L146>)
 
 ```go
 func CreateDir(path string) error
@@ -76,7 +76,7 @@ DefaultStem returns the default filename stem for an image or video run.
 func ExpandHome(path string) (string, error)
 ```
 
-ExpandHome replaces \~ or a leading \~/ with the home directory, returning an error if it is unavailable. Other paths are unchanged.
+ExpandHome replaces \~, or a leading \~ followed by a slash or the platform's separator, with the home directory, returning an error if it is unavailable. Other paths are unchanged.
 
 <a name="FormatExt"></a>
 ## func [FormatExt](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L95>)
@@ -116,7 +116,7 @@ func ParseOutPath(outPath string) Location
 ParseOutPath separates an output path into its directory, stem, and supported media extension. Unsupported extensions are discarded; only image extensions select an output format.
 
 <a name="Location.Resolve"></a>
-### func \(\*Location\) [Resolve](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L155>)
+### func \(\*Location\) [Resolve](<https://github.com/shdeen/bildomat-dev/blob/main/internal/artifact/outpath.go#L157>)
 
 ```go
 func (location *Location) Resolve() error

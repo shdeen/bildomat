@@ -105,10 +105,12 @@ func FormatExt(format string) string {
 	return ""
 }
 
-// ExpandHome replaces ~ or a leading ~/ with the home directory, returning an error if it is
-// unavailable. Other paths are unchanged.
+// ExpandHome replaces ~, or a leading ~ followed by a slash or the platform's separator, with the
+// home directory, returning an error if it is unavailable. Other paths are unchanged.
 func ExpandHome(path string) (string, error) {
-	if path != "~" && !strings.HasPrefix(path, "~/") {
+	// A directory derived from a path takes the platform's separator, so on Windows a path the
+	// user typed as ~/x arrives here as ~\x; both forms are home-relative.
+	if path != "~" && !strings.HasPrefix(path, "~/") && !strings.HasPrefix(path, "~"+string(os.PathSeparator)) {
 		return path, nil
 	}
 

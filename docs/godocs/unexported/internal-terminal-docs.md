@@ -13,6 +13,7 @@ Package terminal owns interactive input, terminal capabilities, and animation.
 - [Constants](<#constants>)
 - [Variables](<#variables>)
 - [func ConfirmOneWordPrompt\(input io.Reader, destination io.Writer, prompt string, interactive, styled bool\) \(canceled bool, err error\)](<#ConfirmOneWordPrompt>)
+- [func EnableStyling\(stream any\) bool](<#EnableStyling>)
 - [func IsTerminal\(stream any\) bool](<#IsTerminal>)
 - [func RepromptModel\(input io.Reader, destination io.Writer, interactive, styled bool\) \(reply string, asked bool, err error\)](<#RepromptModel>)
 - [func readReply\(input io.Reader\) \(string, error\)](<#readReply>)
@@ -59,6 +60,15 @@ func ConfirmOneWordPrompt(input io.Reader, destination io.Writer, prompt string,
 ```
 
 ConfirmOneWordPrompt asks whether to submit a one\-word prompt when interaction is enabled. It reads one reply from input and treats n and no as cancellation, regardless of case. Prompt and input failures retain their original causes.
+
+<a name="EnableStyling"></a>
+## func [EnableStyling](<https://github.com/shdeen/bildomat-dev/blob/main/internal/terminal/styling_other.go#L8>)
+
+```go
+func EnableStyling(stream any) bool
+```
+
+EnableStyling reports whether the supplied stream is a terminal that renders styling escape sequences. On every platform other than Windows a terminal renders them as they are, so the answer is IsTerminal's.
 
 <a name="IsTerminal"></a>
 ## func [IsTerminal](<https://github.com/shdeen/bildomat-dev/blob/main/internal/terminal/terminal.go#L12>)
