@@ -19,8 +19,8 @@ package main
 //  7. Separation of flag help from model notes: cliRenderFlagEntry must omit ModelInfoComment text
 //     and blank paragraph separators from the parameter flag's help entry.
 //  8. Terminal reports for saved artifacts: Given two artifacts and terminal stdout, testGenerate
-//     must print one completion report and two Saved reports, include the clay color escape
-//     sequence, and omit Saved (.
+//     must print one completion report and two Saved reports, style the saved path on the
+//     terminal, and omit Saved (.
 //  9. Help tips fallback: When the rotation providers are absent, tipsHelpText must use exactly one
 //     valid model key per medium from the first loaded provider, including an aggregator, and none
 //     from the later provider.
@@ -390,19 +390,21 @@ func TestParamFlagUsageWithoutModelComments(t *testing.T) {
 //
 // What is being tested:
 // Given two generated artifacts and terminal stdout, the generation stages run by testGenerate must
-// succeed and print exactly one completion report and two Saved reports. Stdout must include the
-// clay color escape sequence and must not contain Saved (.
+// succeed and print exactly one completion report and two Saved reports. The terminal must show the
+// saved path styled, and stdout must not contain Saved (.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
+//
+// Kind: permanent.
 func TestTTYStyledSavedReport(t *testing.T) {
-	loadedCatalog, genInputs, gen, _ := fixtImgGeneration(t)
+	loadedCatalog, genInputs, gen, outDir := fixtImgGeneration(t)
 
 	app := testApp(t, loadedCatalog)
 
 	var err error
 
-	stdout := captureTerminalStdout(t, func() {
+	stdout, terminalOutput := captureTerminalStdout(t, func() {
 		err = testGenerate(t, app, gen, genInputs, params.FlagInputs{}, false, "")
 	})
 	if err != nil {
@@ -421,8 +423,8 @@ func TestTTYStyledSavedReport(t *testing.T) {
 		t.Errorf("✗ a duration is tied to a file report: %q", stdout)
 	}
 
-	if !strings.Contains(stdout, "\x1b[38;5;173m") {
-		t.Errorf("✗ the clay-colored path is missing: %q", stdout)
+	if !terminalOutput.Styled(t, outDir) {
+		t.Errorf("✗ the saved path is not styled on the terminal: %q", stdout)
 	}
 
 	if !t.Failed() {
@@ -785,12 +787,12 @@ func testApp(t *testing.T, loadedCatalog *catalog.Catalog) *bildApp {
 	return app
 }
 
-// captureTerminalStdout runs fn with stdout on a pseudo-terminal and stderr discarded. It returns
-// the terminal output.
-func captureTerminalStdout(test testing.TB, fn func()) string {
+// captureTerminalStdout runs fn with stdout on a terminal and stderr discarded. It returns the
+// terminal output without styling sequences, and the terminal, which answers what was styled.
+func captureTerminalStdout(test testing.TB, fn func()) (string, *terminalFixture) {
 	test.Helper()
 
-	master, slave := openPTY(test)
+	terminalOutput := openTerminal(test)
 
 	devNull, err := os.OpenFile(os.DevNull, os.O_WRONLY, 0)
 	if err != nil {
@@ -798,28 +800,14 @@ func captureTerminalStdout(test testing.TB, fn func()) string {
 	}
 
 	originalOut, originalErr := os.Stdout, os.Stderr
-	os.Stdout, os.Stderr = slave, devNull
-
-	received := make(chan string, 1)
-
-	// This goroutine owns the master. After fn returns, closing the slave ends the read. The
-	// goroutine closes the master and returns the captured text.
-	go func() {
-		var terminal bytes.Buffer
-
-		_, _ = io.Copy(&terminal, master)
-		_ = master.Close()
-
-		received <- terminal.String()
-	}()
+	os.Stdout, os.Stderr = terminalOutput.Output(), devNull
 
 	fn()
 
 	os.Stdout, os.Stderr = originalOut, originalErr
 	_ = devNull.Close()
-	_ = slave.Close()
 
-	return <-received
+	return terminalOutput.ReadOutput(test), terminalOutput
 }
 
 // fixtureCatalog loads the supplied provider descriptions with the built-in parameter flags.

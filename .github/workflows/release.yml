@@ -20,8 +20,36 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
-      - run: go test ./...
+      - name: Set aside the 'exp' tests
         shell: bash
+        run: find . -name '*_exp_test.go' -not -path './.git/*' -delete
+      - name: Run the tests and check every result
+        # A green job means every test ran and passed: a skipped test, a failed test, or a
+        # required test without a pass record fails the job, which `go test` alone would not do
+        # for a skip. The required tests are the terminal tests, on every runner, and the
+        # Windows-only console tests on the Windows runners.
+        shell: bash
+        run: |
+          results="$RUNNER_TEMP/test-results.json"
+          # The exit status is captured without ending the step, so the evidence below prints
+          # for a failed run too; the verdict at the end enforces it.
+          test_status=0
+          go test -json -timeout 10m ./... > "$results" || test_status=$?
+          grep '"Action":"output"' "$results" | grep -E -- '--- FAIL|--- SKIP|✗|💣|^\{[^}]*"Output":"(ok|FAIL|\?)' || true
+          failures="$(grep -c '"Action":"fail".*"Test":"' "$results" || true)"
+          skips="$(grep -c '"Action":"skip".*"Test":"' "$results" || true)"
+          required="TestTTYStyledSavedReport TestCLISingleWordPromptConfirmationScope TestCancelUnderOutputModes TestInvocationTerminalStreams"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            required="$required TestIsTerminalWindowsConsole TestEnableStylingWindowsConsole TestEnableStylingOffConsole"
+          else
+            required="$required TestEnableStylingTerminal"
+          fi
+          missing=""
+          for name in $required; do
+            grep -q '"Action":"pass".*"Test":"'"$name"'",' "$results" || missing="$missing $name"
+          done
+          echo "go test exit $test_status; failed tests: $failures; skipped tests: $skips; required tests without a pass record:${missing:- none}"
+          [[ "$test_status" -eq 0 && "$failures" -eq 0 && "$skips" -eq 0 && -z "$missing" ]]
 
   build:
     needs: test

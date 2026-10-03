@@ -8,7 +8,7 @@ import (
 
 // Invariants tested:
 // 1. Output path components: ParseOutPath must split the supplied paths into the expected
-//    directory, stem, extension, and format.
+//    directory, stem, extension, and format, with a derived directory in the platform's path form.
 // 2. Existing output directories: ParseOutPath must treat an existing extensionless directory as a
 //    directory, a missing extensionless name as a stem, and a path ending in .png as a filename
 //    even when that path names an existing directory.
@@ -18,8 +18,9 @@ import (
 //    resolveOutputDir must create the directory and return its absolute path.
 // 5. Relative output directories: Given a relative directory path, resolveOutputDir must create
 //    that directory beneath the working directory and return its absolute path.
-// 6. Tilde-prefixed output directories: Given ~/shots and a configured home directory,
-//    resolveOutputDir must create shots beneath that home and return its absolute path.
+// 6. Tilde-prefixed output directories: Given ~/shots, in slash form or in the platform's
+//    separator form, and a configured home directory, resolveOutputDir must create shots beneath
+//    that home and return its absolute path.
 // 7. Filename sanitization: sanitizeFilename must replace slashes, backslashes, ASCII control
 //    characters, and DEL with hyphens, while preserving the other characters in each case.
 // 8. Bare tilde output directory: Given ~ and a configured home directory, resolveOutputDir must
@@ -29,8 +30,8 @@ import (
 //
 // What is being tested:
 // ParseOutPath must split the supplied paths into the expected directory, stem, extension, and
-// format. It must discard unknown extensions, preserve recognized extension case, and treat a
-// trailing separator as a directory.
+// format, with a derived directory in the platform's path form. It must discard unknown
+// extensions, preserve recognized extension case, and treat a trailing separator as a directory.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
@@ -45,10 +46,10 @@ func TestParseOutPath(t *testing.T) {
 		"/":             {Dir: "/"},
 		"out/..":        {Dir: "out/.."},
 		"foo.png":       {Stem: "foo", Ext: ".png", Format: "png"},
-		"a/b/foo.jpeg":  {Dir: "a/b", Stem: "foo", Ext: ".jpeg", Format: "jpeg"},
+		"a/b/foo.jpeg":  {Dir: filepath.FromSlash("a/b"), Stem: "foo", Ext: ".jpeg", Format: "jpeg"},
 		"pics/foo.jpg":  {Dir: "pics", Stem: "foo", Ext: ".jpg", Format: "jpeg"},
-		"/abs/foo.webp": {Dir: "/abs", Stem: "foo", Ext: ".webp", Format: "webp"},
-		"~/x/foo":       {Dir: "~/x", Stem: "foo"},
+		"/abs/foo.webp": {Dir: filepath.FromSlash("/abs"), Stem: "foo", Ext: ".webp", Format: "webp"},
+		"~/x/foo":       {Dir: filepath.FromSlash("~/x"), Stem: "foo"},
 		"./foo.png":     {Dir: ".", Stem: "foo", Ext: ".png", Format: "png"},
 		"foo.PNG":       {Stem: "foo", Ext: ".PNG", Format: "png"},
 		"vid.mp4":       {Stem: "vid", Ext: ".mp4"},
@@ -209,22 +210,28 @@ func TestResolveOutDirRelative(t *testing.T) {
 //
 // Test class: Expanded.
 // Test layer: Coverage.
+//
+// Kind: permanent.
 func TestResolveOutDirTilde(t *testing.T) {
 	home := t.TempDir()
-	t.Setenv("HOME", home)
+	setHomeDirectory(t, home)
 
-	got, err := resolveOutputDir("~/shots")
-	if err != nil {
-		t.Errorf("✗ resolveOutputDir(~/shots) error: %v", err)
-	}
+	// The slash form is what a user types; the platform form is what a derived directory holds,
+	// which differs from the slash form on Windows alone.
+	for _, tildePath := range []string{"~/shots", filepath.FromSlash("~/shots")} {
+		got, err := resolveOutputDir(tildePath)
+		if err != nil {
+			t.Errorf("✗ resolveOutputDir(%q) error: %v", tildePath, err)
+		}
 
-	want := filepath.Join(home, "shots")
-	if got != want {
-		t.Errorf("✗ resolveOutputDir(~/shots) = %q, want %q", got, want)
-	}
+		want := filepath.Join(home, "shots")
+		if got != want {
+			t.Errorf("✗ resolveOutputDir(%q) = %q, want %q", tildePath, got, want)
+		}
 
-	if fi, err := os.Stat(want); err != nil || !fi.IsDir() {
-		t.Errorf("✗ expanded ~ path not created: %v", err)
+		if fi, err := os.Stat(want); err != nil || !fi.IsDir() {
+			t.Errorf("✗ expanded %q not created: %v", tildePath, err)
+		}
 	}
 
 	if !t.Failed() {
@@ -270,7 +277,7 @@ func TestSanitize(t *testing.T) {
 // Test layer: Coverage.
 func TestResolveOutDirBareTilde(t *testing.T) {
 	home := t.TempDir()
-	t.Setenv("HOME", home)
+	setHomeDirectory(t, home)
 
 	got, err := resolveOutputDir("~")
 	if err != nil || got != home {
@@ -307,4 +314,12 @@ func assertResolvedUnderWorkingDir(t *testing.T, relativeDir string) {
 	if !t.Failed() {
 		t.Logf("✓ resolveOutputDir(%q) → %q (absolute under the working directory)", relativeDir, resolvedDir)
 	}
+}
+
+// setHomeDirectory points the home directory at the supplied path for the rest of the test, under
+// the variable each platform reads: HOME on Unix and USERPROFILE on Windows.
+func setHomeDirectory(t *testing.T, home string) {
+	t.Helper()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
 }

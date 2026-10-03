@@ -35,13 +35,15 @@ import (
 // What is being tested:
 // Given a bare filename, relative directory, absolute directory, or home-relative directory in
 // OutPath, resolveOutputTarget must return the expected absolute directory without an error.
-// Relative paths must use the invocation directory, and ~/x must use the supplied HOME directory.
+// Relative paths must use the invocation directory, and ~/x must use the supplied home directory.
+//
+// Kind: permanent.
 func TestOutDirForPath(t *testing.T) {
 	workDir := t.TempDir()
 	homeDir := t.TempDir()
 	absoluteDir := t.TempDir()
 	t.Chdir(workDir)
-	t.Setenv("HOME", homeDir)
+	setHomeDirectory(t, homeDir)
 
 	cases := []struct{ name, path, wantDir string }{
 		{"no directory portion", "picture.png", workDir},

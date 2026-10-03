@@ -26,7 +26,7 @@ func TestReuseSelection(t *testing.T) {
 	}
 
 	temporaryHome := t.TempDir()
-	t.Setenv("HOME", temporaryHome)
+	setHomeDirectory(t, temporaryHome)
 	t.Chdir(temporaryHome)
 	recordPath := filepath.Join(temporaryHome, "boat=source.bild.json")
 

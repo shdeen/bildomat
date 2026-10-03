@@ -2153,6 +2153,8 @@ func TestCLIRawErrorsHiddenFromHelp(t *testing.T) {
 //
 // Test class: Expanded.
 // Test layer: Coverage.
+//
+// Kind: permanent.
 func TestCLISingleWordPromptConfirmationScope(t *testing.T) {
 	clearProviderKeys(t)
 	specifier := qualifiedSpecifier(t, builtinDefaultPair(t, shippedCatalog(t)))
@@ -2166,18 +2168,20 @@ func TestCLISingleWordPromptConfirmationScope(t *testing.T) {
 		{name: "nonterminal single word", stdin: "no\n", tty: false, prompt: "hellp"},
 		{name: "terminal multiword", stdin: "no\n", tty: true, prompt: "two words"},
 	} {
-		code, stdout, stderr := captureInteractiveCLI(t, testCase.stdin, testCase.tty, "--json", "--model", specifier, testCase.prompt)
-		if code != 1 {
-			t.Errorf("✗ %s: exit %d, want 1 at the missing-credential boundary", testCase.name, code)
-		}
+		t.Run(testCase.name, func(t *testing.T) {
+			code, stdout, stderr := captureInteractiveCLI(t, testCase.stdin, testCase.tty, "--json", "--model", specifier, testCase.prompt)
+			if code != 1 {
+				t.Errorf("✗ exit %d, want 1 at the missing-credential boundary", code)
+			}
 
-		if strings.Contains(stderr, formBody(t, output.SingleWordConfirmation)) {
-			t.Errorf("✗ %s: unexpected confirmation: %q", testCase.name, stderr)
-		}
+			if strings.Contains(stderr, formBody(t, output.SingleWordConfirmation)) {
+				t.Errorf("✗ unexpected confirmation: %q", stderr)
+			}
 
-		if !strings.Contains(stdout, `"prompt": "`+testCase.prompt+`"`) {
-			t.Errorf("✗ %s: generation did not retain the prompt: %q", testCase.name, stdout)
-		}
+			if !strings.Contains(stdout, `"prompt": "`+testCase.prompt+`"`) {
+				t.Errorf("✗ generation did not retain the prompt: %q", stdout)
+			}
+		})
 	}
 
 	if !t.Failed() {
@@ -2701,7 +2705,7 @@ func TestCLISyntaxForms(t *testing.T) {
 // option, the record must remain absent. Stdout must omit the record basename, stderr must omit its
 // full path, and persistence alone must leave the ordinary error text unchanged.
 func TestPersistenceSelection(t *testing.T) {
-	t.Setenv("HOME", t.TempDir())
+	setHomeDirectory(t, t.TempDir())
 	t.Setenv("GOOGLE_API_KEY", "")
 
 	for _, testCase := range []struct {
@@ -2880,30 +2884,34 @@ func captureInteractiveCLI(t *testing.T, stdin string, tty bool, args ...string)
 	return code, <-captured, stderr
 }
 
-// captureDiagnosticOutput captures stderr from a pipe or pseudo-terminal and removes color escapes.
+// captureDiagnosticOutput captures stderr from a terminal or a pipe, without styling sequences.
 func captureDiagnosticOutput(test testing.TB, interactive bool, execute func()) string {
 	test.Helper()
 
-	var reader, writer *os.File
-	if interactive {
-		reader, writer = openPTY(test)
-	} else {
-		var err error
+	originalStderr := os.Stderr
 
-		reader, writer, err = os.Pipe()
-		if err != nil {
-			test.Fatalf("💣 diagnostic pipe: %v", err)
-		}
+	if interactive {
+		terminalOutput := openTerminal(test)
+		os.Stderr = terminalOutput.Output()
+
+		execute()
+
+		os.Stderr = originalStderr
+
+		return terminalOutput.ReadOutput(test)
 	}
 
-	originalStderr := os.Stderr
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		test.Fatalf("💣 diagnostic pipe: %v", err)
+	}
+
 	os.Stderr = writer
 	captured := make(chan string, 1)
 
 	go func() {
 		defer reader.Close()
-		// A closed terminal slave may end the master read with EIO; its bytes are still the
-		// complete diagnostic capture.
+
 		content, _ := io.ReadAll(reader)
 		captured <- string(content)
 	}()
@@ -2913,7 +2921,14 @@ func captureDiagnosticOutput(test testing.TB, interactive bool, execute func()) 
 	os.Stderr = originalStderr
 	_ = writer.Close()
 
-	return regexp.MustCompile(`\x1b\[[0-9;]*m`).ReplaceAllString(<-captured, "")
+	return stripStyling(<-captured)
+}
+
+// stripStyling removes every styling sequence from text.
+//
+// Test class: Core: Helper.
+func stripStyling(text string) string {
+	return regexp.MustCompile(`\x1b\[[0-9;]*m`).ReplaceAllString(text, "")
 }
 
 // decodeJSONObject decodes exactly one JSON document and fails when stdout contains a second value
@@ -2966,15 +2981,25 @@ func jsonArrayField(t *testing.T, document map[string]any, fieldName string) []a
 	return field
 }
 
-// setUserConfig points HOME at a scratch home directory holding a .bildomat/config.yml with the
-// given content, and returns the file's path.
+// setHomeDirectory points the home directory at the supplied path for the rest of the test, under
+// the variable each platform reads: HOME on Unix and USERPROFILE on Windows.
 //
 // Test class: Core: Helper.
-func setUserConfig(t *testing.T, content string) string {
+func setHomeDirectory(test testing.TB, home string) {
+	test.Helper()
+	test.Setenv("HOME", home)
+	test.Setenv("USERPROFILE", home)
+}
+
+// setUserConfig points the home directory at a scratch directory holding a .bildomat/config.yml
+// with the given content.
+//
+// Test class: Core: Helper.
+func setUserConfig(t *testing.T, content string) {
 	t.Helper()
 
 	home := t.TempDir()
-	t.Setenv("HOME", home)
+	setHomeDirectory(t, home)
 
 	configDir := filepath.Join(home, ".bildomat")
 	if err := os.MkdirAll(configDir, 0o750); err != nil {
@@ -2985,8 +3010,6 @@ func setUserConfig(t *testing.T, content string) string {
 	if err := os.WriteFile(configPath, []byte(content), 0o600); err != nil {
 		t.Fatalf("💣 config file write failed: %v", err)
 	}
-
-	return configPath
 }
 
 // firstStandardProvider returns the first registered provider that is not an aggregator: the
@@ -3500,46 +3523,9 @@ func useStdin(test testing.TB, text string, tty bool) {
 		return
 	}
 
-	master, slave := openPTY(test)
-	os.Stdin = slave
-
-	// The terminal is in raw mode, so the bytes arrive unchanged. Closing the master ends the
-	// input with EOF, but it also discards whatever the program has not read yet, so the writer
-	// closes it only once the input is drained, or once the test ends. The writer alone touches
-	// the master; the test closes the slave after the writer is done. A write the program never
-	// reads blocks once the terminal's input queue is full, so the test ends it with a write
-	// deadline before waiting for the writer.
-	stop := make(chan struct{})
-	done := make(chan struct{})
-
-	go func() {
-		defer close(done)
-		defer func() { _ = master.Close() }()
-
-		_, _ = io.WriteString(master, text)
-
-		for {
-			pending, open := inputPending(test, slave)
-			if !open || pending == 0 {
-				return
-			}
-
-			select {
-			case <-stop:
-				return
-			case <-time.After(time.Millisecond):
-			}
-		}
-	}()
-
-	test.Cleanup(func() {
-		_ = master.SetWriteDeadline(time.Now())
-
-		close(stop)
-		<-done
-
-		_ = slave.Close()
-	})
+	terminalInput := openTerminal(test)
+	os.Stdin = terminalInput.Input()
+	terminalInput.TypeReply(test, text)
 }
 
 // catalogModelKeys derives fully qualified model keys from the built-in configs, ordered by

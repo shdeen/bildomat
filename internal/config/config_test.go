@@ -13,7 +13,7 @@ import (
 
 // Invariants tested:
 // 1. User configuration loading matrix: Load must decode valid settings and return the
-//    configuration path under HOME.
+//    configuration path under the home directory.
 // 2. Unknown provider fault: Given a configuration path and unknown provider ID,
 //    UnknownProviderFault must return an error matching ErrUserConfig and
 //    ErrUserConfigUnknownProvider whose text includes both supplied values.
@@ -21,10 +21,10 @@ import (
 // TestLoad verifies invariant #1: User configuration loading matrix.
 //
 // What is being tested:
-// Load must decode valid settings and return the configuration path under HOME. Missing files and
-// empty values must yield unset settings without faults; unreadable or invalid YAML files must
-// yield unset settings and one ErrUserConfig fault. An unknown key must produce a fault naming that
-// key while preserving valid settings.
+// Load must decode valid settings and return the configuration path under the home directory.
+// Missing files and empty values must yield unset settings without faults; an unreadable config
+// path or an invalid YAML file must yield unset settings and one ErrUserConfig fault. An unknown
+// key must produce a fault naming that key while preserving valid settings.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
@@ -59,11 +59,9 @@ func TestLoad(t *testing.T) {
 			wantFault:   true,
 		},
 		{
-			name:        "unreadable file warns and yields nothing",
-			fileContent: "default-model: gamma/fixture-model\n",
-			hasFile:     true,
-			unreadable:  true,
-			wantFault:   true,
+			name:       "unreadable config path warns and yields nothing",
+			unreadable: true,
+			wantFault:  true,
 		},
 		{
 			name:          "unknown setting warns and the rest applies",
@@ -83,16 +81,18 @@ func TestLoad(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			home := t.TempDir()
-			t.Setenv("HOME", home)
+			setHomeDirectory(t, home)
 
 			wantPath := filepath.Join(home, ".bildomat", "config.yml")
 			if c.hasFile {
 				writeConfigFile(t, home, c.fileContent)
 			}
 
+			// A directory at the config path fails the read on every platform; a permission
+			// change would not, since Windows keeps a read-only file readable.
 			if c.unreadable {
-				if err := os.Chmod(wantPath, 0o000); err != nil {
-					t.Fatalf("💣 chmod failed: %v", err)
+				if err := os.MkdirAll(wantPath, 0o750); err != nil {
+					t.Fatalf("💣 directory at the config path: %v", err)
 				}
 			}
 
@@ -187,4 +187,12 @@ func expectClassifiedFault(t *testing.T, faults []error, wantFaultName string) {
 	if !strings.Contains(faults[0].Error(), wantFaultName) {
 		t.Errorf("✗ fault %q does not name %q", faults[0], wantFaultName)
 	}
+}
+
+// setHomeDirectory points the home directory at the supplied path for the rest of the test, under
+// the variable each platform reads: HOME on Unix and USERPROFILE on Windows.
+func setHomeDirectory(t *testing.T, home string) {
+	t.Helper()
+	t.Setenv("HOME", home)
+	t.Setenv("USERPROFILE", home)
 }

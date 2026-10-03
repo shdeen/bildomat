@@ -15,9 +15,9 @@ import (
 )
 
 // Invariants tested:
-// 1. Spinner rendering and cleanup: StartSpinner followed immediately by Finish must write the
-//    first Generating frame with a dimmed 0.0s counter, end with the line-clearing sequence, and
-//    return a positive duration.
+// 1. Spinner rendering and cleanup: StartSpinner followed by Finish after at least one frame
+//    interval must write the first Generating frame with a dimmed 0.0s counter, end with the
+//    line-clearing sequence, and return a positive duration.
 // 2. Spinner frame advancement: After StartSpinner, the output must contain the second spinner
 //    frame within two seconds.
 // 3. Spinner medium word: For image and video runs, StartSpinner must write a first frame
@@ -27,8 +27,9 @@ import (
 // TestSpinnerRendersAndErases verifies invariant #1: Spinner rendering and cleanup.
 //
 // What is being tested:
-// StartSpinner followed immediately by Finish must write the first Generating frame with a dimmed
-// 0.0s counter, end with the line-clearing sequence, and return a positive duration.
+// StartSpinner followed by Finish after at least one frame interval must write the first
+// Generating frame with a dimmed 0.0s counter, end with the line-clearing sequence, and return a
+// positive duration. The wait keeps the duration positive on a clock as coarse as the Windows one.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
@@ -38,6 +39,9 @@ func TestSpinnerRendersAndErases(t *testing.T) {
 	destination := &buf
 
 	spinner := StartSpinner(context.Background(), destination, media.Image)
+
+	time.Sleep(frameInterval)
+
 	elapsed := spinner.Finish()
 
 	rendered := buf.String()
@@ -77,35 +81,42 @@ func TestSpinnerAnimatesFrames(t *testing.T) {
 
 	t.Cleanup(func() { _ = pipeReadEnd.Close(); _ = pipeWriteEnd.Close() })
 
-	if err := pipeReadEnd.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
-		t.Fatalf("💣 frame read deadline: %v", err)
-	}
-
-	destination := pipeWriteEnd
-
-	spinner := StartSpinner(context.Background(), destination, media.Image)
+	spinner := StartSpinner(context.Background(), pipeWriteEnd, media.Image)
 	defer spinner.Finish()
 
-	frameStream := bufio.NewReader(pipeReadEnd)
-	advancedFrameSeen := false
+	// The frames arrive on a channel so that the wait is bounded by a timer rather than by a pipe
+	// read deadline, which Windows pipes do not support.
+	frameRunes := make(chan rune)
+	stopReading := make(chan struct{})
 
-	for !advancedFrameSeen {
-		streamRune, _, readErr := frameStream.ReadRune()
-		if readErr != nil {
-			t.Fatalf("💣 the frame stream closed before an advanced frame: %v", readErr)
+	t.Cleanup(func() { close(stopReading) })
+
+	go readFrameRunes(bufio.NewReader(pipeReadEnd), frameRunes, stopReading)
+
+	deadline := time.NewTimer(2 * time.Second)
+	defer deadline.Stop()
+
+	for {
+		select {
+		case streamRune, open := <-frameRunes:
+			if !open {
+				t.Fatalf("💣 the frame stream closed before an advanced frame")
+			}
+
+			if streamRune != '⠙' {
+				continue
+			}
+
+			if !t.Failed() {
+				t.Logf("✓ the spinner advances its frames while running")
+			}
+
+			return
+		case <-deadline.C:
+			t.Errorf("✗ no advanced frame within two seconds")
+
+			return
 		}
-
-		if streamRune == '⠙' {
-			advancedFrameSeen = true
-		}
-	}
-
-	_ = spinner.Finish()
-	_ = pipeWriteEnd.Close()
-	_ = pipeReadEnd.Close()
-
-	if !t.Failed() {
-		t.Logf("✓ the spinner advances its frames while running")
 	}
 }
 
@@ -134,5 +145,24 @@ func TestSpinnerStatusNamesMedium(t *testing.T) {
 
 	if !t.Failed() {
 		t.Log("✓ the status line names the medium after the word Generating")
+	}
+}
+
+// readFrameRunes forwards each rune of the frame stream until the stream ends or stopReading
+// closes, then closes frameRunes.
+func readFrameRunes(frameStream *bufio.Reader, frameRunes chan<- rune, stopReading <-chan struct{}) {
+	defer close(frameRunes)
+
+	for {
+		streamRune, _, err := frameStream.ReadRune()
+		if err != nil {
+			return
+		}
+
+		select {
+		case frameRunes <- streamRune:
+		case <-stopReading:
+			return
+		}
 	}
 }

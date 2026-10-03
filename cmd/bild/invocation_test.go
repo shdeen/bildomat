@@ -31,10 +31,78 @@ import (
 // What is being tested:
 // Given terminal, file, pipe, or /dev/null streams, newInvocation must enable interaction only when
 // both input and diagnostics are terminals. It must set styled and diagnosticStyled independently
-// from the corresponding output stream.
+// from the corresponding output stream. The redirected streams and the terminal streams are
+// checked as separate subtests.
+//
+// Kind: permanent.
 func TestInvocationTerminalStreams(t *testing.T) {
-	master, slave := openPTY(t)
-	t.Cleanup(func() { _ = master.Close(); _ = slave.Close() })
+	t.Run("redirected streams", invocationRedirectedStreams)
+	t.Run("terminal streams", invocationTerminalStreams)
+
+	if !t.Failed() {
+		t.Log("✓ each terminal choice follows the actual selected stream")
+	}
+}
+
+// invocationRedirectedStreams checks that no capability is enabled when every stream is a null
+// device, a regular file, or a pipe.
+func invocationRedirectedStreams(t *testing.T) {
+	t.Helper()
+
+	redirected := openRedirectedStreams(t)
+
+	checkStreamCapabilities(t, []streamCapabilityCase{
+		{label: "null", input: redirected.null, stdout: redirected.null, stderr: redirected.null},
+		{label: "file", input: redirected.regular, stdout: redirected.regular, stderr: redirected.regular},
+		{label: "pipe", input: redirected.pipeReader, stdout: redirected.pipeWriter, stderr: redirected.pipeWriter},
+	})
+}
+
+// invocationTerminalStreams checks each capability against a pseudo-terminal placed on one stream
+// at a time, with interaction requiring the terminal on both input and diagnostics.
+func invocationTerminalStreams(t *testing.T) {
+	t.Helper()
+
+	terminalStreams := openTerminal(t)
+	redirected := openRedirectedStreams(t)
+
+	checkStreamCapabilities(t, []streamCapabilityCase{
+		{label: "input terminal, redirected diagnostics", input: terminalStreams.Input(), stdout: redirected.pipeWriter, stderr: redirected.regular},
+		{label: "input and diagnostic terminals", input: terminalStreams.Input(), stdout: redirected.pipeWriter, stderr: terminalStreams.Output(), interactive: true, diagnosticStyled: true},
+		{label: "output terminal", input: redirected.null, stdout: terminalStreams.Output(), stderr: redirected.pipeWriter, styled: true},
+		{label: "diagnostic terminal", input: redirected.regular, stdout: redirected.pipeWriter, stderr: terminalStreams.Output(), diagnosticStyled: true},
+	})
+}
+
+// streamCapabilityCase pairs one choice of streams with the capabilities newInvocation must derive.
+type streamCapabilityCase struct {
+	label                                 string
+	input                                 *os.File
+	stdout, stderr                        io.Writer
+	interactive, styled, diagnosticStyled bool
+}
+
+// checkStreamCapabilities asserts the derived capabilities of every case.
+func checkStreamCapabilities(t *testing.T, cases []streamCapabilityCase) {
+	t.Helper()
+
+	for _, streams := range cases {
+		invocation := newInvocation(streams.input, streams.stdout, streams.stderr)
+		if invocation.interactive != streams.interactive || invocation.styled != streams.styled || invocation.diagnosticStyled != streams.diagnosticStyled {
+			t.Errorf("✗ %s: input capability %t, output capability %t, diagnostic capability %t", streams.label, invocation.interactive, invocation.styled, invocation.diagnosticStyled)
+		}
+	}
+}
+
+// redirectedStreams holds one open stream of each non-terminal kind.
+type redirectedStreams struct {
+	null, regular, pipeReader, pipeWriter *os.File
+}
+
+// openRedirectedStreams opens a null device, a temporary regular file, and a pipe, all closed
+// when the test ends.
+func openRedirectedStreams(t *testing.T) redirectedStreams {
+	t.Helper()
 
 	nullStream, err := os.OpenFile(os.DevNull, os.O_RDWR, 0)
 	if err != nil {
@@ -57,29 +125,7 @@ func TestInvocationTerminalStreams(t *testing.T) {
 
 	t.Cleanup(func() { _ = reader.Close(); _ = writer.Close() })
 
-	for _, streams := range []struct {
-		label                                 string
-		input                                 *os.File
-		stdout, stderr                        io.Writer
-		interactive, styled, diagnosticStyled bool
-	}{
-		{label: "null", input: nullStream, stdout: nullStream, stderr: nullStream},
-		{label: "file", input: regular, stdout: regular, stderr: regular},
-		{label: "pipe", input: reader, stdout: writer, stderr: writer},
-		{label: "input terminal, redirected diagnostics", input: slave, stdout: writer, stderr: regular},
-		{label: "input and diagnostic terminals", input: slave, stdout: writer, stderr: slave, interactive: true, diagnosticStyled: true},
-		{label: "output terminal", input: nullStream, stdout: slave, stderr: writer, styled: true},
-		{label: "diagnostic terminal", input: regular, stdout: writer, stderr: slave, diagnosticStyled: true},
-	} {
-		invocation := newInvocation(streams.input, streams.stdout, streams.stderr)
-		if invocation.interactive != streams.interactive || invocation.styled != streams.styled || invocation.diagnosticStyled != streams.diagnosticStyled {
-			t.Errorf("✗ %s: input capability %t, output capability %t, diagnostic capability %t", streams.label, invocation.interactive, invocation.styled, invocation.diagnosticStyled)
-		}
-	}
-
-	if !t.Failed() {
-		t.Log("✓ each terminal choice follows the actual selected stream")
-	}
+	return redirectedStreams{null: nullStream, regular: regular, pipeReader: reader, pipeWriter: writer}
 }
 
 // TestSaveResults verifies invariant #2: Results file.

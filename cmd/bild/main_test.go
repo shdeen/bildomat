@@ -210,7 +210,8 @@ func TestAppVersion(t *testing.T) {
 	}
 }
 
-// TestMain runs the package tests with an empty temporary HOME and removes it afterward.
+// TestMain runs the package tests with an empty temporary home directory, under the variable each
+// platform reads, and removes it afterward.
 func TestMain(m *testing.M) {
 	scratchHome, err := os.MkdirTemp("", "bild-test-home-*")
 	if err != nil {
@@ -218,9 +219,11 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	if err := os.Setenv("HOME", scratchHome); err != nil {
-		fmt.Fprintln(os.Stderr, "💣 scratch home selection failed:", err)
-		os.Exit(1)
+	for _, homeVariable := range []string{"HOME", "USERPROFILE"} {
+		if err := os.Setenv(homeVariable, scratchHome); err != nil {
+			fmt.Fprintln(os.Stderr, "💣 scratch home selection failed:", err)
+			os.Exit(1)
+		}
 	}
 
 	exitCode := m.Run()

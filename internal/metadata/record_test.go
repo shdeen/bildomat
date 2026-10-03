@@ -272,7 +272,11 @@ func TestRecordBinary(t *testing.T) {
 	}
 
 	requests := decodeObjects(t, decodeObject(t, document["request"])["provider-requests"])
-	if len(requests) != 1 || !bytes.Contains(requests[0]["payload"], []byte(artifactPath)) {
+	if len(requests) != 1 {
+		t.Fatalf("💣 cannot inspect %d requests", len(requests))
+	}
+
+	if !strings.Contains(decodedString(t, decodeObject(t, requests[0]["payload"])["image"]), artifactPath) {
 		t.Error("✗ actual request data URI was not replaced by artifact reference")
 	}
 
@@ -321,7 +325,11 @@ func TestArtifactMediaType(t *testing.T) {
 	}
 
 	responses := decodeObjects(t, document["provider-responses"])
-	if len(responses) != 1 || !bytes.Contains(responses[0]["full-response"], []byte(artifactPath)) {
+	if len(responses) != 1 {
+		t.Fatalf("💣 cannot inspect %d responses", len(responses))
+	}
+
+	if !strings.Contains(decodedString(t, decodeObject(t, responses[0]["full-response"])["data"]), artifactPath) {
 		t.Error("✗ SVG response does not reference its actual artifact")
 	}
 
@@ -414,4 +422,17 @@ func decodeObjects(t *testing.T, content []byte) []map[string]json.RawMessage {
 	}
 
 	return objects
+}
+
+// decodedString decodes one JSON string value, so that a path inside it compares without the
+// escaping JSON applies to backslashes.
+func decodedString(t *testing.T, content json.RawMessage) string {
+	t.Helper()
+
+	var value string
+	if err := json.Unmarshal(content, &value); err != nil {
+		t.Errorf("✗ not a JSON string: %s", content)
+	}
+
+	return value
 }
