@@ -23,6 +23,7 @@ func Fetch(ctx context.Context, endpoint string, credential AuthCredential, fall
 	}
 	defer response.Body.Close() //nolint:errcheck // Reading or streaming reports transfer failures; closing this response only releases its connection.
 
+	//nolint:nilaway // http.Client.Do returns a non-nil response whenever its error is nil, and request returns its error first.
 	if response.StatusCode/100 != 2 {
 		snippet, readErr := readFirstBytes(response.Body, maxRespBytes)
 		record.Receive(requestIndex, metadata.Synchronous, response.StatusCode, response.Header.Get(headerContentType), snippet, readErr)

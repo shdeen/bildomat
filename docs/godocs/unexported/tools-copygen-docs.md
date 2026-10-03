@@ -6,7 +6,9 @@
 import "github.com/shdeen/bildomat/tools/copygen"
 ```
 
-Command copygen turns internal/templates/copy.toml into per\-package string constants. Each top\-level table names a package directory relative to the repository root. The go:generate directive runs it from internal/templates.
+Command copygen turns internal/templates/copy.toml into per\-package string constants: each top\-level table of the file names a package directory relative to the repository root, and the command writes that package's zz\_consts.go. The directive in internal/templates/templates.go names it.
+
+Nothing runs it on its own: no build step, no workflow, no test. After editing copy.toml, run \`go generate ./internal/templates\` from the repository root and commit every regenerated zz\_consts.go together with the edit. The test in copygen\_test.go regenerates the constants in memory and fails when a committed file no longer matches copy.toml, which is how a missed regeneration shows up.
 
 ## Index
 
@@ -76,7 +78,7 @@ var identifierForm = regexp.MustCompile(`^[A-Z][A-Za-z0-9]*$`)
 ```
 
 <a name="generate"></a>
-## func [generate](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L66>)
+## func [generate](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L73>)
 
 ```go
 func generate() error
@@ -85,7 +87,7 @@ func generate() error
 generate validates and renders the catalog before writing each package's constants. A write failure may leave earlier files updated.
 
 <a name="loadCatalog"></a>
-## func [loadCatalog](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L110>)
+## func [loadCatalog](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L117>)
 
 ```go
 func loadCatalog(sourcePath, repositoryRoot string) (map[string]map[string]string, error)
@@ -94,7 +96,7 @@ func loadCatalog(sourcePath, repositoryRoot string) (map[string]map[string]strin
 loadCatalog decodes the catalog source into per\-package entry maps, validating the document shape, every table, and every entry.
 
 <a name="main"></a>
-## func [main](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L57>)
+## func [main](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L64>)
 
 ```go
 func main()
@@ -103,7 +105,7 @@ func main()
 main runs copy generation and reports failures on stderr with a nonzero exit status.
 
 <a name="packageNameOf"></a>
-## func [packageNameOf](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L195>)
+## func [packageNameOf](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L202>)
 
 ```go
 func packageNameOf(dir string) (string, error)
@@ -112,7 +114,7 @@ func packageNameOf(dir string) (string, error)
 packageNameOf returns the package clause of the first Go source file in a directory, skipping test files and the generated file itself.
 
 <a name="renderPackageSource"></a>
-## func [renderPackageSource](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L161>)
+## func [renderPackageSource](<https://github.com/shdeen/bildomat-dev/blob/main/tools/copygen/copygen.go#L168>)
 
 ```go
 func renderPackageSource(repositoryRoot, dir string, entries map[string]string) (string, error)

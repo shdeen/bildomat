@@ -67,7 +67,7 @@ func prepareVideoInputs(ctx context.Context, api *catalog.VideoAPI, run *generat
 			return preparedGeneration, err
 		}
 
-		preparedGeneration.InputMedia[mediaIndex] = downloaded[0]
+		preparedGeneration.InputMedia[mediaIndex] = downloaded[0] //nolint:nilaway // DownloadInputMedia received exactly one input and returned no error, so it returns exactly one.
 		if api.InputMediaMustResize {
 			changes, conformErr := generation.ConformInputMedia(&run.Model, preparedGeneration.Params, preparedGeneration.InputMedia[mediaIndex:mediaIndex+1])
 

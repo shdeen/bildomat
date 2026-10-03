@@ -174,7 +174,7 @@ func client(credential AuthCredential, origin *url.URL) *http.Client
 client limits redirects and confines the supplied credential to the original origin.
 
 <a name="copyDownload"></a>
-## func [copyDownload](<https://github.com/shdeen/bildomat-dev/blob/main/internal/httpapi/download.go#L68>)
+## func [copyDownload](<https://github.com/shdeen/bildomat-dev/blob/main/internal/httpapi/download.go#L69>)
 
 ```go
 func copyDownload(file *os.File, body io.Reader) (signature []byte, written int64, copyErr error)
@@ -246,7 +246,7 @@ func send(ctx context.Context, httpMethod, endpoint string, credential AuthCrede
 send performs a request and reads its bounded body before provider decoding. It captures the transaction in a nonnil record, including incomplete response bytes on failure.
 
 <a name="stream"></a>
-## func [stream](<https://github.com/shdeen/bildomat-dev/blob/main/internal/httpapi/download.go#L40>)
+## func [stream](<https://github.com/shdeen/bildomat-dev/blob/main/internal/httpapi/download.go#L41>)
 
 ```go
 func stream(ctx context.Context, response *http.Response, endpoint, fallbackExt string, record *metadata.Record, requestIndex int) (artifact.Media, error)

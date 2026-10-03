@@ -1,6 +1,13 @@
-// Command copygen turns internal/templates/copy.toml into per-package string constants. Each
-// top-level table names a package directory relative to the repository root. The go:generate
-// directive runs it from internal/templates.
+// Command copygen turns internal/templates/copy.toml into per-package string constants: each
+// top-level table of the file names a package directory relative to the repository root, and the
+// command writes that package's zz_consts.go. The directive in internal/templates/templates.go
+// names it.
+//
+// Nothing runs it on its own: no build step, no workflow, no test. After editing copy.toml, run
+// `go generate ./internal/templates` from the repository root and commit every regenerated
+// zz_consts.go together with the edit. The test in copygen_test.go regenerates the constants in
+// memory and fails when a committed file no longer matches copy.toml, which is how a missed
+// regeneration shows up.
 package main
 
 import (

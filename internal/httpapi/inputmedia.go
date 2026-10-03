@@ -132,7 +132,7 @@ func DownloadInputMedia(ctx context.Context, mediaInputs []media.Input) ([]media
 		mediaInput.Bytes = data
 		mediaInput.Filepath = mediaInput.URL
 		mediaInput.URL = ""
-		downloadedInputs[inputIndex] = mediaInput
+		downloadedInputs[inputIndex] = mediaInput //nolint:nilaway // The loop runs only when mediaInputs holds elements, and a clone of a non-empty slice is non-nil.
 	}
 
 	return downloadedInputs, nil
