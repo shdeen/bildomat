@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.5] - 2026-09-28
+## [0.0.5] - 2026-10-03
 
 First public release. A `bild` command for generating and editing images and videos from the terminal and for effective agentic use.
 

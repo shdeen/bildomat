@@ -9,9 +9,6 @@
 #   BILD_VERSION      release to install, such as 0.1.0 (default: the latest release)
 #   BILD_INSTALL_DIR  directory to install bild.exe into (default: %LOCALAPPDATA%\Programs\bild)
 
-# The messages this script prints are written inline, as the project owner
-# authorized on 2026-09-29 for these standalone installers.
-
 # Everything runs inside one script block. Under "irm | iex" the script runs in
 # the caller's session, so the block keeps its variables and preference
 # settings out of that session, and a failure ends the block with an error

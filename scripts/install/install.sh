@@ -10,9 +10,6 @@
 #   BILD_VERSION      release to install, such as 0.1.0 (default: the latest release)
 #   BILD_INSTALL_DIR  directory to install bild into (default: $HOME/.local/bin)
 
-# The messages this script prints are written inline, as the project owner
-# authorized on 2026-09-29 for these standalone installers.
-
 set -eu
 
 releases_url="https://github.com/shdeen/bildomat/releases"
