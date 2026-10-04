@@ -7,7 +7,7 @@
   <img src="assets/logo/bildomat-horizontal-light-transparent.png" alt="bildomat" width="280">
 </picture>
 
-# An image/video generation CLI for agentic use and scriptability, with support for over 150 models from leading providers
+# Image and video generation for agents and scriptS. One command, 150+ models.
 
 [Overview](#overview) | [Quickstart](#quickstart) | [Basic Usage](#basic-usage) | [Agentic Use](#agentic-use) | [Scripting](#scripting) | [Providers and API Keys](#providers-and-api-keys) | [Configuration](#configuration)
 
