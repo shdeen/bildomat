@@ -182,6 +182,12 @@ For a more advanced workflow, such as creating a fashion ensemble product shot, 
 
 ### Install
 
+**With [Homebrew](https://brew.sh) (macOS or Linux)**:
+
+```sh
+brew install shdeen/tap/bild
+```
+
 **Install script**:
 
 On macOS or Linux:
