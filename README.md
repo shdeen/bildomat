@@ -7,7 +7,7 @@
   <img src="assets/logo/bildomat-horizontal-light-transparent.png" alt="bildomat" width="280">
 </picture>
 
-# Multiple providers. 150+ models. One `bild` command
+# An image/video generation CLI for agentic use and scriptability, with support for over 150 models from leading providers
 
 [Overview](#overview) | [Quickstart](#quickstart) | [Basic Usage](#basic-usage) | [Agentic Use](#agentic-use) | [Scripting](#scripting) | [Providers and API Keys](#providers-and-api-keys) | [Configuration](#configuration)
 
