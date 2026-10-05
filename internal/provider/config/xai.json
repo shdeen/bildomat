@@ -282,6 +282,48 @@
           "maxMultiple": 1
         }
       ]
+    },
+    {
+      "id": "grok-imagine-video-1.5-lite",
+      "name": "Grok Imagine Video 1.5 Lite",
+      "description": "Generate video from a text prompt or one reference image.",
+      "media": "video",
+      "docsURL": "https://docs.x.ai/developers/models/grok-imagine-video-1.5-lite",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "1:1",
+            "16:9",
+            "9:16",
+            "4:3",
+            "3:4",
+            "3:2",
+            "2:3"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "480p",
+            "720p",
+            "1080p"
+          ]
+        },
+        {
+          "paramID": "duration",
+          "flagID": "duration",
+          "minValue": 1,
+          "maxValue": 15
+        },
+        {
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "modelInfoComment": "Supply one image for image-to-video generation."
+        }
+      ]
     }
   ],
   "config": {

@@ -1131,6 +1131,60 @@
           ]
         }
       ]
+    },
+    {
+      "id": "flux-3-image",
+      "name": "FLUX 3 Image",
+      "description": "Generate images from text or edit one reference image.",
+      "media": "image",
+      "docsURL": "https://docs.bfl.ai/flux_3/flux3_image_overview",
+      "params": [
+        {
+          "paramID": "aspect_ratio",
+          "flagID": "aspect-ratio",
+          "allowedValues": [
+            "21:9",
+            "2:1",
+            "16:9",
+            "3:2",
+            "7:5",
+            "4:3",
+            "5:4",
+            "1:1",
+            "4:5",
+            "3:4",
+            "5:7",
+            "2:3",
+            "9:16",
+            "1:2",
+            "9:21",
+            "auto"
+          ]
+        },
+        {
+          "paramID": "resolution",
+          "flagID": "resolution",
+          "allowedValues": [
+            "768sq",
+            "1k",
+            "1.5k",
+            "2k",
+            "4k"
+          ]
+        },
+        {
+          "paramID": "safety_tolerance",
+          "flagID": "safety-tolerance",
+          "minValue": 0,
+          "maxValue": 4
+        },
+        {
+          "paramID": "images",
+          "flagID": "input-media",
+          "maxMultiple": 1,
+          "modelInfoComment": "Bildomat supports one reference image on the direct BFL route."
+        }
+      ]
     }
   ],
   "config": {

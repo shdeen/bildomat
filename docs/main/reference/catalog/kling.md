@@ -152,4 +152,4 @@ Option | Constraints
 `--duration` | Allowed values: 5, 10
 `--input-media` | Repeat maximum: 1
 
-Revised 2026-10-02
+Revised 2026-10-05

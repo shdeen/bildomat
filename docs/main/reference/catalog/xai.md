@@ -2,7 +2,7 @@
 
 Every model that `bild` offers from xAI (provider ID `xai`, key variable `XAI_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info xai/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-4 image models, 2 video models.
+4 image models, 3 video models.
 
 ## Contents
 
@@ -12,6 +12,7 @@ Every model that `bild` offers from xAI (provider ID `xai`, key variable `XAI_AP
 - [Grok Imagine Image 2.0](#grok-imagine-image-20)
 - [Grok Imagine Video](#grok-imagine-video)
 - [Grok Imagine Video 1.5](#grok-imagine-video-15)
+- [Grok Imagine Video 1.5 Lite](#grok-imagine-video-15-lite)
 
 ## Grok Imagine Image Quality
 
@@ -92,4 +93,19 @@ Option | Constraints
 `--duration` | Allowed range: 1 to 15
 `--input-media` | Repeat maximum: 1
 
-Revised 2026-10-02
+## Grok Imagine Video 1.5 Lite
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Grok Imagine Video 1.5 Lite | video | none | `xai/grok-imagine-video-1.5-lite`
+
+Generate video from a text prompt or one reference image.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3
+`--resolution` | Allowed values: 480p, 720p, 1080p
+`--duration` | Allowed range: 1 to 15
+`--input-media` | Repeat maximum: 1; Supply one image for image-to-video generation.
+
+Revised 2026-10-05

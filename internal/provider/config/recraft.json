@@ -1073,6 +1073,64 @@
           "modelInfoComment": "precise follows the style closely; flexible permits more variation. See https://www.recraft.ai/docs/recraft-models/recraft-v4-styles."
         }
       ]
+    },
+    {
+      "id": "recraftv4_1_flash",
+      "name": "Recraft V4.1 Flash",
+      "aliases": [
+        "recraftv4_1_flash_raster"
+      ],
+      "description": "Generate raster images from a text prompt.",
+      "media": "image",
+      "docsURL": "https://www.recraft.ai/docs/api-reference/models/recraft-v4-1-flash",
+      "params": [
+        {
+          "paramID": "size",
+          "flagID": "size",
+          "allowedValues": [
+            "1024x1024",
+            "1536x768",
+            "768x1536",
+            "1280x832",
+            "832x1280",
+            "1216x896",
+            "896x1216",
+            "1152x896",
+            "896x1152",
+            "832x1344",
+            "1280x896",
+            "896x1280",
+            "1344x768",
+            "768x1344"
+          ]
+        },
+        {
+          "flagID": "aspect-ratio",
+          "ruleDescription": "Selects the supported image size closest to the requested aspect ratio."
+        },
+        {
+          "flagID": "resolution",
+          "ruleDescription": "Selects a supported image size using the requested resolution."
+        },
+        {
+          "paramID": "n",
+          "flagID": "num-images",
+          "minValue": 1,
+          "maxValue": 6
+        },
+        {
+          "paramID": "random_seed",
+          "flagID": "seed"
+        },
+        {
+          "paramID": "image_format",
+          "flagID": "output-format",
+          "allowedValues": [
+            "png",
+            "webp"
+          ]
+        }
+      ]
     }
   ],
   "config": {

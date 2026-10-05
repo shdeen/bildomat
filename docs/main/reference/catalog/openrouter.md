@@ -2,7 +2,7 @@
 
 Every model that `bild` offers from OpenRouter (provider ID `openrouter`, key variable `OPENROUTER_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openrouter/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-51 image models, 29 video models.
+56 image models, 30 video models.
 
 ## Contents
 
@@ -86,6 +86,12 @@ Every model that `bild` offers from OpenRouter (provider ID `openrouter`, key va
 - [Black Forest Labs: FLUX Video Edit](#black-forest-labs-flux-video-edit)
 - [Black Forest Labs: FLUX Video Upscale](#black-forest-labs-flux-video-upscale)
 - [HeyGen: Avatar IV](#heygen-avatar-iv)
+- [Black Forest Labs: FLUX 3 Image](#black-forest-labs-flux-3-image)
+- [ByteDance Seed: Seedream 5.0 Flash](#bytedance-seed-seedream-50-flash)
+- [InclusionAI: Ming Image 0.1 Design](#inclusionai-ming-image-01-design)
+- [InclusionAI: Ming Image 0.1 Design Layer](#inclusionai-ming-image-01-design-layer)
+- [Recraft: Recraft V4.1 Flash](#recraft-recraft-v41-flash)
+- [HeyGen: HeyGen Video 1](#heygen-heygen-video-1)
 
 ## OpenAI: GPT Image 2.5 Flare
 
@@ -1502,4 +1508,86 @@ Option | Constraints
 `--voice-volume` | Allowed range: 0 to 1
 `--voice-locale` | 
 
-Revised 2026-10-02
+## Black Forest Labs: FLUX 3 Image
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Black Forest Labs: FLUX 3 Image | image | none | `openrouter/black-forest-labs/flux-3-image`
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 21:9, 2:1, 16:9, 3:2, 7:5, 4:3, 5:4, 1:1, 4:5, 3:4, 5:7, 2:3, 9:16, 1:2, 9:21, auto
+`--resolution` | Allowed values: 768, 1K, 1.5K, 2K, 4K
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 10
+`--safety-tolerance` | Allowed range: 0 to 4
+
+## ByteDance Seed: Seedream 5.0 Flash
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+ByteDance Seed: Seedream 5.0 Flash | image | none | `openrouter/bytedance-seed/seedream-5-0-flash`
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:2, 2:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 9:19.5, 19.5:9, 9:20, 20:9, 9:21, 21:9, auto
+`--resolution` | Allowed values: 1K, 2K
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
+`--seed` | 
+
+## InclusionAI: Ming Image 0.1 Design
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+InclusionAI: Ming Image 0.1 Design | image | none | `openrouter/inclusionai/ming-image-0.1-design`
+
+Option | Constraints
+-------|------------
+`--output-format` | Allowed values: png, jpeg, webp
+`--num-images` | Allowed range: 1 to 1
+
+## InclusionAI: Ming Image 0.1 Design Layer
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+InclusionAI: Ming Image 0.1 Design Layer | image | none | `openrouter/inclusionai/ming-image-0.1-design-layer`
+
+Generate separate transparent layer images from a prompt and one reference image.
+
+Option | Constraints
+-------|------------
+`--output-format` | Allowed values: png, webp
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | **Required.** Repeat maximum: 1; Supply one reference image. Each returned layer is saved as a separate image.
+
+## Recraft: Recraft V4.1 Flash
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft: Recraft V4.1 Flash | image | none | `openrouter/recraft/recraft-v4.1-flash`
+
+Generate raster images from a text prompt.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
+`--num-images` | Allowed range: 1 to 6
+
+## HeyGen: HeyGen Video 1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+HeyGen: HeyGen Video 1 | video | none | `openrouter/heygen/heygen-video-1`
+
+Generate video with audio from text, an opening image, or image references.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 21:9, 16:9, 4:3, 1:1, 3:4, 9:16
+`--resolution` | Allowed values: 480p, 768p
+`--duration` | Allowed range: 5 to 15
+`--input-media` | Repeat maximum: 9; Use up to nine image references, or one opening image with first:image.png. Do not combine an opening image with references. Closing frames, video references, and audio references are not supported by this configuration.
+`--seed` | 
+
+Revised 2026-10-05

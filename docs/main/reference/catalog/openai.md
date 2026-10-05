@@ -195,4 +195,4 @@ Option | Constraints
 `--duration` | Allowed values: 4, 8, 12, 16, 20
 `--input-media` | Repeat maximum: 1
 
-Revised 2026-10-02
+Revised 2026-10-05

@@ -2,7 +2,7 @@
 
 Every model that `bild` offers from Black Forest Labs (provider ID `bfl`, key variable `BFL_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info bfl/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-21 image models, 1 video models.
+22 image models, 1 video models.
 
 ## Contents
 
@@ -28,6 +28,7 @@ Every model that `bild` offers from Black Forest Labs (provider ID `bfl`, key va
 - [FLUX Erase](#flux-erase)
 - [FLUX Virtual Try-On V1](#flux-virtual-try-on-v1)
 - [FLUX Virtual Try-On V2](#flux-virtual-try-on-v2)
+- [FLUX 3 Image](#flux-3-image)
 
 ## FLUX.2 [pro]
 
@@ -427,4 +428,19 @@ Option | Constraints
 `--safety-tolerance` | Allowed range: 0 to 5
 `--garment-url` | **Required.** Public HTTP(S) URL of the garment image. See https://api.bfl.ai/openapi.json.
 
-Revised 2026-10-02
+## FLUX 3 Image
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+FLUX 3 Image | image | none | `bfl/flux-3-image`
+
+Generate images from text or edit one reference image.
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 21:9, 2:1, 16:9, 3:2, 7:5, 4:3, 5:4, 1:1, 4:5, 3:4, 5:7, 2:3, 9:16, 1:2, 9:21, auto
+`--resolution` | Allowed values: 768sq, 1k, 1.5k, 2k, 4k
+`--input-media` | Repeat maximum: 1; Bildomat supports one reference image on the direct BFL route.
+`--safety-tolerance` | Allowed range: 0 to 4
+
+Revised 2026-10-05

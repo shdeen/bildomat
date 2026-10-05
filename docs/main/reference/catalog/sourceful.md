@@ -41,4 +41,4 @@ Option | Constraints
 `--background` | Allowed values: original, transparent
 `--prompt-upsampling` | 
 
-Revised 2026-10-02
+Revised 2026-10-05

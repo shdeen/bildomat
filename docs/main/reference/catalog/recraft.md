@@ -2,7 +2,7 @@
 
 Every model that `bild` offers from Recraft (provider ID `recraft`, key variable `RECRAFT_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info recraft/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-20 image models, 0 video models.
+21 image models, 0 video models.
 
 ## Contents
 
@@ -26,6 +26,7 @@ Every model that `bild` offers from Recraft (provider ID `recraft`, key variable
 - [Recraft V4 Styles Pro](#recraft-v4-styles-pro)
 - [Recraft V4 Styles Vector](#recraft-v4-styles-vector)
 - [Recraft V4 Styles Pro Vector](#recraft-v4-styles-pro-vector)
+- [Recraft V4.1 Flash](#recraft-v41-flash)
 
 ## Recraft V4.1
 
@@ -335,4 +336,21 @@ Option | Constraints
 `--style-id` | **Required.** Use a Recraft style UUID compatible with this model, not a style name. See https://www.recraft.ai/docs/api-reference/styles.
 `--style-match` | precise follows the style closely; flexible permits more variation. See https://www.recraft.ai/docs/recraft-models/recraft-v4-styles.
 
-Revised 2026-10-02
+## Recraft V4.1 Flash
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Recraft V4.1 Flash | image | `recraftv4_1_flash_raster` | `recraft/recraftv4_1_flash`
+
+Generate raster images from a text prompt.
+
+Option | Constraints
+-------|------------
+`--size` | Allowed values: 1024x1024, 1536x768, 768x1536, 1280x832, 832x1280, 1216x896, 896x1216, 1152x896, 896x1152, 832x1344, 1280x896, 896x1280, 1344x768, 768x1344
+`--aspect-ratio` | Rule: Selects the supported image size closest to the requested aspect ratio.
+`--resolution` | Rule: Selects a supported image size using the requested resolution.
+`--output-format` | Allowed values: png, webp
+`--num-images` | Allowed range: 1 to 6
+`--seed` | 
+
+Revised 2026-10-05
