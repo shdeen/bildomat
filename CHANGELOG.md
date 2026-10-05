@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.6] - 2026-10-05
+
+### Added
+
+- New models: Black Forest Labs FLUX 3 Image (`bfl/flux-3-image`), Recraft V4.1 Flash (`recraft/recraftv4_1_flash`), and xAI Grok Imagine Video 1.5 Lite (`xai/grok-imagine-video-1.5-lite`).
+- New OpenRouter models: FLUX 3 Image, Seedream 5.0 Flash, Ming Image 0.1 Design, Ming Image 0.1 Design Layer, Recraft V4.1 Flash, and HeyGen Video 1.
+- Install with Homebrew on macOS or Linux: `brew install shdeen/tap/bild`.
+
 ## [0.0.5] - 2026-10-03
 
 First public release. A `bild` command for generating and editing images and videos from the terminal and for effective agentic use.
@@ -19,5 +27,6 @@ First public release. A `bild` command for generating and editing images and vid
 - Install scripts for macOS and Linux (`install.sh`) and Windows (`install.ps1`).
 - Configuration file in `~/.bildomat/config.yml` sets a default model, a default output directory, and provider API keys. Keys can also be set in environment variables. YAML keys and env vars are listed on each provider's info page.
 
-[Unreleased]: https://github.com/shdeen/bildomat/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/shdeen/bildomat/compare/v0.0.6...HEAD
+[0.0.6]: https://github.com/shdeen/bildomat/releases/tag/v0.0.6
 [0.0.5]: https://github.com/shdeen/bildomat/releases/tag/v0.0.5
