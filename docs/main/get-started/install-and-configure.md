@@ -2,36 +2,45 @@
 
 ## Install
 
+### Install Script
+
 macOS and Linux:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/shdeen/bildomat/main/scripts/install/install.sh | sh
+curl -fsSL https://bildomat.com/install.sh | sh
 ```
 
 Windows, in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/shdeen/bildomat/main/scripts/install/install.ps1 | iex
+irm https://bildomat.com/install.ps1 | iex
+```
+
+### Homebrew
+
+On macOS or Linux, with [Homebrew](https://brew.sh):
+
+```sh
+brew install shdeen/tap/bild
 ```
 
 ### Go
+
+With [Go 1.26.5 or later](https://go.dev/dl/) on macOS, Linux, or Windows:
 
 ```sh
 go install github.com/shdeen/bildomat/cmd/bild@latest
 ```
 
+Go usually installs binaries to `~/go/bin`. Make sure that directory is on your `PATH`.
+
 ### Binaries
 
-- [macOS, Apple silicon](https://github.com/shdeen/bildomat/releases/download/v0.0.5/bild_0.0.5_darwin_arm64.tar.gz)
-- [macOS, Intel](https://github.com/shdeen/bildomat/releases/download/v0.0.5/bild_0.0.5_darwin_amd64.tar.gz)
-- [Linux, ARM](https://github.com/shdeen/bildomat/releases/download/v0.0.5/bild_0.0.5_linux_arm64.tar.gz)
-- [Linux, Intel/AMD](https://github.com/shdeen/bildomat/releases/download/v0.0.5/bild_0.0.5_linux_amd64.tar.gz)
-- [Windows, ARM](https://github.com/shdeen/bildomat/releases/download/v0.0.5/bild_0.0.5_windows_arm64.zip)
-- [Windows, Intel/AMD](https://github.com/shdeen/bildomat/releases/download/v0.0.5/bild_0.0.5_windows_amd64.zip)
+Download the archive for your system from the [Bildomat releases page](https://github.com/shdeen/bildomat/releases). Archives are available for macOS, Linux, and Windows, each on ARM and Intel/AMD processors.
 
 ## Add a Provider Key
 
-Create a key with the provider whose models you want to use:
+Create a key with each provider whose models you want to use. A key from one provider is enough to start.
 
 | Provider | Where to create a key | Configuration key | Environment variable |
 | --- | --- | --- | --- |
@@ -44,39 +53,75 @@ Create a key with the provider whose models you want to use:
 | Kling | [API keys](https://kling.ai/dev/api-key) | `kling` | `KLING_API_KEY` |
 | OpenRouter | [API keys](https://openrouter.ai/settings/keys) | `openrouter` | `OPENROUTER_API_KEY` |
 
-Put the key in the configuration file or in an environment variable.
+An OpenRouter key gives access to models from many vendors through OpenRouter. It does not work with those vendors' direct integrations.
+
+Put each key in the configuration file or in an environment variable. A key in the configuration file takes precedence over the environment variable for the same provider.
 
 ## Use the Configuration File
 
-Create `~/.bildomat/config.yml` to choose a default model, default output directory, and provider keys. All settings are optional.
+Create `~/.bildomat/config.yml` to set provider keys, a default model, and a default output directory. All settings are optional. On Windows, the file is `%USERPROFILE%\.bildomat\config.yml`.
 
 ```yaml
-default-model: google/gemini-3.1-flash-image
+default-model: openai/gpt-image-2
 output-dir: ~/Pictures/bild
 api-keys:
   google: YOUR_GOOGLE_API_KEY
   openai: YOUR_OPENAI_API_KEY
+  xai: YOUR_XAI_API_KEY
+  bfl: YOUR_BFL_API_KEY
+  sourceful: YOUR_SOURCEFUL_API_KEY
+  recraft: YOUR_RECRAFT_API_KEY
+  kling: YOUR_KLING_API_KEY
+  openrouter: YOUR_OPENROUTER_API_KEY
 ```
 
-Replace placeholder keys with credentials for the providers you use. Omit providers you do not use. Bildomat reads the file each time it runs a command; a standalone `bild --version` does not read it.
+Replace each placeholder with your key for that provider, and omit the providers you do not use. Bildomat reads the file each time it runs a command; a standalone `bild --version` does not read it.
 
 Without `default-model`, a run that omits `--model` uses the default model of the first keyed provider, in the order `bild list` shows providers, and `bild help` names the model in effect under `-m, --model`. Set `default-model` when you want one particular model whichever credentials are present.
+
+## Use an Environment Variable
+
+Set the variable for each provider whose key is not in the configuration file. Omit the lines for providers you do not use.
+
+macOS and Linux:
+
+```sh
+export GOOGLE_API_KEY='YOUR_GOOGLE_API_KEY'
+export OPENAI_API_KEY='YOUR_OPENAI_API_KEY'
+export XAI_API_KEY='YOUR_XAI_API_KEY'
+export BFL_API_KEY='YOUR_BFL_API_KEY'
+export SOURCEFUL_API_KEY='YOUR_SOURCEFUL_API_KEY'
+export RECRAFT_API_KEY='YOUR_RECRAFT_API_KEY'
+export KLING_API_KEY='YOUR_KLING_API_KEY'
+export OPENROUTER_API_KEY='YOUR_OPENROUTER_API_KEY'
+```
+
+To set the variables in every new terminal, add these lines to your shell's startup file, such as `~/.zshrc` or `~/.bashrc`.
+
+Windows, in PowerShell:
+
+```powershell
+$env:GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY'
+$env:OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY'
+$env:XAI_API_KEY = 'YOUR_XAI_API_KEY'
+$env:BFL_API_KEY = 'YOUR_BFL_API_KEY'
+$env:SOURCEFUL_API_KEY = 'YOUR_SOURCEFUL_API_KEY'
+$env:RECRAFT_API_KEY = 'YOUR_RECRAFT_API_KEY'
+$env:KLING_API_KEY = 'YOUR_KLING_API_KEY'
+$env:OPENROUTER_API_KEY = 'YOUR_OPENROUTER_API_KEY'
+```
+
+These assignments last for the current session. To set them in every session, add them to your PowerShell profile.
+
+An environment variable supplies the key only when the configuration file has no nonempty key for that provider. To let the variable supply the key, remove or empty that provider's entry in the configuration file.
 
 ## Override a Default for One Request
 
 ```sh
-bild --model openai/gpt-image-2 --output-path ./poster.png "A geometric poster for a coastal railway"
+bild --model xai/grok-imagine-image --output-path ./poster.png "A geometric poster for a coastal railway"
 ```
 
-The model flag overrides the configured model. Any `--output-path` overrides the configured output directory, and a relative path such as `poster.png` or `./poster.png` is relative to the working directory. The configured directory applies only to runs without `--output-path`.
-
-## Use an Environment Variable
-
-```sh
-export OPENAI_API_KEY='YOUR_API_KEY'
-```
-
-This works when there is no nonempty OpenAI key in the configuration file. A configured key wins over the environment variable. Remove or empty that configuration entry if you want the environment variable to supply the credential.
+The `--model` flag overrides the configured model. Any `--output-path` overrides the configured output directory, and a relative path such as `poster.png` or `./poster.png` is relative to the working directory. The configured directory applies only to runs without `--output-path`.
 
 ## Check a Configuration Warning
 
@@ -84,4 +129,4 @@ A missing configuration file is normal and produces no warning. An unreadable or
 
 See [configuration reference](../reference/configuration.md) for all provider identifiers, environment variables, path rules, and precedence.
 
-Revised 2026-10-01
+Revised 2026-10-05

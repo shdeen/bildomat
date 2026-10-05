@@ -7,7 +7,7 @@
   <img src="assets/logo/bildomat-horizontal-light-transparent.png" alt="bildomat" width="280">
 </picture>
 
-# Image and video generation for agents and scripts. One command, 150+ models.
+# Image and video generation for agents and scripts. One command, 150+ models
 
 [Overview](#overview) | [Quickstart](#quickstart) | [Basic Usage](#basic-usage) | [Agentic Use](#agentic-use) | [Scripting](#scripting) | [Providers and API Keys](#providers-and-api-keys) | [Configuration](#configuration)
 
@@ -230,24 +230,62 @@ API keys may be set in the Bildomat configuration file or in shell environment v
 
 #### The Bildomat configuration file
 
-The Bildomat configuration file is in YAML format within the Bildomat directory under your home directory. To set it up, create a `config.yml` file at the following path: `~/.bildomat/config.yml`. Then add your API key to `config.yml` as follows:
+The Bildomat configuration file is in YAML format within the Bildomat directory under your home directory.
+
+To set it up on macOS or Linux, create a `config.yml` file at the following path: `~/.bildomat/config.yml`. On Windows, use `%USERPROFILE%\.bildomat\config.yml`.
+
+Then add the key for each provider you use under `api-keys`, and omit the providers you don't use:
 
 ```yaml
 api-keys:
   google: your-google-api-key
+  openai: your-openai-api-key
+  xai: your-xai-api-key
+  bfl: your-bfl-api-key
+  sourceful: your-sourceful-api-key
+  recraft: your-recraft-api-key
+  kling: your-kling-api-key
+  openrouter: your-openrouter-api-key
 ```
+
+A key in the configuration file takes precedence over the environment variable for the same provider.
 
 #### A shell environment variable
 
-To set up the API key in your shell environment, use the environment variable listed for your provider in the [Providers and API Keys](#providers-and-api-keys) section below.
-
-Set the environment variable for your chosen provider by exporting it from your shell. For example, for Google, run:
+To set up an API key in your shell environment, export the environment variable for each provider you use, and omit the providers you don't use. The [Providers and API Keys](#providers-and-api-keys) section below lists each provider's variable.
 
 ```sh
 export GOOGLE_API_KEY="your-google-api-key"
+export OPENAI_API_KEY="your-openai-api-key"
+export XAI_API_KEY="your-xai-api-key"
+export BFL_API_KEY="your-bfl-api-key"
+export SOURCEFUL_API_KEY="your-sourceful-api-key"
+export RECRAFT_API_KEY="your-recraft-api-key"
+export KLING_API_KEY="your-kling-api-key"
+export OPENROUTER_API_KEY="your-openrouter-api-key"
 ```
 
-To have your shell load with your environment variable at startup, add the above command to your shell configuration file, such as `~/.bashrc` or `~/.zshrc`.
+To have your shell load with your environment variables at startup, add these commands to your shell configuration file, such as `~/.bashrc` or `~/.zshrc`.
+
+<details>
+<summary>Windows PowerShell</summary>
+
+Set the key for each provider you use, for the current session:
+
+```powershell
+$env:GOOGLE_API_KEY = "your-google-api-key"
+$env:OPENAI_API_KEY = "your-openai-api-key"
+$env:XAI_API_KEY = "your-xai-api-key"
+$env:BFL_API_KEY = "your-bfl-api-key"
+$env:SOURCEFUL_API_KEY = "your-sourceful-api-key"
+$env:RECRAFT_API_KEY = "your-recraft-api-key"
+$env:KLING_API_KEY = "your-kling-api-key"
+$env:OPENROUTER_API_KEY = "your-openrouter-api-key"
+```
+
+Add these assignments to your PowerShell profile to keep them across sessions, or use the same configuration file at `$HOME/.bildomat/config.yml`.
+
+</details>
 
 ### Generate your first image
 
@@ -271,30 +309,17 @@ You may also set up a default model by setting it in the configuration file. Spe
 
 Without a model in the configuration file, `bild` uses the default model of the first provider, in the order that `bild list` shows, whose API key is set up. To see which model that is, run `bild help` and check the `-m`/`--model` option. If no provider has an API key set up, a run without `-m` fails and asks for a model.
 
-<details>
-<summary>Windows PowerShell</summary>
-
-Set the key for the current session:
-
-```powershell
-$env:GOOGLE_API_KEY = "your-google-api-key"
-```
-
-Add that assignment to your PowerShell profile to keep it across sessions, or use the same configuration file at `$HOME/.bildomat/config.yml`.
-
-</details>
-
 ## Basic Usage
 
 Put options before the quoted prompt. Select a model with `-m`, supply an image or video reference with `-i`, and choose an output path with `-o`.
 
 ```sh
 # Generate an image
-bild "logo for a cryo-monitoring company"
+bild "logo for a neighborhood bread bakery"
 
 # Choose a model and output file
 bild -m openai/gpt-image-2 -o logo.png \
-  "logo for a cryo-monitoring company"
+  "logo for a neighborhood bread bakery"
 
 # Edit a photo or use it as a visual reference
 bild -m google/gemini-3.1-flash-image -i product.jpg -o studio.png \

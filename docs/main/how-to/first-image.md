@@ -2,16 +2,11 @@
 
 Create an image of a paper city, make a wide version, and edit its lighting. Each command saves a separate file so you can compare the results.
 
-You need `bild` on your `PATH`, network access, and a Google API key. See [install and configure Bildomat](../get-started/install-and-configure.md) to install `bild` or create a key. Generation requests may incur provider charges.
+You need `bild` on your `PATH`, Internet access, and an API key from the provider of the model you use. The commands below use Google's `google/gemini-3.1-flash-image` model. With a key from another provider, replace that model with one of the provider's models that accepts `--input-media`; [find a model](find-a-model.md) shows how to choose one. See [install and configure Bildomat](../get-started/install-and-configure.md) to install `bild` or create a key. Generation requests may incur provider charges.
 
 ## Set the Credential
 
-If you have not configured a Google key in Bildomat's configuration file, export it in this shell:
-
-```sh
-export GOOGLE_API_KEY='YOUR_API_KEY'
-bild --version
-```
+If your provider's key is not in Bildomat's configuration file, set the provider's environment variable in this shell. [Install and configure Bildomat](../get-started/install-and-configure.md#use-an-environment-variable) gives the variable for every provider, and shows how to put keys in the configuration file instead.
 
 A key in `~/.bildomat/config.yml` takes precedence over the environment variable. See [configuration](../reference/configuration.md) if you need to change an existing key.
 
@@ -53,4 +48,4 @@ Open the edited file. The source remains available beside it. You have generated
 
 Continue with [processing images in scripts](use-bild-in-scripts.md), [using an agent](use-bild-with-agents.md), or [animating an image](generate-video.md).
 
-Revised 2026-10-02
+Revised 2026-10-04
