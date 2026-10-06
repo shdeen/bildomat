@@ -78,19 +78,19 @@ func (fixture *sourcefulHTTPFixture) ServeHTTP(responseWriter http.ResponseWrite
 	fixture.mutex.Lock()
 	fixture.recordedRequests = append(fixture.recordedRequests, sourcefulRecordedRequest{
 		method:       request.Method,
-		path:         request.URL.Path,
+		path:         request.URL.RequestURI(),
 		credential:   request.Header.Get("X-Api-Key"),
 		requestBytes: requestBytes,
 	})
 	fixture.mutex.Unlock()
 
-	if request.Method == http.MethodPost && (request.URL.Path == "/v2.5/generations/t2i" || request.URL.Path == "/v2.5/generations/i2i") {
+	if request.Method == http.MethodPost && (request.URL.Path == "/v2.5/generations/t2i" || request.URL.Path == "/v2.5/generations/i2i" || request.URL.Path == "/v2/generations/t2i" || request.URL.Path == "/v2/generations/i2i") {
 		writeSourcefulTestAnswer(fixture.test, responseWriter, fixture.creationAnswer)
 
 		return
 	}
 
-	if request.Method == http.MethodGet && strings.HasPrefix(request.URL.Path, "/v2.5/generations/") {
+	if request.Method == http.MethodGet && (strings.HasPrefix(request.URL.Path, "/v2.5/generations/") || strings.HasPrefix(request.URL.Path, "/v2/generations/")) {
 		writeSourcefulTestAnswer(fixture.test, responseWriter, fixture.nextPollAnswer())
 
 		return

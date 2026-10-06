@@ -637,7 +637,7 @@ type bodyCase struct {
 }
 
 // shippedBFLCfg decodes the embedded config through the strict shared path.
-func shippedBFLCfg(t *testing.T) catalog.Provider {
+func shippedBFLCfg(t testing.TB) catalog.Provider {
 	t.Helper()
 
 	flags := params.Flags()
@@ -656,7 +656,7 @@ func shippedBFLCfg(t *testing.T) catalog.Provider {
 }
 
 // shippedBFLModel returns the decoded config's model by id.
-func shippedBFLModel(t *testing.T, provCfg catalog.Provider, id string) catalog.Model {
+func shippedBFLModel(t testing.TB, provCfg catalog.Provider, id string) catalog.Model {
 	t.Helper()
 
 	for _, model := range provCfg.Models {

@@ -20,39 +20,73 @@ import (
 )
 
 // Invariants tested:
-//  1. Usage error output: Given a UsageError for --bogus, PrintUsageError must write the offending
+//  1. Media problem and source details: Complete problem explanations render directly; positional
+//     source labels and invalid dimensions retain the complete configured error sentence.
+//  2. Usage error output: Given a UsageError for --bogus, PrintUsageError must write the offending
 //     flag and compact Usage heading to stderr, omit the full help options, and write nothing to
 //     stdout.
-//  2. Raw usage error output: Given the same UsageError, PrintUsageError must produce different
+//  3. Raw usage error output: Given the same UsageError, PrintUsageError must produce different
 //     normal and raw text on stderr. Both forms must include compact usage and omit the full
 //     OPTIONS section; raw output must include the internal CLI error chain.
-//  3. Operational error output: Given an unknown-model error, PrintError must name the rejected
+//  4. Operational error output: Given an unknown-model error, PrintError must name the rejected
 //     specifier on stderr, omit compact usage, and write nothing to stdout.
-//  4. Input media time notice: Given a MediaError with a frame-anchor conflict, errorMessage must
+//  5. Input media time notice: Given a MediaError with a frame-anchor conflict, errorMessage must
 //     return that specific problem text exactly. Given ErrInputMediaTime without details, it must
 //     return FrameTimeInvalidGeneric.
-//  5. Input media unsendable notice: Given an unsendable-input MediaError wrapped in an outer
+//  6. Input media unsendable notice: Given an unsendable-input MediaError wrapped in an outer
 //     diagnostic, errorMessage must return the inner problem text exactly and omit the outer
 //     diagnostic.
-//  6. Error notices use stderr: When writing to stderr, PrintAmbiguity must include the ambiguous
+//  7. Error notices use stderr: When writing to stderr, PrintAmbiguity must include the ambiguous
 //     model specifier and PrintReprompt must include the specifier prompt.
-//  7. User configuration warnings: Given a user-configuration read, decode, unknown-setting,
+//  8. User configuration warnings: Given a user-configuration read, decode, unknown-setting,
 //     unknown-provider, or location error, PrintUserConfigWarning must write exactly one stderr
 //     line and nothing to stdout. Read and decode warnings must name the path; unknown-setting and
 //     unknown-provider warnings must also name the offending key or provider ID.
-//  8. Unclassified error fallback: Given an unclassified error, errorMessage must return its own
+//  9. Unclassified error fallback: Given an unclassified error, errorMessage must return its own
 //     message; given the wrapped flag-parser fixture, it must return the innermost parser message
 //     without the wrapper. Given nil, it must return an empty string.
-//  9. Ambiguous model selection details: Given two matching models, PrintAmbiguity must write the
+//  10. Ambiguous model selection details: Given two matching models, PrintAmbiguity must write the
 //     configured heading with the supplied specifier, followed by the two fully qualified model
 //     keys in input order, each indented by two spaces.
-//  10. Error line mapping: For the credential, cancellation, transport, provider-response, media,
+//  11. Error line mapping: For the credential, cancellation, transport, provider-response, media,
 //      model-selection, output-file, configuration, and working-directory fixtures, errorMessage
 //      must include the specified user-facing message and relevant values. It must omit each case's
 //      internal details, avoid both the raw chain and unclassified fallback, and contain valid
 //      UTF-8 with no control characters.
 
-// TestPrintUsageError verifies invariant #1: Usage error output.
+// TestMediaProblemAndSourceDetails verifies invariant #1: Media problem and source details.
+// Test class: Core.
+// Kind: permanent.
+// What makes it or breaks it: A complete explanation must not become a quoted source, and a
+// source label or invalid dimension must not replace the complete error sentence.
+func TestMediaProblemAndSourceDetails(t *testing.T) {
+	problemText := "The selected route cannot use this input."
+	for _, messageCase := range []struct {
+		name            string
+		mediaFailure    *errs.MediaError
+		requiredMessage string
+	}{
+		{"problem explanation", &errs.MediaError{Problem: problemText, Cause: errs.ErrInputMedia}, problemText},
+		{"invalid source", &errs.MediaError{Source: "media 1", Cause: errs.ErrInputMediaSource}, fmt.Sprintf(InputMediaSourceInvalid, "media 1")},
+		{"empty source", &errs.MediaError{Source: "image 1", Cause: errs.ErrInputMediaEmpty}, fmt.Sprintf(InputMediaSourceInvalid, "image 1")},
+		{"decode source", &errs.MediaError{Source: "image 1", Cause: errs.ErrInputMediaDecode}, fmt.Sprintf(InputMediaSourceInvalid, "image 1")},
+		{"encode source", &errs.MediaError{Source: "image 1", Cause: errs.ErrInputMediaEncode}, fmt.Sprintf(InputMediaSourceInvalid, "image 1")},
+		{"invalid dimensions", &errs.MediaError{Problem: "0x0", Cause: errs.ErrInputMediaSize}, fmt.Sprintf(InputMediaSourceInvalid, "0x0")},
+	} {
+		t.Run(messageCase.name, func(t *testing.T) {
+			renderedMessage := errorMessage(messageCase.mediaFailure, "", "")
+			if renderedMessage != messageCase.requiredMessage {
+				t.Errorf("✗ media error = %q; require %q", renderedMessage, messageCase.requiredMessage)
+			}
+		})
+	}
+
+	if !t.Failed() {
+		t.Log("✓ media explanations render directly and source details retain their complete error sentence")
+	}
+}
+
+// TestPrintUsageError verifies invariant #2: Usage error output.
 //
 // What is being tested:
 // Given a UsageError for --bogus, PrintUsageError must write the offending flag and compact Usage
@@ -88,7 +122,7 @@ func TestPrintUsageError(t *testing.T) {
 	}
 }
 
-// TestPrintUsageErrorRaw verifies invariant #2: Raw usage error output.
+// TestPrintUsageErrorRaw verifies invariant #3: Raw usage error output.
 //
 // What is being tested:
 // Given the same UsageError, PrintUsageError must produce different normal and raw text on stderr.
@@ -130,7 +164,7 @@ func TestPrintUsageErrorRaw(t *testing.T) {
 	}
 }
 
-// TestPrintError verifies invariant #3: Operational error output.
+// TestPrintError verifies invariant #4: Operational error output.
 //
 // What is being tested:
 // Given an unknown-model error, PrintError must name the rejected specifier on stderr, omit compact
@@ -166,7 +200,7 @@ func TestPrintError(t *testing.T) {
 	}
 }
 
-// TestInputMediaTimeNotice verifies invariant #4: Input media time notice.
+// TestInputMediaTimeNotice verifies invariant #5: Input media time notice.
 //
 // What is being tested:
 // Given a MediaError with a frame-anchor conflict, errorMessage must return that specific problem
@@ -192,7 +226,7 @@ func TestInputMediaTimeNotice(t *testing.T) {
 	}
 }
 
-// TestInputMediaUnsendableNotice verifies invariant #5: Input media unsendable notice.
+// TestInputMediaUnsendableNotice verifies invariant #6: Input media unsendable notice.
 //
 // What is being tested:
 // Given an unsendable-input MediaError wrapped in an outer diagnostic, errorMessage must return the
@@ -214,7 +248,7 @@ func TestInputMediaUnsendableNotice(t *testing.T) {
 	}
 }
 
-// TestErrorNoticesUseStderr verifies invariant #6: Error notices use stderr.
+// TestErrorNoticesUseStderr verifies invariant #7: Error notices use stderr.
 //
 // What is being tested:
 // When writing to stderr, PrintAmbiguity must include the ambiguous model specifier and
@@ -251,7 +285,7 @@ func TestErrorNoticesUseStderr(t *testing.T) {
 	}
 }
 
-// TestPrintUserConfigWarning verifies invariant #7: User configuration warnings.
+// TestPrintUserConfigWarning verifies invariant #8: User configuration warnings.
 //
 // What is being tested:
 // Given a user-configuration read, decode, unknown-setting, unknown-provider, or location error,
@@ -330,7 +364,7 @@ func TestPrintUserConfigWarning(t *testing.T) {
 	}
 }
 
-// TestErrorLineInnermostFallback verifies invariant #8: Unclassified error fallback.
+// TestErrorLineInnermostFallback verifies invariant #9: Unclassified error fallback.
 //
 // What is being tested:
 // Given an unclassified error, errorMessage must return its own message; given the wrapped
@@ -361,7 +395,7 @@ func TestErrorLineInnermostFallback(t *testing.T) {
 	}
 }
 
-// TestAmbigView verifies invariant #9: Ambiguous model selection details.
+// TestAmbigView verifies invariant #10: Ambiguous model selection details.
 //
 // What is being tested:
 // Given two matching models, PrintAmbiguity must write the configured heading with the supplied
@@ -392,7 +426,7 @@ func TestAmbigView(t *testing.T) {
 	}
 }
 
-// TestErrorLineMapping verifies invariant #10: Error line mapping.
+// TestErrorLineMapping verifies invariant #11: Error line mapping.
 //
 // What is being tested:
 // For the credential, cancellation, transport, provider-response, media, model-selection,

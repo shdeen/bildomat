@@ -1,34 +1,36 @@
 package sourceful
 
 // Invariants tested:
-//  1. Sourceful redirected result: When the result URL redirects to another server, Generate must
+//  1. Riverflow 2 generation: Text and image requests use v2 routes and top-level controls, and
+//     return every ready image artifact with its MIME-derived extension.
+//  2. Sourceful redirected result: When the result URL redirects to another server, Generate must
 //     return one artifact without an error and omit X-Api-Key from both download requests.
-//  2. Sourceful request and response branches: Given output under data.result, classifyJobResponse
+//  3. Sourceful request and response branches: Given output under data.result, classifyJobResponse
 //     must complete with the supplied URL and MIME type. NewProvider must return
 //     ErrProvConfigNoAdapterAPI for absent adapter settings. Generate must classify a closed
 //     creation endpoint as ErrTransportRequest, polling HTTP 500 with a message as
 //     ErrResponseStatus and ErrResponseServer, and missing job status as ErrResponseNoData.
 //     jobPoll.Poll must return ErrTransportRequest for a closed polling endpoint.
-//  3. Sourceful text request: Without input media, Generate must POST to /v2.5/generations/t2i with
+//  4. Sourceful text request: Without input media, Generate must POST to /v2.5/generations/t2i with
 //     the selected model, supplied instruction, and a distinct nonempty idempotency key for each
 //     call. Supplied output and thinking controls must appear at their configured paths.
 //     Unrequested output, thinkingLevel, and enhancePrompt fields, and the listed unsupported
 //     fields, must be absent.
-//  4. Sourceful image request: Given a remote image followed by local image bytes, Generate must
+//  5. Sourceful image request: Given a remote image followed by local image bytes, Generate must
 //     POST once to /v2.5/generations/i2i and preserve that order in imageUrls. The first value must
 //     be the unchanged URL and the second must encode the original local bytes as a data URI.
-//  5. Sourceful job states: For every configured pending status followed by completion, Generate
+//  6. Sourceful job states: For every configured pending status followed by completion, Generate
 //     must make two polls and return one artifact. A ready response must return one artifact. Each
 //     configured failure must return ErrResponseGen containing lastErrorMessage, and an
 //     unconfigured status must return ErrResponseUnknown.
-//  6. Sourceful download: Given PNG or WebP output MIME types, Generate must return one artifact
+//  7. Sourceful download: Given PNG or WebP output MIME types, Generate must return one artifact
 //     with the matching extension; an unusable MIME type must select the configured fallback
 //     extension. API requests must carry X-Api-Key, and the single artifact download must omit it.
-//  7. Sourceful configuration: catalog.LoadCatalog must accept the embedded Sourceful configuration
+//  8. Sourceful configuration: catalog.LoadCatalog must accept the embedded Sourceful configuration
 //     and return the package's provider ID, nonempty display name and API key environment variable,
-//     and two named image models with nonempty IDs. NewProvider must construct a nonnil generator
+//     and named image models with nonempty IDs. NewProvider must construct a nonnil generator
 //     without an error.
-//  8. Sourceful parameter adjustment: Given one more image than the model permits, a first-frame
+//  9. Sourceful parameter adjustment: Given one more image than the model permits, a first-frame
 //     marker, and an unsupported duration, AdjustParams must retain only the permitted image count,
 //     remove the retained image's frame marker, and omit duration. It must preserve the caller's
 //     marker and return one Capped, one Conformed, and one Ignored record for those changes without
@@ -55,7 +57,27 @@ import (
 	"github.com/shdeen/bildomat/internal/params"
 )
 
-// TestSourcefulRedirectedResult verifies invariant #1: Sourceful redirected result.
+// TestRiverflow2Generation verifies invariant #1: Riverflow 2 generation.
+// Test class: Core.
+// Kind: permanent.
+// What makes it or breaks it: Both model IDs use v2 text and image routes; references retain
+// order, parameters remain at the top level, and each ready image is downloaded without API keys.
+func TestRiverflow2Generation(t *testing.T) {
+	for _, modelID := range []string{"riverflow-2-fast", "riverflow-2-pro"} {
+		for _, referenceInputs := range [][]media.Input{nil, {
+			{URL: "https://media.example/reference.png", MIME: "image/png"},
+			{Bytes: []byte("local reference"), MIME: "image/png"},
+		}} {
+			verifyRiverflow2Generation(t, modelID, referenceInputs)
+		}
+	}
+
+	if !t.Failed() {
+		t.Log("✓ both Riverflow 2 models route text and images through v2 and download every ready image")
+	}
+}
+
+// TestSourcefulRedirectedResult verifies invariant #2: Sourceful redirected result.
 //
 // What is being tested:
 // When the result URL redirects to another server, Generate must return one artifact without an
@@ -100,7 +122,7 @@ func TestSourcefulRedirectedResult(t *testing.T) {
 	}
 }
 
-// TestSourcefulCoverageBranches verifies invariant #2: Sourceful request and response branches.
+// TestSourcefulCoverageBranches verifies invariant #3: Sourceful request and response branches.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
@@ -124,7 +146,7 @@ func TestSourcefulCoverageBranches(t *testing.T) {
 	}
 }
 
-// TestSourcefulTextRequest verifies invariant #3: Sourceful text request.
+// TestSourcefulTextRequest verifies invariant #4: Sourceful text request.
 //
 // What is being tested:
 // Without input media, Generate must POST to /v2.5/generations/t2i with the selected model,
@@ -180,7 +202,7 @@ func TestSourcefulTextRequest(t *testing.T) {
 	}
 }
 
-// TestSourcefulImageRequest verifies invariant #4: Sourceful image request.
+// TestSourcefulImageRequest verifies invariant #5: Sourceful image request.
 //
 // What is being tested:
 // Given a remote image followed by local image bytes, Generate must POST once to
@@ -250,7 +272,7 @@ func TestSourcefulImageRequest(t *testing.T) {
 	}
 }
 
-// TestSourcefulJobStates verifies invariant #5: Sourceful job states.
+// TestSourcefulJobStates verifies invariant #6: Sourceful job states.
 //
 // What is being tested:
 // For every configured pending status followed by completion, Generate must make two polls and
@@ -289,7 +311,7 @@ func TestSourcefulJobStates(t *testing.T) {
 	}
 }
 
-// TestSourcefulDownload verifies invariant #6: Sourceful download.
+// TestSourcefulDownload verifies invariant #7: Sourceful download.
 //
 // What is being tested:
 // Given PNG or WebP output MIME types, Generate must return one artifact with the matching
@@ -324,14 +346,14 @@ func TestSourcefulDownload(t *testing.T) {
 	}
 }
 
-// TestSourcefulConfiguration verifies invariant #7: Sourceful configuration.
+// TestSourcefulConfiguration verifies invariant #8: Sourceful configuration.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
 //
 // What is being tested:
 // catalog.LoadCatalog must accept the embedded Sourceful configuration and return the package's
-// provider ID, nonempty display name and API key environment variable, and two named image models
+// provider ID, nonempty display name and API key environment variable, and named image models
 // with nonempty IDs. NewProvider must construct a nonnil generator without an error.
 func TestSourcefulConfiguration(t *testing.T) {
 	providerConfig, configLoaded := loadSourcefulTestProvider(t)
@@ -345,10 +367,6 @@ func TestSourcefulConfiguration(t *testing.T) {
 
 	if providerConfig.DisplayName == "" || providerConfig.APIKeyEnvVar == "" {
 		t.Errorf("✗ provider identity is incomplete: %+v", providerConfig.Identity())
-	}
-
-	if len(providerConfig.Models) != 2 {
-		t.Errorf("✗ configured model count = %d, want 2", len(providerConfig.Models))
 	}
 
 	for modelIndex := range providerConfig.Models {
@@ -367,11 +385,11 @@ func TestSourcefulConfiguration(t *testing.T) {
 	}
 
 	if !t.Failed() {
-		t.Log("✓ the embedded Sourceful config validates and composes a generator over both image models")
+		t.Log("✓ the embedded Sourceful config validates and composes a generator over all four image models")
 	}
 }
 
-// TestSourcefulAdjustParams verifies invariant #8: Sourceful parameter adjustment.
+// TestSourcefulAdjustParams verifies invariant #9: Sourceful parameter adjustment.
 //
 // What is being tested:
 // Given one more image than the model permits, a first-frame marker, and an unsupported duration,
@@ -538,8 +556,8 @@ func (fixture *sourcefulHTTPFixture) requestsMatching(method, path string) []sou
 	return matchingRequests
 }
 
-// requestCountByPrefix returns the number of recorded requests matching a method and path prefix.
-func (fixture *sourcefulHTTPFixture) requestCountByPrefix(method, pathPrefix string) int {
+// getRequestCountByPrefix returns the number of recorded GET requests matching a path prefix.
+func (fixture *sourcefulHTTPFixture) getRequestCountByPrefix(pathPrefix string) int {
 	fixture.test.Helper()
 
 	fixture.mutex.Lock()
@@ -548,7 +566,7 @@ func (fixture *sourcefulHTTPFixture) requestCountByPrefix(method, pathPrefix str
 	matchingRequests := 0
 
 	for _, recordedRequest := range fixture.recordedRequests {
-		if recordedRequest.method == method && strings.HasPrefix(recordedRequest.path, pathPrefix) {
+		if recordedRequest.method == http.MethodGet && strings.HasPrefix(recordedRequest.path, pathPrefix) {
 			matchingRequests++
 		}
 	}
@@ -793,7 +811,7 @@ func verifySourcefulPendingStatus(t *testing.T, pendingStatus string) {
 		t.Errorf("✗ %q state result = %+v, %v; want a later completed artifact", pendingStatus, result, generationErr)
 	}
 
-	if pollCount := fixture.requestCountByPrefix(http.MethodGet, "/v2.5/generations/"); pollCount != 2 {
+	if pollCount := fixture.getRequestCountByPrefix("/v2.5/generations/"); pollCount != 2 {
 		t.Errorf("✗ poll requests after %q = %d, want 2", pendingStatus, pollCount)
 	}
 
@@ -973,9 +991,13 @@ func verifySourcefulVersion1960Response(t *testing.T) {
 
 	jobDone, classificationErr := pollRequest.classifyJobResponse(responseBody)
 
-	classifiedAddress := pollRequest.resultURL
-	if classificationErr != nil || !jobDone || classifiedAddress != resultAddress || pollRequest.resultMIME != "image/webp" {
-		t.Errorf("✗ version 1.96.0 completed response = %q, %v, %q, %v; want %q, true, %q, nil", classifiedAddress, jobDone, pollRequest.resultMIME, classificationErr, resultAddress, "image/webp")
+	var classifiedAddress, classifiedMIME string
+	if len(pollRequest.resultArtifacts) > 0 {
+		classifiedAddress, classifiedMIME = pollRequest.resultArtifacts[0].URL, pollRequest.resultArtifacts[0].MIME
+	}
+
+	if classificationErr != nil || !jobDone || classifiedAddress != resultAddress || classifiedMIME != "image/webp" {
+		t.Errorf("✗ version 1.96.0 completed response = %q, %v, %q, %v; want %q, true, %q, nil", classifiedAddress, jobDone, classifiedMIME, classificationErr, resultAddress, "image/webp")
 	}
 
 	if !t.Failed() {
@@ -1192,4 +1214,79 @@ func constructedTestProvider(test testing.TB, description *catalog.Provider) gen
 	}
 
 	return generator
+}
+
+// verifyRiverflow2Generation exercises one model and input combination through the provider.
+func verifyRiverflow2Generation(t *testing.T, modelID string, referenceInputs []media.Input) {
+	t.Helper()
+
+	providerConfig, configLoaded := loadSourcefulTestProvider(t)
+	if !configLoaded {
+		return
+	}
+
+	configuredModel := catalog.Model{ID: modelID, Family: "riverflow-2", Media: media.Image, Params: params.Definitions{
+		{FlagID: params.FlagTypeAspect, ParamID: "aspectRatio"},
+		{FlagID: params.FlagTypeResolution, ParamID: "resolution"},
+		{FlagID: params.FlagType("prompt-upsampling"), ParamID: "enhancePrompt"},
+		{FlagID: params.FlagTypeInputMedia},
+	}}
+
+	t.Setenv("TMPDIR", t.TempDir())
+	fixture := newSourcefulHTTPFixture(t, &providerConfig)
+	fixture.pollingAnswers = []sourcefulTestAnswer{{statusCode: http.StatusOK, answerBytes: sourcefulJSONDocument(t, map[string]any{
+		"data": map[string]any{
+			"job": map[string]any{"status": "completed"},
+			"artifacts": []map[string]any{
+				{"type": "image", "status": "ready", "url": fixture.server.URL + "/result?first", "mimeType": "image/png"},
+				{"type": "image", "status": "processing", "url": fixture.server.URL + "/unfinished"},
+				{"type": "video", "status": "ready", "url": fixture.server.URL + "/video"},
+				{"type": "image", "status": "ready", "url": fixture.server.URL + "/result?second", "mimeType": "image/webp"},
+			},
+		},
+	})}}
+
+	generationResult, generationErr := generateSourcefulTestImage(t, &providerConfig, configuredModel, params.Values{
+		params.FlagTypeAspect: "3:2", params.FlagTypeResolution: "1K", params.FlagType("prompt-upsampling"): true,
+	}, referenceInputs)
+	if generationErr != nil || len(generationResult.Artifacts) != 2 {
+		t.Errorf("✗ %s returned %d artifacts, error %v; require two ready images", modelID, len(generationResult.Artifacts), generationErr)
+	} else if generationResult.Artifacts[0].FileExt != ".png" || generationResult.Artifacts[1].FileExt != ".webp" {
+		t.Errorf("✗ ready image MIME types were not preserved: %+v", generationResult.Artifacts)
+	}
+
+	creationPath := "/v2/generations/t2i"
+	if len(referenceInputs) > 0 {
+		creationPath = "/v2/generations/i2i"
+	}
+
+	creationRequests := fixture.requestsMatching(http.MethodPost, creationPath)
+	if len(creationRequests) != 1 {
+		t.Errorf("✗ %s creation requests = %d, require one", creationPath, len(creationRequests))
+
+		return
+	}
+
+	requestDocument := decodeSourcefulRequest(t, creationRequests[0])
+	if requestDocument["model"] != modelID || requestDocument["aspectRatio"] != "3:2" || requestDocument["resolution"] != "1K" || requestDocument["enhancePrompt"] != true || requestDocument["output"] != nil {
+		t.Errorf("✗ v2 controls or model changed: %+v", requestDocument)
+	}
+
+	if len(referenceInputs) > 0 {
+		imageURLs, arrayPresent := requestDocument["imageUrls"].([]any)
+		if !arrayPresent || len(imageURLs) != 2 || imageURLs[0] != referenceInputs[0].URL || imageURLs[1] != referenceInputs[1].DataURI() {
+			t.Errorf("✗ v2 references lost order or encoding: %#v", requestDocument["imageUrls"])
+		}
+	}
+
+	if fixture.getRequestCountByPrefix("/v2/generations/") != 1 || fixture.getRequestCountByPrefix("/result?") != 2 {
+		t.Errorf("✗ v2 polling or ready-image downloads are incomplete")
+	}
+
+	for _, artifactPath := range []string{"/result?first", "/result?second"} {
+		downloadRequests := fixture.requestsMatching(http.MethodGet, artifactPath)
+		if len(downloadRequests) != 1 || downloadRequests[0].credential != "" {
+			t.Errorf("✗ artifact %s was not downloaded exactly once without credentials: %+v", artifactPath, downloadRequests)
+		}
+	}
 }
