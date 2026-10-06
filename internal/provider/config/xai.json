@@ -49,7 +49,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 3
+          "maxMultiple": 3,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         }
       ]
     },
@@ -97,7 +98,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 3
+          "maxMultiple": 3,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         }
       ]
     },
@@ -142,7 +144,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 3
+          "maxMultiple": 3,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         }
       ]
     },
@@ -199,7 +202,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 3
+          "maxMultiple": 3,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         }
       ]
     },
@@ -240,7 +244,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         }
       ]
     },
@@ -279,7 +284,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         }
       ]
     },
@@ -321,7 +327,7 @@
         {
           "flagID": "input-media",
           "maxMultiple": 1,
-          "modelInfoComment": "Supply one image for image-to-video generation."
+          "modelInfoComment": "Supply one image for image-to-video generation. Takes images only; a video source fails the run."
         }
       ]
     }

@@ -44,7 +44,7 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 }
 
 // AdjustParams returns model-compatible generation parameters and records describing each
-// adjustment. Video models resolve the first and last frame anchors to keyframe times; image models
+// adjustment. Video generation resolves first and last frame anchors to keyframe times; image models
 // drop frame prefixes with a record.
 func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error) {
 	preparedGeneration, adjustmentErr := generation.AdjustGeneration(model, inputs, mediaInputs)
@@ -52,9 +52,10 @@ func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, me
 		return preparedGeneration, adjustmentErr
 	}
 
-	if model.Media == media.Video {
+	inputDefinition, inputDeclared := model.Param(params.FlagTypeInputMedia)
+	if model.Media == media.Video && (!inputDeclared || !isVideoToolInput(inputDefinition.ParamID)) {
 		resolveFluxFrameAnchors(preparedGeneration.InputMedia, preparedGeneration.Params)
-	} else {
+	} else if model.Media != media.Video {
 		preparedGeneration.Changes = append(preparedGeneration.Changes, generation.DropFramePrefixes(preparedGeneration.InputMedia)...)
 	}
 

@@ -32,7 +32,7 @@ func Resize(width, height int, mediaInputs []Input) ([]Input, error) {
 	resizedInputs := make([]Input, 0, len(mediaInputs))
 	for inputIndex, mediaInput := range mediaInputs {
 		if mediaInput.URL != "" || mediaInput.Kind() == Video {
-			return nil, &errs.MediaError{Problem: fmt.Sprintf(IndexForm, inputIndex+1), Cause: errs.ErrInputMediaSource}
+			return nil, &errs.MediaError{Source: fmt.Sprintf(IndexForm, inputIndex+1), Cause: errs.ErrInputMediaSource}
 		}
 
 		resizedInput, err := resizeItem(&mediaInput, width, height, fmt.Sprintf(ImageIndexForm, inputIndex+1))
@@ -50,7 +50,7 @@ func Resize(width, height int, mediaInputs []Input) ([]Input, error) {
 func resizeItem(mediaInput *Input, width, height int, position string) (Input, error) {
 	sourceImage, _, err := image.Decode(bytes.NewReader(mediaInput.Bytes))
 	if err != nil {
-		return Input{}, &errs.MediaError{Problem: position, Cause: errors.Join(errs.ErrInputMediaDecode, err)}
+		return Input{}, &errs.MediaError{Source: position, Cause: errors.Join(errs.ErrInputMediaDecode, err)}
 	}
 
 	sourceCrop := centerCrop(sourceImage.Bounds(), width, height)
@@ -59,7 +59,7 @@ func resizeItem(mediaInput *Input, width, height int, position string) (Input, e
 
 	var encoded bytes.Buffer
 	if err := png.Encode(&encoded, resizedImage); err != nil {
-		return Input{}, &errs.MediaError{Problem: position, Cause: errors.Join(errs.ErrInputMediaEncode, err)}
+		return Input{}, &errs.MediaError{Source: position, Cause: errors.Join(errs.ErrInputMediaEncode, err)}
 	}
 
 	return Input{Bytes: encoded.Bytes(), MIME: mimePNG, Filepath: mediaInput.Filepath, Time: mediaInput.Time, FrameAnchor: mediaInput.FrameAnchor}, nil

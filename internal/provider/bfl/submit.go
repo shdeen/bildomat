@@ -19,13 +19,16 @@ import (
 
 // The BFL adapter's headers, request fields, modes, and error contexts.
 //   - keyHeader: the credential header
-//   - wireKeyMode: the request field selecting the generation mode
-//   - wireKeyPrompt: the request field carrying the prompt
-//   - wireKeyWidth: the request field carrying the width
-//   - wireKeyHeight: the request field carrying the height
-//   - wireKeyStartVideo: the request field carrying the continuation video
-//   - wireKeyKeyframes: the request field carrying the keyframe array
-//   - wireKeyInputImage: the base name of the indexed input-image fields
+//   - fieldMode: the request field selecting the generation mode
+//   - fieldPrompt: the request field carrying the prompt
+//   - fieldWidth: the request field carrying the width
+//   - fieldHeight: the request field carrying the height
+//   - fieldStartVideo: the request field carrying the continuation video
+//   - fieldKeyframes: the request field carrying the keyframe array
+//   - fieldInputImage: the base name of the indexed input-image fields
+//   - fieldImages: the ordered image reference array
+//   - fieldVideo: the video editing input
+//   - fieldInputVideo: the video upscaling input
 //   - modeVideoContinuation: the mode value continuing a video
 //   - modeTextToVideo: the mode value generating from the prompt alone
 //   - modeImageToVideo: the mode value generating from keyframe images
@@ -33,13 +36,16 @@ import (
 const (
 	keyHeader = "x-key"
 
-	wireKeyMode       = "mode"
-	wireKeyPrompt     = "prompt"
-	wireKeyWidth      = "width"
-	wireKeyHeight     = "height"
-	wireKeyStartVideo = "start_video"
-	wireKeyKeyframes  = "keyframes"
-	wireKeyInputImage = "input_image"
+	fieldMode       = "mode"
+	fieldPrompt     = "prompt"
+	fieldWidth      = "width"
+	fieldHeight     = "height"
+	fieldStartVideo = "start_video"
+	fieldKeyframes  = "keyframes"
+	fieldInputImage = "input_image"
+	fieldImages     = "images"
+	fieldVideo      = "video"
+	fieldInputVideo = "input_video"
 
 	modeVideoContinuation = "v2v"
 	modeTextToVideo       = "t2v"
@@ -97,84 +103,105 @@ func startJob(ctx context.Context, base string, cred httpapi.AuthCredential, pro
 
 // requestBody returns the request fields for an image or video job. It omits the prompt field when
 // the supplied prompt is empty.
-func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, inputs []media.Input) (map[string]any, error) {
-	body := map[string]any{}
+func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input) (map[string]any, error) {
+	requestDocument := map[string]any{}
 	if prompt != "" {
-		body[wireKeyPrompt] = prompt
+		requestDocument[fieldPrompt] = prompt
 	}
 
-	sizeVal, err := params.Value[string](parameterValues, params.FlagTypeSize)
+	sizeValue, err := params.Value[string](parameterValues, params.FlagTypeSize)
 	if err != nil {
 		return nil, err
 	}
 
-	if sizeVal != "" {
-		if width, h, ok := parseWidthHeight(sizeVal); ok {
-			body[wireKeyWidth] = width
-			body[wireKeyHeight] = h
+	if sizeValue != "" {
+		if width, height, ok := parseWidthHeight(sizeValue); ok {
+			requestDocument[fieldWidth] = width
+			requestDocument[fieldHeight] = height
 		}
 	}
 
-	maps.Copy(body, provider.WireParamValues(model, parameterValues))
+	maps.Copy(requestDocument, provider.WireParamValues(model, parameterValues))
 
-	if len(inputs) == 0 {
-		if model.Media == media.Video {
-			body[wireKeyMode] = modeTextToVideo
+	inputDefinition, inputDeclared := model.Param(params.FlagTypeInputMedia)
+	if inputDeclared && isVideoToolInput(inputDefinition.ParamID) {
+		if err := addVideoToolInput(requestDocument, inputDefinition.ParamID, mediaInputs); err != nil {
+			return nil, err
 		}
 
-		return body, nil
+		return requestDocument, nil
+	}
+
+	if len(mediaInputs) == 0 {
+		if model.Media == media.Video {
+			requestDocument[fieldMode] = modeTextToVideo
+		}
+
+		return requestDocument, nil
 	}
 
 	if model.Media == media.Video {
-		err = addVideoInputs(body, inputs, parameterValues)
+		err = addVideoInputs(requestDocument, mediaInputs, parameterValues)
 	} else {
-		err = addImageInputs(body, model, inputs)
+		err = addImageInputs(requestDocument, model, mediaInputs)
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return body, nil
+	return requestDocument, nil
 }
 
 // requestBinaryFields describes the encoded media locations used by BFL's image and video request
 // shapes. URL values at these locations remain URLs.
-func requestBinaryFields(model *catalog.Model, inputs []media.Input) []metadata.BinaryField {
-	fields := make([]metadata.BinaryField, 0, len(inputs))
-	inputConfig, _ := model.Param(params.FlagTypeInputMedia)
+func requestBinaryFields(model *catalog.Model, mediaInputs []media.Input) []metadata.BinaryField {
+	binaryFields := make([]metadata.BinaryField, 0, len(mediaInputs))
+	// An undeclared input uses the zero-value ID, selecting the indexed image fields below.
+	inputDefinition, _ := model.Param(params.FlagTypeInputMedia)
 
-	for index, input := range inputs {
-		if model.Media != media.Video {
-			name := inputConfig.ParamID
-			if name == "" {
-				name = indexedInputMediaParam(index)
-			}
-
-			fields = append(fields, metadata.BinaryField{Path: []string{name}, MIME: input.MIME})
+	for inputIndex, mediaInput := range mediaInputs {
+		if isVideoToolInput(inputDefinition.ParamID) {
+			binaryFields = append(binaryFields, metadata.BinaryField{Path: []string{inputDefinition.ParamID}, MIME: mediaInput.MIME})
 
 			continue
 		}
 
-		if input.Kind() == media.Video {
-			fields = append(fields, metadata.BinaryField{Path: []string{wireKeyStartVideo}, MIME: input.MIME})
+		if model.Media != media.Video {
+			fieldName := inputDefinition.ParamID
+			if fieldName == "" {
+				fieldName = indexedInputMediaParam(inputIndex)
+			}
+
+			fieldPath := []string{fieldName}
+			if fieldName == fieldImages {
+				fieldPath = append(fieldPath, strconv.Itoa(inputIndex))
+			}
+
+			binaryFields = append(binaryFields, metadata.BinaryField{Path: fieldPath, MIME: mediaInput.MIME})
+
+			continue
+		}
+
+		if mediaInput.Kind() == media.Video {
+			binaryFields = append(binaryFields, metadata.BinaryField{Path: []string{fieldStartVideo}, MIME: mediaInput.MIME})
 
 			continue
 		}
 
 		// BFL accepts an image string or a pair containing time and image.
-		fields = append(fields,
-			metadata.BinaryField{Path: []string{wireKeyKeyframes, strconv.Itoa(index)}, MIME: input.MIME},
-			metadata.BinaryField{Path: []string{wireKeyKeyframes, strconv.Itoa(index), "1"}, MIME: input.MIME})
+		binaryFields = append(binaryFields,
+			metadata.BinaryField{Path: []string{fieldKeyframes, strconv.Itoa(inputIndex)}, MIME: mediaInput.MIME},
+			metadata.BinaryField{Path: []string{fieldKeyframes, strconv.Itoa(inputIndex), "1"}, MIME: mediaInput.MIME})
 	}
 
-	return fields
+	return binaryFields
 }
 
 // addVideoInputs writes continuation media or image keyframes and their mode into the body. It
 // rejects mixed media, multiple videos, and timed continuation videos.
-func addVideoInputs(body map[string]any, inputs []media.Input, parameterValues params.Values) error {
-	imageInputs, videoInputs := media.SplitInputs(inputs)
+func addVideoInputs(requestDocument map[string]any, mediaInputs []media.Input, parameterValues params.Values) error {
+	imageInputs, videoInputs := media.SplitInputs(mediaInputs)
 
 	switch {
 	case len(imageInputs) > 0 && len(videoInputs) > 0:
@@ -186,8 +213,8 @@ func addVideoInputs(body map[string]any, inputs []media.Input, parameterValues p
 			return &errs.MediaError{Problem: VideoContinuationTimed, Cause: errs.ErrInputMediaTime}
 		}
 
-		body[wireKeyMode] = modeVideoContinuation
-		body[wireKeyStartVideo] = videoInputs[0].URLOrBase64()
+		requestDocument[fieldMode] = modeVideoContinuation
+		requestDocument[fieldStartVideo] = videoInputs[0].URLOrBase64()
 
 		return nil
 	}
@@ -197,16 +224,16 @@ func addVideoInputs(body map[string]any, inputs []media.Input, parameterValues p
 		return err
 	}
 
-	body[wireKeyMode] = modeImageToVideo
-	body[wireKeyKeyframes] = keyframes
+	requestDocument[fieldMode] = modeImageToVideo
+	requestDocument[fieldKeyframes] = keyframes
 
 	return nil
 }
 
-// addImageInputs writes images into the model's single declared field or indexed fields. It rejects
+// addImageInputs writes an image array, a single declared field, or indexed fields. It rejects
 // videos, timed inputs, and multiple inputs for a single field.
-func addImageInputs(body map[string]any, model *catalog.Model, inputs []media.Input) error {
-	for _, mediaInput := range inputs {
+func addImageInputs(requestDocument map[string]any, model *catalog.Model, mediaInputs []media.Input) error {
+	for _, mediaInput := range mediaInputs {
 		if mediaInput.Kind() == media.Video {
 			return &errs.MediaError{Problem: ImageGotVideo, Cause: errs.ErrInputMedia}
 		}
@@ -216,19 +243,30 @@ func addImageInputs(body map[string]any, model *catalog.Model, inputs []media.In
 		}
 	}
 
-	inputCfg, _ := model.Param(params.FlagTypeInputMedia)
-	if inputCfg.ParamID != "" {
-		if len(inputs) != 1 {
-			return &errs.MediaError{Problem: fmt.Sprintf(SingleInputOnly, inputCfg.ParamID), Cause: errs.ErrInputMedia}
+	inputDefinition, _ := model.Param(params.FlagTypeInputMedia)
+	if inputDefinition.ParamID == fieldImages {
+		imageReferences := make([]string, 0, len(mediaInputs))
+		for _, mediaInput := range mediaInputs {
+			imageReferences = append(imageReferences, mediaInput.URLOrBase64())
 		}
 
-		body[inputCfg.ParamID] = inputs[0].URLOrBase64()
+		requestDocument[fieldImages] = imageReferences
 
 		return nil
 	}
 
-	for inputIndex, mediaInput := range inputs {
-		body[indexedInputMediaParam(inputIndex)] = mediaInput.URLOrBase64()
+	if inputDefinition.ParamID != "" {
+		if len(mediaInputs) != 1 {
+			return &errs.MediaError{Problem: fmt.Sprintf(SingleInputOnly, inputDefinition.ParamID), Cause: errs.ErrInputMedia}
+		}
+
+		requestDocument[inputDefinition.ParamID] = mediaInputs[0].URLOrBase64()
+
+		return nil
+	}
+
+	for inputIndex, mediaInput := range mediaInputs {
+		requestDocument[indexedInputMediaParam(inputIndex)] = mediaInput.URLOrBase64()
 	}
 
 	return nil
@@ -236,7 +274,7 @@ func addImageInputs(body map[string]any, model *catalog.Model, inputs []media.In
 
 // indexedInputMediaParam returns the request field name for a zero-based image index.
 func indexedInputMediaParam(i int) string {
-	baseName := wireKeyInputImage
+	baseName := fieldInputImage
 
 	if i == 0 {
 		return baseName
@@ -256,4 +294,35 @@ func parseWidthHeight(size string) (width, height int, valid bool) {
 	}
 
 	return params.ParseDimensions(size)
+}
+
+// isVideoToolInput identifies the declared fields that accept a whole video without a mode.
+func isVideoToolInput(parameterID string) bool {
+	return parameterID == fieldVideo || parameterID == fieldInputVideo
+}
+
+// addVideoToolInput writes one whole video at the model's declared input field.
+func addVideoToolInput(requestDocument map[string]any, inputField string, mediaInputs []media.Input) error {
+	if len(mediaInputs) == 0 {
+		return &errs.MediaError{Problem: VideoInputRequired, Cause: errs.ErrInputMedia}
+	}
+
+	if len(mediaInputs) != 1 {
+		return &errs.MediaError{Problem: fmt.Sprintf(SingleInputOnly, inputField), Cause: errs.ErrInputMedia}
+	}
+
+	referenceVideo := mediaInputs[0]
+	// URLs remain unidentified until the command has credentials to inspect them.
+	unresolvedURL := referenceVideo.URL != "" && referenceVideo.MIME == ""
+	if !unresolvedURL && referenceVideo.Kind() != media.Video {
+		return &errs.MediaError{Source: referenceVideo.Source(), Cause: errs.ErrInputMediaMIME}
+	}
+
+	if referenceVideo.HasFrame() {
+		return &errs.MediaError{Source: referenceVideo.Source(), Cause: errs.ErrInputMediaTime}
+	}
+
+	requestDocument[inputField] = referenceVideo.URLOrBase64()
+
+	return nil
 }

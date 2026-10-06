@@ -44,7 +44,8 @@
         {
           "paramID": "image",
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice."
         }
       ]
     },
@@ -84,7 +85,8 @@
         {
           "paramID": "image_list",
           "flagID": "input-media",
-          "maxMultiple": 10
+          "maxMultiple": 10,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice."
         }
       ]
     },
@@ -124,7 +126,8 @@
         {
           "paramID": "image_list",
           "flagID": "input-media",
-          "maxMultiple": 10
+          "maxMultiple": 10,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice."
         }
       ]
     },
@@ -167,7 +170,8 @@
         {
           "paramID": "image",
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice."
         }
       ]
     },
@@ -199,7 +203,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 2
+          "maxMultiple": 2,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order."
         }
       ]
     },
@@ -227,7 +232,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order."
         }
       ]
     },
@@ -260,7 +266,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 7
+          "maxMultiple": 7,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes and numeric times select the opening and closing frames, and unprefixed images are references."
         }
       ]
     },
@@ -289,7 +296,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 7
+          "maxMultiple": 7,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes and numeric times select the opening and closing frames, and unprefixed images are references."
         }
       ]
     },
@@ -321,7 +329,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 2
+          "maxMultiple": 2,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order."
         }
       ]
     },
@@ -348,7 +357,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order."
         }
       ]
     }

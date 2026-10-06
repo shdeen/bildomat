@@ -251,7 +251,7 @@ func multipartBody(fields map[string]string, inputMediaFormField string, mediaIn
 // writeMediaPart writes one local image as a multipart file part.
 func writeMediaPart(multipartWriter *multipart.Writer, field string, mediaIndex int, mediaInput *media.Input) error {
 	if mediaInput.URL != "" || mediaInput.Kind() == media.Video {
-		return &errs.MediaError{Problem: fmt.Sprintf(media.IndexForm, mediaIndex+1), Cause: errs.ErrInputMediaSource}
+		return &errs.MediaError{Source: fmt.Sprintf(media.IndexForm, mediaIndex+1), Cause: errs.ErrInputMediaSource}
 	}
 
 	if _, timed := mediaInput.FrameTime(); timed {
@@ -259,7 +259,7 @@ func writeMediaPart(multipartWriter *multipart.Writer, field string, mediaIndex 
 	}
 
 	if len(mediaInput.Bytes) == 0 {
-		return &errs.MediaError{Problem: fmt.Sprintf(media.ImageIndexForm, mediaIndex+1), Cause: errs.ErrInputMediaEmpty}
+		return &errs.MediaError{Source: fmt.Sprintf(media.ImageIndexForm, mediaIndex+1), Cause: errs.ErrInputMediaEmpty}
 	}
 
 	h := make(textproto.MIMEHeader)

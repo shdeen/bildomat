@@ -100,7 +100,7 @@ VersionReport                = "%s version %s"
 #   - AllowedValues: constraints.go: a parameter's declared value set
 #   - AmbiguityCandidate: errs.go PrintAmbiguity: one candidate key under the heading
 #   - AmbiguityHeading: errs.go PrintAmbiguity; the candidate keys list under it, one per line
-#   - CardPromptIgnored: info.go modelCardData: the model card's prompt line value for a model that ignores the prompt
+#   - CardPromptIgnored: info.go modelCardData: the model card's prompt line value for a model that does not require a prompt
 #   - CatalogCountForm: info.go catalogMediaCounts: a medium's model count above one
 #   - CatalogCountFormOne: info.go catalogMediaCounts: a medium's model count of one
 #   - CatalogSeparator: info.go catalogMediaCounts: between the per-medium counts
@@ -203,7 +203,7 @@ AllowedRange               = "Allowed range: %s to %s"
 AllowedValues              = "Allowed values: %s"
 AmbiguityCandidate         = "%s%s/%s%s"
 AmbiguityHeading           = "%[1]sThe model specifier %[3]s%[2]s%[4]q%[3]s%[1]s matches more than one model:%[3]s"
-CardPromptIgnored          = "ignored (this model does not read a prompt)"
+CardPromptIgnored          = "not required"
 CatalogCountForm           = "%d %s models"
 CatalogCountFormOne        = "%d %s model"
 CatalogSeparator           = "·"
@@ -339,6 +339,7 @@ UnknownStatusForm = "%s (%s): %s"
 #   - PollURLMissing: submit.go: a submit response without its polling endpoint
 #   - SingleInputOnly: submit.go: several sources for a single-input field
 #   - VideoContinuationTimed: submit.go: a timed video-continuation source
+#   - VideoInputRequired: submit.go: a video tool without its required source
 #   - VideoMediaMixed: submit.go: image and video sources in one video request
 #   - VideoOneContinuation: submit.go: more than one continuation video
 ["internal/provider/bfl"]
@@ -350,14 +351,19 @@ KeyframesNeedDuration    = "timed BFL keyframes require duration"
 PollURLMissing           = "%s: no polling_url in the submit response"
 SingleInputOnly          = "%s accepts one input"
 VideoContinuationTimed   = "BFL video continuation cannot be timed"
+VideoInputRequired       = "This model requires a video. Supply an MP4 file or video URL with --input-media."
 VideoMediaMixed          = "BFL video request mixes image and video inputs"
 VideoOneContinuation     = "BFL video continuation accepts one video"
 
 # The Sourceful adapter's missing-response diagnostics.
+#   - ArtifactURLMissing: poll.go: a ready image artifact without its download URL
+#   - ReadyImagesMissing: poll.go: a completed job without a ready image artifact
 #   - JobIDMissing: generate.go: a creation response without its job identifier
 #   - JobStatusUnknownForm: generate.go classifyJobResponse: an unrecognized job status, naming the job
 #   - ResultURLMissing: generate.go: a completed response without its output URL
 ["internal/provider/sourceful"]
+ArtifactURLMissing   = "%s: a ready image artifact has no URL"
+ReadyImagesMissing   = "%s: no ready image artifacts in the completed job"
 JobIDMissing         = "%s: no jobId in the creation response"
 JobStatusUnknownForm = "%s: status %q"
 ResultURLMissing     = "%s: no output url in the completed job"

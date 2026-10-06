@@ -4,7 +4,9 @@ package sourceful
 
 // The internal/provider/sourceful section of the copy catalog, one constant per entry.
 const (
+	ArtifactURLMissing   = "%s: a ready image artifact has no URL"
 	JobIDMissing         = "%s: no jobId in the creation response"
 	JobStatusUnknownForm = "%s: status %q"
+	ReadyImagesMissing   = "%s: no ready image artifacts in the completed job"
 	ResultURLMissing     = "%s: no output url in the completed job"
 )

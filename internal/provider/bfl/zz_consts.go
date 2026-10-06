@@ -12,6 +12,7 @@ const (
 	PollURLMissing           = "%s: no polling_url in the submit response"
 	SingleInputOnly          = "%s accepts one input"
 	VideoContinuationTimed   = "BFL video continuation cannot be timed"
+	VideoInputRequired       = "This model requires a video. Supply an MP4 file or video URL with --input-media."
 	VideoMediaMixed          = "BFL video request mixes image and video inputs"
 	VideoOneContinuation     = "BFL video continuation accepts one video"
 )

@@ -332,13 +332,16 @@ func inputMediaNotice(err error) string {
 		return FrameTimeInvalidGeneric
 	}
 
-	description := detail.Source
-	if description == "" {
-		description = detail.Problem
+	if detail.Problem != "" && errors.Is(err, errs.ErrInputMediaSize) {
+		return fmt.Sprintf(InputMediaSourceInvalid, escapeForTerminal(detail.Problem))
 	}
 
-	if description != "" {
-		return fmt.Sprintf(InputMediaSourceInvalid, escapeForTerminal(description))
+	if detail.Problem != "" {
+		return escapeForTerminal(detail.Problem)
+	}
+
+	if detail.Source != "" {
+		return fmt.Sprintf(InputMediaSourceInvalid, escapeForTerminal(detail.Source))
 	}
 
 	return InputMediaInvalid

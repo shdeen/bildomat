@@ -19,25 +19,36 @@ const (
 
 // The Sourceful API's credential header, request routes, and request fields.
 //   - keyHeader: the credential header
-//   - generationsRoute: the route every generation request starts from
-//   - textRoute: the creation route for a prompt alone
-//   - imageRoute: the creation route for a prompt with reference images
-//   - pollRoute: the job query route, before the job ID
+//   - riverflow2Family: the model family using version 2 of the API
+//   - generationsRoute: the version 2.5 generation route
+//   - generationsV2Route: the version 2 generation route
+//   - textOperation: the creation operation for a prompt alone
+//   - imageOperation: the creation operation for reference images
 //   - fieldInstruction: the request field carrying the prompt
 //   - fieldIdempotencyKey: the request field carrying the idempotency key
 //   - fieldImageURLs: the request field carrying the reference images
 const (
 	keyHeader = "X-API-KEY"
 
-	generationsRoute = "/v2.5/generations"
-	textRoute        = generationsRoute + "/t2i"
-	imageRoute       = generationsRoute + "/i2i"
-	pollRoute        = generationsRoute + "/"
+	riverflow2Family   = "riverflow-2"
+	generationsRoute   = "/v2.5/generations"
+	generationsV2Route = "/v2/generations"
+	textOperation      = "t2i"
+	imageOperation     = "i2i"
 
 	fieldInstruction    = "instruction"
 	fieldIdempotencyKey = "idempotencyKey"
 	fieldImageURLs      = "imageUrls"
 )
+
+// generationRoute selects the generation and polling route from the configured model family.
+func generationRoute(modelFamily string) string {
+	if modelFamily == riverflow2Family {
+		return generationsV2Route
+	}
+
+	return generationsRoute
+}
 
 // buildRequestBody returns a Sourceful request with a fresh idempotency key.
 func buildRequestBody(generationRequest *generation.Generation) map[string]any {

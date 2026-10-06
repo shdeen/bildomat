@@ -11,25 +11,29 @@ import (
 	"github.com/shdeen/bildomat/internal/catalog"
 	"github.com/shdeen/bildomat/internal/errs"
 	"github.com/shdeen/bildomat/internal/httpapi"
+	"github.com/shdeen/bildomat/internal/media"
 	"github.com/shdeen/bildomat/internal/metadata"
 	"github.com/shdeen/bildomat/internal/provider"
 )
+
+// artifactStatusReady marks a downloadable artifact in a version 2 job response.
+const artifactStatusReady = "ready"
 
 // jobPoll tracks one Sourceful generation job.
 //   - adapterAPI: endpoint, polling, and status settings
 //   - apiCredential: authentication for status requests
 //   - jobID: the provider job identifier
 //   - providerModelName: the provider/model label used in errors
-//   - resultMIME: the completed image MIME type
-//   - resultURL: the completed image download URL
+//   - modelFamily: the configured model family selecting the API version
+//   - resultArtifacts: the completed images and their MIME types
 //   - record: optional request and response retention
 type jobPoll struct {
 	adapterAPI        *catalog.AdapterAPI
 	apiCredential     httpapi.AuthCredential
 	jobID             string
 	providerModelName string
-	resultMIME        string
-	resultURL         string
+	modelFamily       string
+	resultArtifacts   []jobArtifact
 	record            *metadata.Record
 }
 
@@ -39,6 +43,20 @@ type jobData struct {
 	Job json.RawMessage `json:"job"`
 	// Result contains a result object.
 	Result json.RawMessage `json:"result"`
+	// Artifacts contains the version 2 artifact list.
+	Artifacts json.RawMessage `json:"artifacts"`
+}
+
+// jobArtifact decodes one version 2 artifact and retains its download information.
+type jobArtifact struct {
+	// Type identifies image or video output.
+	Type string `json:"type"`
+	// Status identifies ready, processing, or failed output.
+	Status string `json:"status"`
+	// URL locates the generated media.
+	URL string `json:"url"`
+	// MIME supplies the provider's optional media type.
+	MIME string `json:"mimeType"`
 }
 
 // jobRecord preserves the types and presence of a job's status and result fields.
@@ -59,9 +77,9 @@ type resultOutput struct {
 	MIME any `json:"mimeType"`
 }
 
-// Poll retrieves the job status and retains the URL and MIME type after valid completion.
+// Poll retrieves the job status and retains image URLs and MIME types after valid completion.
 func (sourcefulPoll *jobPoll) Poll(ctx context.Context) (jobDone bool, err error) {
-	pollEndpoint := strings.TrimRight(sourcefulPoll.adapterAPI.APIBase, "/") + pollRoute + url.PathEscape(sourcefulPoll.jobID)
+	pollEndpoint := strings.TrimRight(sourcefulPoll.adapterAPI.APIBase, "/") + generationRoute(sourcefulPoll.modelFamily) + "/" + url.PathEscape(sourcefulPoll.jobID)
 
 	status, body, err := httpapi.GetAuth(ctx, pollEndpoint, sourcefulPoll.apiCredential, metadata.Asynchronous, sourcefulPoll.record)
 	if err := provider.PollResponseError(sourcefulPoll.providerModelName, status, body, err); err != nil {
@@ -96,6 +114,10 @@ func (sourcefulPoll *jobPoll) classifyJobResponse(responseBody []byte) (bool, er
 	case slices.Contains(sourcefulPoll.adapterAPI.PendingStatusText, jobStatus):
 		return false, nil
 	case jobStatus == sourcefulPoll.adapterAPI.ReadyStatusText:
+		if sourcefulPoll.modelFamily == riverflow2Family {
+			return sourcefulPoll.completedArtifacts(data.Artifacts)
+		}
+
 		return sourcefulPoll.completedResult(job.Result, data.Result)
 	case slices.Contains(sourcefulPoll.adapterAPI.FailedStatusText, jobStatus):
 		failureMessage, _ := job.LastErrorMessage.(string) //nolint:revive // An absent or non-string optional message intentionally becomes empty.
@@ -132,7 +154,39 @@ func (sourcefulPoll *jobPoll) completedResult(primary, alternate json.RawMessage
 		resultMIME, _ = alternateOutput.MIME.(string) //nolint:revive // An absent or non-string optional MIME value intentionally becomes empty.
 	}
 
-	sourcefulPoll.resultURL, sourcefulPoll.resultMIME = resultURL, resultMIME
+	sourcefulPoll.resultArtifacts = []jobArtifact{{URL: resultURL, MIME: resultMIME}}
+
+	return true, nil
+}
+
+// completedArtifacts retains all ready image outputs in provider order. A ready image without
+// a URL, or a completed job without any ready image, is an incomplete result.
+func (sourcefulPoll *jobPoll) completedArtifacts(encodedArtifacts json.RawMessage) (bool, error) {
+	var reportedArtifacts []jobArtifact
+	if len(encodedArtifacts) > 0 {
+		if err := json.Unmarshal(encodedArtifacts, &reportedArtifacts); err != nil {
+			return false, fmt.Errorf("%q, %w, %w", sourcefulPoll.providerModelName, errs.ErrResponseDecode, err)
+		}
+	}
+
+	readyImages := make([]jobArtifact, 0, len(reportedArtifacts))
+	for _, reportedArtifact := range reportedArtifacts {
+		if reportedArtifact.Type != string(media.Image) || reportedArtifact.Status != artifactStatusReady {
+			continue
+		}
+
+		if reportedArtifact.URL == "" {
+			return false, fmt.Errorf("%q, %w", fmt.Sprintf(ArtifactURLMissing, sourcefulPoll.providerModelName), errs.ErrResponseNoData)
+		}
+
+		readyImages = append(readyImages, reportedArtifact)
+	}
+
+	if len(readyImages) == 0 {
+		return false, fmt.Errorf("%q, %w", fmt.Sprintf(ReadyImagesMissing, sourcefulPoll.providerModelName), errs.ErrResponseNoData)
+	}
+
+	sourcefulPoll.resultArtifacts = readyImages
 
 	return true, nil
 }

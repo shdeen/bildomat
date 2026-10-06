@@ -52,7 +52,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -137,7 +138,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -220,7 +222,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -303,7 +306,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -383,7 +387,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -463,7 +468,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -543,7 +549,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 16
+          "maxMultiple": 16,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -609,7 +616,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",
@@ -651,7 +659,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run."
         },
         {
           "paramID": "size",

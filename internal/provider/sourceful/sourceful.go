@@ -3,6 +3,7 @@ package sourceful
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -63,7 +64,7 @@ func (*generator) AdjustParams(model *catalog.Model, flagInputs params.FlagInput
 	return preparedGeneration, nil
 }
 
-// Generate creates a Sourceful job, waits for completion, and downloads its image.
+// Generate creates a Sourceful job, waits for completion, and downloads its images.
 func (sourceful *generator) Generate(ctx context.Context, generationRequest *generation.Generation) (generation.Result, error) {
 	apiKey := generationRequest.APIKey
 
@@ -77,20 +78,22 @@ func (sourceful *generator) Generate(ctx context.Context, generationRequest *gen
 		return generation.Result{Preparation: generationRequest.Clone()}, err
 	}
 
-	generatedMedia, err := sourceful.fetchResult(ctx, apiCredential, providerModelName, jobID, generationRequest.Record)
+	generatedMedia, err := sourceful.fetchResult(ctx, apiCredential, providerModelName, jobID, generationRequest.Model.Family, generationRequest.Record)
 	if err != nil {
 		return generation.Result{Preparation: generationRequest.Clone()}, err
 	}
 
-	return generation.Result{Preparation: generationRequest.Clone(), Artifacts: []artifact.Media{generatedMedia}}, nil
+	return generation.Result{Preparation: generationRequest.Clone(), Artifacts: generatedMedia}, nil
 }
 
 // createJob posts a text or image generation request and returns its job ID.
 func (sourceful *generator) createJob(ctx context.Context, apiCredential httpapi.AuthCredential, providerModelName string, generationRequest *generation.Generation) (string, error) {
-	creationRoute := textRoute
+	creationOperation := textOperation
 	if len(generationRequest.InputMedia) > 0 {
-		creationRoute = imageRoute
+		creationOperation = imageOperation
 	}
+
+	creationRoute := generationRoute(generationRequest.Model.Family) + "/" + creationOperation
 
 	creationStatus, creationBody, err := httpapi.PostJSON(
 		ctx,
@@ -109,30 +112,36 @@ func (sourceful *generator) createJob(ctx context.Context, apiCredential httpapi
 	return creationJobID(creationBody, providerModelName)
 }
 
-// fetchResult waits for the job to complete and downloads its image artifact. It records provider
-// completion and the artifact response.
-func (sourceful *generator) fetchResult(ctx context.Context, apiCredential httpapi.AuthCredential, providerModelName, jobID string, record *metadata.Record) (artifact.Media, error) {
+// fetchResult waits for completion and downloads every ready image. A failed download cleans up
+// the temporary files from earlier downloads.
+func (sourceful *generator) fetchResult(ctx context.Context, apiCredential httpapi.AuthCredential, providerModelName, jobID, modelFamily string, record *metadata.Record) ([]artifact.Media, error) {
 	jobPoll := &jobPoll{
 		adapterAPI:        sourceful.adapterAPI,
 		apiCredential:     apiCredential,
 		jobID:             jobID,
 		providerModelName: providerModelName,
+		modelFamily:       modelFamily,
 		record:            record,
 	}
 
 	err := httpapi.Poll(ctx, sourceful.adapterAPI.PollInterval.Duration(), sourceful.adapterAPI.PollTimeout.Duration(), jobPoll)
 	if err != nil {
-		return artifact.Media{}, &errs.PollError{Model: providerModelName, Resource: jobID, Cause: err}
+		return nil, &errs.PollError{Model: providerModelName, Resource: jobID, Cause: err}
 	}
-
-	fallbackExtension := media.ExtForMimeOr(jobPoll.resultMIME, sourceful.adapterAPI.ImageFallbackExt)
 
 	record.ProviderFinished(nil)
 
-	generatedMedia, err := httpapi.Fetch(ctx, jobPoll.resultURL, httpapi.AuthCredential{}, fallbackExtension, record)
-	if err != nil {
-		return artifact.Media{}, fmt.Errorf("%q, %w", providerModelName, err)
+	generatedImages := make([]artifact.Media, 0, len(jobPoll.resultArtifacts))
+	for _, completedImage := range jobPoll.resultArtifacts {
+		fallbackExtension := media.ExtForMimeOr(completedImage.MIME, sourceful.adapterAPI.ImageFallbackExt)
+
+		generatedMedia, err := httpapi.Fetch(ctx, completedImage.URL, httpapi.AuthCredential{}, fallbackExtension, record)
+		if err != nil {
+			return nil, fmt.Errorf("%q, %w, %w", providerModelName, errs.ErrTransport, errors.Join(err, artifact.Cleanup(generatedImages)))
+		}
+
+		generatedImages = append(generatedImages, generatedMedia)
 	}
 
-	return generatedMedia, nil
+	return generatedImages, nil
 }

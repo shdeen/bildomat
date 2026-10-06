@@ -40,7 +40,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 8
+          "maxMultiple": 8,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -93,7 +94,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 8
+          "maxMultiple": 8,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -146,7 +148,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 8
+          "maxMultiple": 8,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -199,7 +202,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 8
+          "maxMultiple": 8,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -264,7 +268,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 4
+          "maxMultiple": 4,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -313,7 +318,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 4
+          "maxMultiple": 4,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -362,7 +368,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 4
+          "maxMultiple": 4,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -544,7 +551,8 @@
           "paramID": "image",
           "flagID": "input-media",
           "required": true,
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "steps",
@@ -607,7 +615,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 4
+          "maxMultiple": 4,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -650,7 +659,8 @@
         },
         {
           "flagID": "input-media",
-          "maxMultiple": 4
+          "maxMultiple": 4,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -688,7 +698,8 @@
           "paramID": "input_image",
           "flagID": "input-media",
           "required": true,
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "output_format",
@@ -723,7 +734,8 @@
           "paramID": "image",
           "flagID": "input-media",
           "required": true,
-          "maxMultiple": 1
+          "maxMultiple": 1,
+          "modelInfoComment": "Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "seed",
@@ -799,7 +811,7 @@
           "paramID": "keyframes",
           "flagID": "input-media",
           "maxMultiple": 10,
-          "modelInfoComment": "Flux.3 Video special usage: <[keyframe:]media-file>. For each media input to appear a number of seconds into the clip, use an optional keyframe value in seconds (e.g., Specify '3:image.png' for the image to appear 3 seconds into the clip.) See online docs for details on keyframe usage and supporting models: https://bildomat.com/docs."
+          "modelInfoComment": "Flux.3 Video special usage: <[keyframe:]media-file>. For each media input to appear a number of seconds into the clip, use an optional keyframe value in seconds (e.g., Specify '3:image.png' for the image to appear 3 seconds into the clip.) Images are keyframes: a numeric time can be set on any image and requires --duration. Alternatively, supply one untimed video to continue it; images and a video cannot be combined. See online docs for details on keyframe usage and supporting models: https://bildomat.com/docs."
         }
       ]
     },
@@ -814,7 +826,7 @@
           "flagID": "input-media",
           "maxMultiple": 1,
           "required": true,
-          "modelInfoComment": "Supply the image to expand. Set at least one --expand-* margin. See https://api.bfl.ai/openapi.json."
+          "modelInfoComment": "Supply the image to expand. Set at least one --expand-* margin. See https://api.bfl.ai/openapi.json. Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "top",
@@ -888,7 +900,7 @@
           "flagID": "input-media",
           "maxMultiple": 1,
           "required": true,
-          "modelInfoComment": "Supply the image to inpaint. Use its alpha channel or provide --mask as raw base64 image data."
+          "modelInfoComment": "Supply the image to inpaint. Use its alpha channel or provide --mask as raw base64 image data. Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "finetune_id",
@@ -972,7 +984,7 @@
           "flagID": "input-media",
           "maxMultiple": 1,
           "required": false,
-          "modelInfoComment": "Optional reference image for generation."
+          "modelInfoComment": "Optional reference image for generation. Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "image_prompt_strength",
@@ -1017,7 +1029,7 @@
           "flagID": "input-media",
           "maxMultiple": 1,
           "required": true,
-          "modelInfoComment": "Supply the image to erase from. Also supply --mask."
+          "modelInfoComment": "Supply the image to erase from. Also supply --mask. Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "mask",
@@ -1063,7 +1075,7 @@
           "flagID": "input-media",
           "maxMultiple": 1,
           "required": true,
-          "modelInfoComment": "Supply the person image. Supply the clothing image with --garment-url."
+          "modelInfoComment": "Supply the person image. Supply the clothing image with --garment-url. Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "garment",
@@ -1103,7 +1115,7 @@
           "flagID": "input-media",
           "maxMultiple": 1,
           "required": true,
-          "modelInfoComment": "Supply the person image. Supply the clothing image with --garment-url."
+          "modelInfoComment": "Supply the person image. Supply the clothing image with --garment-url. Takes images only; a video source fails the run, and frame prefixes are removed with a notice."
         },
         {
           "paramID": "garment",
@@ -1135,7 +1147,7 @@
     {
       "id": "flux-3-image",
       "name": "FLUX 3 Image",
-      "description": "Generate images from text or edit one reference image.",
+      "description": "Generate images from text or edit up to ten reference images.",
       "media": "image",
       "docsURL": "https://docs.bfl.ai/flux_3/flux3_image_overview",
       "params": [
@@ -1159,7 +1171,8 @@
             "1:2",
             "9:21",
             "auto"
-          ]
+          ],
+          "modelInfoComment": "The API default is auto: a ratio requested in the prompt takes precedence, otherwise the first reference determines the framing. Without a reference, the prompt determines the ratio, falling back to 1:1."
         },
         {
           "paramID": "resolution",
@@ -1170,21 +1183,84 @@
             "1.5k",
             "2k",
             "4k"
-          ]
+          ],
+          "modelInfoComment": "The API default is 1k. These tiers specify pixel area; exact dimensions depend on the aspect ratio."
         },
         {
           "paramID": "safety_tolerance",
           "flagID": "safety-tolerance",
           "minValue": 0,
-          "maxValue": 4
+          "maxValue": 4,
+          "modelInfoComment": "The API default is 2; 0 applies the strictest moderation."
         },
         {
           "paramID": "images",
           "flagID": "input-media",
-          "maxMultiple": 1,
-          "modelInfoComment": "Bildomat supports one reference image on the direct BFL route."
+          "maxMultiple": 10,
+          "modelInfoComment": "Accepts up to ten image files or public HTTP(S) URLs in the supplied order. Local images are sent as base64. Excess references are omitted with a notice. Videos fail the run; frame prefixes are removed with a notice."
         }
       ]
+    },
+    {
+      "id": "flux-tools/video-edit-v1",
+      "name": "FLUX Video Edit",
+      "media": "video",
+      "docsURL": "https://docs.bfl.ai/flux_tools/flux_video_edit",
+      "params": [
+        {
+          "flagID": "input-media",
+          "paramID": "video",
+          "required": true,
+          "maxMultiple": 1,
+          "modelInfoComment": "Supply a local MP4 or public HTTP(S) video URL. A run without a video fails before submission. Image inputs and frame prefixes are rejected. The API requires an edit prompt of 1 to 4096 characters after trimming whitespace. Duration, resolution, aspect ratio, and audio follow the source video; generation controls cannot override them. Output is MP4."
+        },
+        {
+          "flagID": "safety-tolerance",
+          "paramID": "safety_tolerance",
+          "minValue": 0,
+          "maxValue": 4,
+          "modelInfoComment": "The API default is 2; 0 applies the strictest moderation. Sexual content remains limited to level 3 and hate content to level 2 regardless of this setting."
+        }
+      ],
+      "description": "Edit one video using a prompt while preserving its duration, resolution, aspect ratio, and audio."
+    },
+    {
+      "id": "flux-tools/video-upscale-v1",
+      "name": "FLUX Video Upscale",
+      "media": "video",
+      "docsURL": "https://docs.bfl.ai/flux_tools/flux_video_upscale",
+      "promptIgnored": true,
+      "params": [
+        {
+          "flagID": "input-media",
+          "paramID": "input_video",
+          "required": true,
+          "maxMultiple": 1,
+          "modelInfoComment": "Supply a local MP4 or public HTTP(S) video URL. BFL documents a 50 MB limit for base64 MP4 input and a source limit of 2560 by 1440 pixels (3.7 megapixels per frame). Only the first 20 seconds are upscaled; slightly longer clips are shortened and much longer clips are rejected. A run without a video fails before submission. Image inputs and frame prefixes are rejected. A supplied prompt reaches the API; omitting it requests a neutral upscale. Output is MP4."
+        },
+        {
+          "flagID": "upscale-factor",
+          "paramID": "upscale_factor",
+          "minValue": 1.5,
+          "maxValue": 3,
+          "modelInfoComment": "The API default is 2. Output preserves the source aspect ratio and is capped at 13.75 megapixels per frame, which can reduce the actual scale below the requested factor."
+        },
+        {
+          "flagID": "creativity",
+          "paramID": "creativity",
+          "minValue": 0,
+          "maxValue": 1,
+          "modelInfoComment": "0 preserves the source closely; 1 permits creative detail enhancement. The API default is 1."
+        },
+        {
+          "flagID": "safety-tolerance",
+          "paramID": "safety_tolerance",
+          "minValue": 0,
+          "maxValue": 4,
+          "modelInfoComment": "The API default is 2; 0 applies the strictest moderation. Sexual content remains limited to level 3 and hate content to level 2 regardless of this setting."
+        }
+      ],
+      "description": "Upscale one video by 1.5 to 3 times, with an optional prompt to guide enhanced detail."
     }
   ],
   "config": {

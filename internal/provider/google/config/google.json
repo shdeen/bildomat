@@ -40,12 +40,12 @@
             "6",
             "8"
           ],
-          "ruleDescription": "forced to 8 when reference images are supplied, when extending a video, or when the resolution is 1080p or 4k"
+          "ruleDescription": "forced to 8 with any input media or resolution 1080p or 4k"
         },
         {
           "flagID": "input-media",
           "maxMultiple": 3,
-          "modelInfoComment": "Veo 3.1 special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+          "modelInfoComment": "Veo 3.1 special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). A closing image requires an opening image. Unprefixed images are references, not opening frames. Alternatively, supply one video to extend it; images and a video cannot be combined. See online docs for details on specifying frames for input media: https://bildomat.com/docs."
         },
         {
           "paramID": "seed",
@@ -54,7 +54,7 @@
         {
           "paramID": "personGeneration",
           "flagID": "person-generation",
-          "modelInfoComment": "Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted."
+          "modelInfoComment": "Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted. See https://ai.google.dev/gemini-api/docs/veo."
         },
         {
           "paramID": "negativePrompt",
@@ -96,12 +96,12 @@
             "6",
             "8"
           ],
-          "ruleDescription": "forced to 8 when reference images are supplied, when extending a video, or when the resolution is 1080p or 4k"
+          "ruleDescription": "forced to 8 with any input media or resolution 1080p or 4k"
         },
         {
           "flagID": "input-media",
           "maxMultiple": 3,
-          "modelInfoComment": "Veo 3.1 family special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+          "modelInfoComment": "Veo 3.1 family special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). A closing image requires an opening image. Unprefixed images are references, not opening frames. Alternatively, supply one video to extend it; images and a video cannot be combined. See online docs for details on specifying frames for input media: https://bildomat.com/docs."
         },
         {
           "paramID": "seed",
@@ -110,7 +110,7 @@
         {
           "paramID": "personGeneration",
           "flagID": "person-generation",
-          "modelInfoComment": "Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted."
+          "modelInfoComment": "Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted. See https://ai.google.dev/gemini-api/docs/veo."
         },
         {
           "paramID": "negativePrompt",
@@ -151,12 +151,12 @@
             "6",
             "8"
           ],
-          "ruleDescription": "forced to 8 when reference images are supplied or the resolution is 1080p"
+          "ruleDescription": "forced to 8 with any input media or resolution 1080p"
         },
         {
           "flagID": "input-media",
           "maxMultiple": 1,
-          "modelInfoComment": "Veo 3.1 family special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs."
+          "modelInfoComment": "Veo 3.1 family special usage: <[first:|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). An unprefixed image or first: selects the opening frame. A closing image requires an opening image, so the one-input cap prevents using last: successfully. Bildomat can submit one video for extension instead; the provider determines whether Lite accepts that operation. See online docs for details on specifying frames for input media: https://bildomat.com/docs."
         },
         {
           "paramID": "seed",
@@ -165,7 +165,7 @@
         {
           "paramID": "personGeneration",
           "flagID": "person-generation",
-          "modelInfoComment": "Google accepts allow_all for text-to-video and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted."
+          "modelInfoComment": "Google accepts allow_all for text-to-video and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted. See https://ai.google.dev/gemini-api/docs/veo."
         }
       ]
     },
