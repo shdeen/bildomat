@@ -13,15 +13,15 @@ api-keys:
 | --- | --- | --- |
 | `default-model` | String | Unset; without it, a run without `--model` uses the default model of the first keyed provider. `bild help` shows the model in effect under `-m, --model`. Accepts the same identifiers as `--model`. The value is not checked when the file is read: `bild help` shows an unknown value as the default, and a run without `--model` then fails as an unknown model, exit code 1. |
 | `output-dir` | String | Unset; output otherwise goes to the working directory. Applies only when `--output-path` is omitted. |
-| `api-keys` | Mapping from provider ID to string | Unset; nonempty keys override the corresponding environment variable. |
+| `api-keys` | Mapping from provider ID to string | Unset; nonempty API keys override the corresponding environment variable. |
 
-An explicit `--model` wins over configuration. With neither, the model is the declared default of the first provider, in the order `bild list` uses, whose API key is available; generation exits 2 when no provider's key is available. See [model names and aliases](model-specifiers.md#defaults).
+An explicit `--model` wins over configuration. With neither, the model is the declared default of the first provider, in the order `bild list` uses, whose API key is available; generation exits 2 when no provider's API key is available. See [model names and aliases](model-specifiers.md#defaults).
 
-Any `--output-path` wins over `output-dir`: `-o hero.png` and `-o ./hero.png` both save in the working directory. A relative configured directory resolves against the working directory, and saved paths are reported absolute either way. A leading `~/`, or `~` alone, expands in output paths and `output-dir`.
+Any `--output-path` wins over `output-dir`: `-o hero.png` and `-o ./hero.png` both save in the working directory. A relative configured directory resolves against the working directory, and saved paths are reported absolute either way. A leading `~/`, or `~` alone, expands in output paths and `output-dir`; on Windows, so does a leading `~\`.
 
 There is no `--output-dir` flag and no alternate configuration-file flag. Empty values behave as unset.
 
-A missing configuration file is silent. An unreadable or invalid file produces a warning on standard error and is ignored. When the home directory cannot be determined, for example because `HOME` is unset, Bildomat warns that it cannot locate the file and continues without it. An `--output-path` or `--save-results` path that begins with `~/`, or is `~` alone, then fails with exit code 1. A path such as `~name/x` is never expanded and is used as written. Unknown top-level keys are warned about while recognized settings remain usable. An unknown provider ID in `api-keys` with a nonempty value is warned about and ignored; one with an empty value is ignored silently. Configuration warnings do not themselves change the exit code; they also use standard error during JSON commands.
+A missing configuration file is silent. An unreadable or invalid file produces a warning on standard error and is ignored. When the home directory cannot be determined, for example because `HOME` is unset, Bildomat warns that it cannot locate the file and continues without it. An `--output-path` or `--save-results` path that begins with `~/`, or on Windows `~\`, or is `~` alone, then fails with exit code 1. A path such as `~name/x` is never expanded and is used as written. Unknown top-level keys are warned about while recognized settings remain usable. An unknown provider ID in `api-keys` with a nonempty value is warned about and ignored; one with an empty value is ignored silently. Configuration warnings do not themselves change the exit code; they also use standard error during JSON commands.
 
 Bildomat reads the file for generation, `bild help`, and the catalog commands, so warnings appear with all of them. A standalone `bild --version` does not read the file. These runs also end before the file is read and show no configuration warning: an unknown flag or a flag value of the wrong type, a flag placed before a command word, `--help` or `--version` beside other input, and a `--save-results` file that cannot be opened. Other usage errors, such as a missing prompt, an extra argument, or an unknown help topic, occur after the file is read, so its warnings appear before the error.
 
@@ -38,7 +38,7 @@ Bildomat reads the file for generation, `bild help`, and the catalog commands, s
 | `recraft` | `RECRAFT_API_KEY` |
 | `kling` | `KLING_API_KEY` |
 
-A nonempty configured key wins over the environment variable. If neither supplies a key for the selected provider, generation fails with exit code 1. Other providers' keys are not required. OpenRouter uses its own key even for a model from a vendor that also has a direct integration. Kling accepts the bearer credential supplied as its key; Bildomat does not assemble a token from separate access and secret keys.
+A nonempty configured API key wins over the environment variable. If neither supplies an API key for the selected provider, generation fails with exit code 1. Other providers' API keys are not required. OpenRouter uses its own API key even for a model from a vendor that also has a direct integration. Kling accepts the bearer credential supplied as its API key; Bildomat does not assemble a token from separate access and secret keys.
 
 Catalog commands need no credential. Generation requires network access and whatever model access the provider grants to the account.
 
@@ -62,7 +62,7 @@ Gemini models answer in a single response rather than through a job. When that r
 
 While Bildomat waits on a submitted job, it retries through network errors, failures reading a response, and HTTP status 429, 502, 503, and 504, within the job's time limit. A polling response larger than 64 MiB is not retried. The submission itself is never retried, and neither is the download of a finished result, which must complete within its eight-minute request limit. Other provider error responses, failed job states, and malformed responses end polling immediately. A timeout reports the model and the provider's job, and does not prove that the provider stopped the job. See [cancellation and errors](exit-codes-and-errors.md).
 
-Input URLs must be HTTP or HTTPS. Bildomat requests each one that the model will use to identify its media type, and some providers receive media that Bildomat downloads, so a URL must be accessible to Bildomat as well as to the service. Bildomat does not attach a provider key to input-URL requests; see [input media](input-media.md). Provider credentials on result downloads are restricted to the configured service origin where required. A request follows at most nine redirects and fails at the tenth. Credentials are not forwarded to another host or scheme.
+Input URLs must be HTTP or HTTPS. Bildomat requests each one that the model will use to identify its media type, and some providers receive media that Bildomat downloads, so a URL must be accessible to Bildomat as well as to the service. Bildomat does not attach a provider API key to input-URL requests; see [input media](input-media.md). Provider credentials on result downloads are restricted to the configured service origin where required. A request follows at most nine redirects and fails at the tenth. Credentials are not forwarded to another host or scheme.
 
 ## Home and Temporary Files
 
@@ -70,4 +70,4 @@ On Unix systems, `HOME` determines the home directory used for configuration and
 
 Downloaded results first occupy temporary files in that directory, using names beginning `bild-dl-`. Bildomat copies each downloaded result into its output file and then removes the temporary file, so both the temporary directory and the destination need free space. A failed run also removes its temporary downloads. If a removal fails, the run fails with exit code 1 and names the file; media already saved are kept and reported. An abrupt process termination can leave files behind.
 
-Revised 2026-10-01
+Revised 2026-10-06

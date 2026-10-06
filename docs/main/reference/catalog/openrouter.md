@@ -1,6 +1,6 @@
 # OpenRouter Models
 
-Every model that `bild` offers from OpenRouter (provider ID `openrouter`, key variable `OPENROUTER_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openrouter/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
+Every model that `bild` offers from OpenRouter (provider ID `openrouter`, API key variable `OPENROUTER_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openrouter/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
 56 image models, 30 video models.
 
@@ -138,12 +138,12 @@ FLUX.2 [flex] excels at rendering complex text, typography, and fine details, an
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 8
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -158,12 +158,12 @@ FLUX.2 [klein] 4B is the fastest and most cost-effective model in the FLUX.2 fam
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 4
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -178,12 +178,12 @@ FLUX.2 [max] is the new top-tier image model from Black Forest Labs, pushing ima
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 8
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -198,12 +198,12 @@ A high-end image generation and editing model focused on frontier-level visual q
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 8
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -220,7 +220,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 21:9, 16:9, 4:3, 1:1, 3:4, 9:16
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
-`--generate-audio` | 
+`--generate-audio` |
 
 ## ByteDance Seed: Seedream 4.5
 
@@ -234,11 +234,11 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:2, 2:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 9:19.5, 19.5:9, 9:20, 20:9, 9:21, 21:9, auto
 `--resolution` | Allowed values: 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
 `--input-media` | Repeat maximum: 14
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -254,11 +254,11 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:2, 2:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 9:19.5, 19.5:9, 9:20, 20:9, 9:21, 21:9, auto
 `--resolution` | Allowed values: 1K, 2K
-`--quality` | 
-`--output-format` | 
+`--quality` |
+`--output-format` |
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -276,7 +276,7 @@ Option | Constraints
 `--resolution` | Allowed values: 2K, 4K
 `--num-images` | Allowed range: 1 to 4
 `--input-media` | Repeat maximum: 14
-`--seed` | 
+`--seed` |
 
 ## Google: Nano Banana (Gemini 2.5 Flash Image)
 
@@ -289,8 +289,8 @@ Gemini 2.5 Flash Image, a.k.a. "Nano Banana," is now generally available. It is 
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 3
@@ -309,7 +309,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
@@ -328,7 +328,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
@@ -347,7 +347,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 512, 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
@@ -366,7 +366,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 512, 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
@@ -385,7 +385,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 1K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
@@ -404,10 +404,10 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:2, 16:9, 4:5, 2:3, 9:16
 `--resolution` | Allowed values: 1K
-`--quality` | 
-`--output-format` | 
+`--quality` |
+`--output-format` |
 `--input-media` | Repeat maximum: 1
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -423,10 +423,10 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:2, 16:9, 4:5, 2:3, 9:16
 `--resolution` | Allowed values: 1K
-`--quality` | 
-`--output-format` | 
+`--quality` |
+`--output-format` |
 `--input-media` | Repeat maximum: 1
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -442,10 +442,10 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:2, 16:9, 4:5, 2:3, 9:16
 `--resolution` | Allowed values: 1K
-`--quality` | 
-`--output-format` | 
+`--quality` |
+`--output-format` |
 `--input-media` | Repeat maximum: 1
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -460,8 +460,8 @@ Microsoft's MAI-Image-2.5 is a high-quality image generation model available via
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 1
@@ -479,9 +479,9 @@ Microsoft's MAI-Image-2.5 is a high-quality image generation model available via
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, 3:2, 2:3, auto
-`--resolution` | 
-`--quality` | 
-`--output-format` | 
+`--resolution` |
+`--quality` |
+`--output-format` |
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 1
 `--background` | Allowed values: auto, transparent, opaque
@@ -497,8 +497,8 @@ OpenAI: GPT-5 Image | image | none | `openrouter/openai/gpt-5-image`
 
 Option | Constraints
 -------|------------
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: auto, low, medium, high
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
@@ -516,8 +516,8 @@ GPT-5 Image Mini combines OpenAI's advanced language capabilities, powered by [G
 
 Option | Constraints
 -------|------------
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: auto, low, medium, high
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
@@ -535,8 +535,8 @@ OpenAI: GPT-5.4 Image 2 | image | none | `openrouter/openai/gpt-5.4-image-2`
 
 Option | Constraints
 -------|------------
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: auto, low, medium, high
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
@@ -555,7 +555,7 @@ OpenAI's GPT Image 1 generates and edits images via the dedicated Images API. Fe
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, auto
-`--resolution` | 
+`--resolution` |
 `--quality` | Allowed values: auto, low, medium, high
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
@@ -574,7 +574,7 @@ A cost-efficient variant of GPT Image 1 for high-quality image generation at red
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, auto
-`--resolution` | 
+`--resolution` |
 `--quality` | Allowed values: auto, low, medium, high
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
@@ -593,7 +593,7 @@ OpenAI's latest image generation model. Supports high-fidelity image generation 
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 3:2, 2:3, 4:3, 3:4, 16:9, 9:16, 21:9, auto
-`--resolution` | 
+`--resolution` |
 `--quality` | Allowed values: auto, low, medium, high
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
@@ -613,11 +613,11 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:2, 1:4, 2:1, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 9:16, 16:9
 `--resolution` | Allowed values: 1K, 2K
-`--quality` | 
-`--output-format` | 
+`--quality` |
+`--output-format` |
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 4
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -633,11 +633,11 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 1:2, 1:4, 2:1, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 9:16, 16:9
 `--resolution` | Allowed values: 1K, 2K
-`--quality` | 
-`--output-format` | 
+`--quality` |
+`--output-format` |
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 4
-`--seed` | 
+`--seed` |
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
 
@@ -652,8 +652,8 @@ Recraft V3 is an image generation model from Recraft. It supports text and image
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -671,8 +671,8 @@ Recraft V4 is an image generation model from Recraft. It supports text and image
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -690,8 +690,8 @@ Recraft V4 Pro is an image generation model from Recraft. It supports text and i
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -709,8 +709,8 @@ Recraft V4 Pro Vector is the vector (SVG) variant of Recraft V4 Pro. It supports
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -786,8 +786,8 @@ Recraft V4 Vector is the vector (SVG) variant of Recraft V4. It supports text an
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -805,8 +805,8 @@ Recraft V4.1 is an image generation model from Recraft tuned for high aesthetics
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -824,8 +824,8 @@ Recraft V4.1 Pro is an image generation model from Recraft tuned for high aesthe
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -843,8 +843,8 @@ Recraft V4.1 Pro Vector is the vector (SVG) variant of Recraft V4.1 Pro, tuned f
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -862,8 +862,8 @@ Recraft V4.1 Utility is a general-purpose image generation model from Recraft. I
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -881,8 +881,8 @@ Recraft V4.1 Utility Pro is a general-purpose image generation model from Recraf
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -900,8 +900,8 @@ Recraft V4.1 Vector is the vector (SVG) variant of Recraft V4.1, tuned for high 
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 16:9, 9:16, auto
-`--resolution` | 
-`--quality` | 
+`--resolution` |
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 6
 `--input-media` | Repeat maximum: 1
@@ -920,7 +920,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
 `--resolution` | Allowed values: 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 4
@@ -939,7 +939,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
 `--resolution` | Allowed values: 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 10
@@ -958,7 +958,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
 `--resolution` | Allowed values: 1K, 2K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: jpeg
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 4
@@ -977,7 +977,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 4:3, 3:4, 3:2, 2:3, 16:9, 9:16, 21:9, auto
 `--resolution` | Allowed values: 1K, 2K, 4K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 10
@@ -997,7 +997,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 1:1, 3:4, 4:3, 9:16, 16:9, 2:3, 3:2, 9:19.5, 19.5:9, 9:20, 20:9, 1:2, 2:1, auto
 `--resolution` | Allowed values: 1K, 2K
 `--quality` | Allowed values: low, medium
-`--output-format` | 
+`--output-format` |
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 3
 `--background` | Allowed values: auto, transparent, opaque
@@ -1015,7 +1015,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 3:4, 4:3, 9:16, 16:9, 2:3, 3:2, 9:19.5, 19.5:9, 9:20, 20:9, 1:2, 2:1, auto
 `--resolution` | Allowed values: 1K, 2K
-`--quality` | 
+`--quality` |
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 3
@@ -1036,7 +1036,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
+`--seed` |
 
 ## Alibaba: HappyHorse 1.1
 
@@ -1052,7 +1052,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
+`--seed` |
 
 ## Alibaba: Wan 2.6
 
@@ -1068,8 +1068,8 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 5, 10
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Alibaba: Wan 2.7
 
@@ -1085,8 +1085,8 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 2, 3, 4, 5, 6, 7, 8, 9, 10
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Alibaba: Wan 3.0
 
@@ -1102,8 +1102,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p, 1080p
 `--duration` | Allowed range: 2 to 30
 `--input-media` | Repeat maximum: 1; Special usage: <[first:]media-file>. To use the image as the opening frame, add the 'first:' prefix (for example, first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Alibaba: Wan 3.0 Prime
 
@@ -1119,8 +1119,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p, 1080p
 `--duration` | Allowed range: 2 to 30
 `--input-media` | Repeat maximum: 1; Special usage: <[first:]media-file>. To use the image as the opening frame, add the 'first:' prefix (for example, first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## ByteDance: Seedance 1.5 Pro
 
@@ -1136,8 +1136,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p, 1080p
 `--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## ByteDance: Seedance 2.0
 
@@ -1153,8 +1153,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p, 1080p, 4K
 `--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## ByteDance: Seedance 2.0 Fast
 
@@ -1170,8 +1170,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p
 `--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## ByteDance: Seedance 2.0 Mini
 
@@ -1187,8 +1187,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p
 `--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## ByteDance: Seedance 2.5
 
@@ -1204,8 +1204,8 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 720p
 `--duration` | Allowed values: 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Google: Veo 3.1
 
@@ -1221,8 +1221,8 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p, 4K
 `--duration` | Allowed values: 4, 6, 8
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Google: Veo 3.1 Fast
 
@@ -1238,8 +1238,8 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p, 4K
 `--duration` | Allowed values: 4, 6, 8
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Google: Veo 3.1 Lite
 
@@ -1255,8 +1255,8 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 4, 6, 8
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--generate-audio` | 
+`--seed` |
+`--generate-audio` |
 
 ## Kling: Video v3.0 Pro
 
@@ -1272,7 +1272,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p
 `--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--generate-audio` | 
+`--generate-audio` |
 
 ## Kling: Video v3.0 Standard
 
@@ -1288,7 +1288,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p
 `--duration` | Allowed values: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--generate-audio` | 
+`--generate-audio` |
 
 ## Kling: Video O1
 
@@ -1304,7 +1304,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p
 `--duration` | Allowed values: 5, 10
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--generate-audio` | 
+`--generate-audio` |
 
 ## MiniMax: Hailuo 2.3
 
@@ -1335,7 +1335,7 @@ Option | Constraints
 `--resolution` | Allowed values: 2K
 `--duration` | Allowed values: 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--generate-audio` | 
+`--generate-audio` |
 
 ## OpenAI: Sora 2 Pro
 
@@ -1351,7 +1351,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 4, 8, 12, 16, 20
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--generate-audio` | 
+`--generate-audio` |
 
 ## Runway: Aleph 2.0
 
@@ -1365,7 +1365,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 16:9, 4:3, 3:2, 1:1, 2:3, 3:4, 9:16, 21:9
 `--input-media` | **Required.** Repeat maximum: 1
-`--seed` | 
+`--seed` |
 
 ## Runway: Gen-4.5
 
@@ -1381,7 +1381,7 @@ Option | Constraints
 `--resolution` | Allowed values: 720p
 `--duration` | Allowed values: 2, 3, 4, 5, 6, 7, 8, 9, 10
 `--input-media` | Special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
+`--seed` |
 
 ## SpaceXAI: Grok Imagine Video
 
@@ -1455,7 +1455,7 @@ Option | Constraints
 `--resolution` | Allowed values: 768p, 480p
 `--duration` | Allowed range: 5 to 15
 `--input-media` | Repeat maximum: 2; Prefix images with first: or last: to select the opening or closing frame. See https://openrouter.ai/docs/guides/overview/multimodal/video-generation.
-`--watermark` | 
+`--watermark` |
 
 ## Black Forest Labs: FLUX Video Edit
 
@@ -1498,15 +1498,15 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p
 `--input-media` | **Required.** Repeat maximum: 1; Supply one portrait image. The prompt is spoken using --voice-id. Audio input is not supported.
-`--voice-id` | **Required.** The example IDs have been verified with this endpoint. Find other voice IDs at https://developers.heygen.com/reference/list-voices.
-`--motion-prompt` | 
-`--expressiveness` | 
-`--image-fit` | 
-`--remove-background` | 
+`--voice-id` | **Required.** Examples: 16a09e4706f74997ba4ed05ea11470f6, 6be73833ef9a4eb0aeee399b8fe9d62b; The example IDs have been verified with this endpoint. Find other voice IDs at https://developers.heygen.com/reference/list-voices.
+`--motion-prompt` |
+`--expressiveness` | Examples: low, medium, high
+`--image-fit` | Examples: contain, cover
+`--remove-background` |
 `--voice-speed` | Allowed range: 0.5 to 1.5
 `--voice-pitch` | Pitch adjustment from -50 to +50 semitones.
 `--voice-volume` | Allowed range: 0 to 1
-`--voice-locale` | 
+`--voice-locale` | Examples: en-US, en-GB
 
 ## Black Forest Labs: FLUX 3 Image
 
@@ -1534,7 +1534,7 @@ Option | Constraints
 `--resolution` | Allowed values: 1K, 2K
 `--num-images` | Allowed range: 1 to 1
 `--input-media` | Repeat maximum: 14
-`--seed` | 
+`--seed` |
 
 ## InclusionAI: Ming Image 0.1 Design
 
@@ -1588,6 +1588,6 @@ Option | Constraints
 `--resolution` | Allowed values: 480p, 768p
 `--duration` | Allowed range: 5 to 15
 `--input-media` | Repeat maximum: 9; Use up to nine image references, or one opening image with first:image.png. Do not combine an opening image with references. Closing frames, video references, and audio references are not supported by this configuration.
-`--seed` | 
+`--seed` |
 
-Revised 2026-10-05
+Revised 2026-10-06

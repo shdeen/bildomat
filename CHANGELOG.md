@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.7] - 2026-10-06
+
+### Added
+
+- New models: Black Forest Labs FLUX Video Edit (`bfl/flux-tools/video-edit-v1`) and FLUX Video Upscale (`bfl/flux-tools/video-upscale-v1`), and Sourceful Riverflow 2 Fast (`sourceful/riverflow-2-fast`) and Riverflow 2 Pro (`sourceful/riverflow-2-pro`).
+- FLUX 3 Image (`bfl/flux-3-image`) accepts up to ten reference images.
+- Colored output in the Windows console.
+
+### Fixed
+
+- On Windows, a leading `~/` or `~\` in `--output-path`, `--save-results`, or the `output-dir` setting expands to the home directory.
+
 ## [0.0.6] - 2026-10-05
 
 ### Added
@@ -27,6 +39,7 @@ First public release. A `bild` command for generating and editing images and vid
 - Install scripts for macOS and Linux (`install.sh`) and Windows (`install.ps1`).
 - Configuration file in `~/.bildomat/config.yml` sets a default model, a default output directory, and provider API keys. Keys can also be set in environment variables. YAML keys and env vars are listed on each provider's info page.
 
-[Unreleased]: https://github.com/shdeen/bildomat/compare/v0.0.6...HEAD
+[Unreleased]: https://github.com/shdeen/bildomat/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/shdeen/bildomat/releases/tag/v0.0.7
 [0.0.6]: https://github.com/shdeen/bildomat/releases/tag/v0.0.6
 [0.0.5]: https://github.com/shdeen/bildomat/releases/tag/v0.0.5

@@ -17,12 +17,14 @@ Package sourceful provides image generation through the Sourceful Design API.
 
 ## Constants
 
-<a name="JobIDMissing"></a>The internal/provider/sourceful section of the copy catalog, one constant per entry.
+<a name="ArtifactURLMissing"></a>The internal/provider/sourceful section of the copy catalog, one constant per entry.
 
 ```go
 const (
+    ArtifactURLMissing   = "%s: a ready image artifact has no URL"
     JobIDMissing         = "%s: no jobId in the creation response"
     JobStatusUnknownForm = "%s: status %q"
+    ReadyImagesMissing   = "%s: no ready image artifacts in the completed job"
     ResultURLMissing     = "%s: no output url in the completed job"
 )
 ```
@@ -42,7 +44,7 @@ var ConfigJSON []byte
 ```
 
 <a name="NewProvider"></a>
-## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/sourceful/sourceful.go#L39>)
+## func [NewProvider](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/sourceful/sourceful.go#L40>)
 
 ```go
 func NewProvider(providerDescription *catalog.Provider) (generation.Generator, error)

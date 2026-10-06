@@ -22,9 +22,9 @@ Because the provider-qualified step comes first, a bare OpenRouter ID whose vend
 
 ## Defaults
 
-An explicit `--model` wins over `default-model` in `~/.bildomat/config.yml`. Without either, Bildomat takes the declared default model of the first provider, in the order `bild list` uses, whose API key is available from the configuration file or the environment. Every provider declares one; the table in [providers and models](providers-and-models.md) lists them, and `bild info PROVIDER --json` reports the same value under `defaultModel`. When no provider's key is available, generation exits 2 and asks for `--model`; catalog commands are unaffected.
+An explicit `--model` wins over `default-model` in `~/.bildomat/config.yml`. Without either, Bildomat takes the declared default model of the first provider, in the order `bild list` uses, whose API key is available from the configuration file or the environment. Every provider declares one; the table in [providers and models](providers-and-models.md) lists them, and `bild info PROVIDER --json` reports the same value under `defaultModel`. When no provider's API key is available, generation exits 2 and asks for `--model`; catalog commands are unaffected.
 
-`bild help` shows the model in effect under `-m, --model`, and shows no default when none resolves. Because the choice follows the keys that are present, adding or removing a credential can change which model an unqualified run uses. Name the model explicitly when that matters. See [configuration](configuration.md).
+`bild help` shows the model in effect under `-m, --model`, and shows no default when none resolves. Because the choice follows the API keys that are present, adding or removing a credential can change which model an unqualified run uses. Name the model explicitly when that matters. See [configuration](configuration.md).
 
 ## Ambiguous names
 
@@ -36,4 +36,4 @@ When either standard input or standard error is not a terminal, ambiguity exits 
 
 An unknown model exits 1. Use [find a model](../how-to/find-a-model.md) to locate an available identifier.
 
-Revised 2026-10-01
+Revised 2026-10-05

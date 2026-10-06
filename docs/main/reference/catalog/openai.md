@@ -1,6 +1,6 @@
 # OpenAI Models
 
-Every model that `bild` offers from OpenAI (provider ID `openai`, key variable `OPENAI_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openai/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
+Every model that `bild` offers from OpenAI (provider ID `openai`, API key variable `OPENAI_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openai/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
 7 image models, 2 video models.
 
@@ -26,13 +26,13 @@ Fast image generation and editing for everyday creative work.
 
 Option | Constraints
 -------|------------
-`--size` | <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
-`--aspect-ratio` | 
-`--resolution` | 
+`--size` | Examples: 1024x768, 1024x4096; <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, xhigh, max, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -47,13 +47,13 @@ Generate images and make precise edits from text and image references.
 
 Option | Constraints
 -------|------------
-`--size` | <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
-`--aspect-ratio` | 
-`--resolution` | 
+`--size` | Examples: 1024x768, 1024x4096; <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, xhigh, max, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -68,13 +68,13 @@ State-of-the-art image generation model.
 
 Option | Constraints
 -------|------------
-`--size` | <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
-`--aspect-ratio` | 
-`--resolution` | 
+`--size` | Examples: 1024x768, 1024x4096; <W>x<H> - Requirements: aspect ratio between 1:3 and 3:1, maximum edge: 3840, total pixels (width x height): 655360-8294400, 16-px increments, long edge of 1536 when the size is derived from an aspect ratio
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -90,12 +90,12 @@ Previous image generation model, with better instruction following and adherence
 Option | Constraints
 -------|------------
 `--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -111,12 +111,12 @@ Generate or edit images with GPT Image 1.
 Option | Constraints
 -------|------------
 `--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -132,12 +132,12 @@ Previous image model used in ChatGPT.
 Option | Constraints
 -------|------------
 `--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -153,12 +153,12 @@ A cost-efficient version of GPT Image 1.
 Option | Constraints
 -------|------------
 `--size` | Allowed values: 1024x1024, 1024x1536, 1536x1024
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--quality` | Allowed values: low, medium, high, auto
 `--output-format` | Allowed values: png, jpeg, webp
 `--num-images` | Allowed range: 1 to 10
-`--input-media` | Repeat maximum: 16
+`--input-media` | Repeat maximum: 16; Takes images only; a video source fails the run.
 `--background` | Allowed values: transparent, opaque, auto
 `--output-compression` | Allowed range: 0 to 100
 `--moderation-level` | Allowed values: low, auto
@@ -174,10 +174,10 @@ Flagship video generation with synced audio, creating richly detailed, dynamic c
 Option | Constraints
 -------|------------
 `--size` | Allowed values: 1280x720, 720x1280
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--duration` | Allowed values: 4, 8, 12, 16, 20
-`--input-media` | Repeat maximum: 1
+`--input-media` | Repeat maximum: 1; Takes images only; a video source fails the run.
 
 ## Sora 2 Pro
 
@@ -190,9 +190,9 @@ State-of-the-art, most advanced media generation model, generating videos with s
 Option | Constraints
 -------|------------
 `--size` | Allowed values: 1280x720, 720x1280, 1792x1024, 1024x1792, 1920x1080, 1080x1920
-`--aspect-ratio` | 
-`--resolution` | 
+`--aspect-ratio` | Examples: 16:9, 2:3
+`--resolution` |
 `--duration` | Allowed values: 4, 8, 12, 16, 20
-`--input-media` | Repeat maximum: 1
+`--input-media` | Repeat maximum: 1; Takes images only; a video source fails the run.
 
-Revised 2026-10-05
+Revised 2026-10-06

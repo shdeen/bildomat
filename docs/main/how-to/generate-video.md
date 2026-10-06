@@ -34,6 +34,15 @@ bild --model bfl/flux-3-video --duration 8 --input-media clip.mp4 --output-path 
 
 Both models accept one continuation video and reject mixing a video with images. Use an untimed MP4. Direct Kling and xAI do not accept video input. An MP4 is not a universal input for every video model.
 
+## Edit or upscale a video
+
+```sh
+bild --model bfl/flux-tools/video-edit-v1 --input-media clip.mp4 --output-path ./clip-snow.mp4 "Cover the street in fresh snow"
+bild --model bfl/flux-tools/video-upscale-v1 --input-media clip.mp4 --upscale-factor 2 --output-path ./clip-large.mp4
+```
+
+Each model takes one video, as a local MP4 or an HTTP(S) URL, without a frame prefix. A run without a video, or with an image, fails before submission. The edited video keeps the source's duration, resolution, aspect ratio, and audio. The upscale model does not require a prompt; a prompt, when given, guides the added detail. Check `bild info` for each model's limits.
+
 ## Request audio or exclude content
 
 ```sh
@@ -47,4 +56,4 @@ Each option applies only where the selected model declares it. On direct Kling 2
 
 Asynchronous jobs are polled for up to 30 minutes, with a terminal progress display when ordinary output is shown in a terminal. Temporary network failures and busy or unavailable responses from the provider do not end the wait; Bildomat keeps polling within the time limit. Gemini Omni video models answer a single request instead of running a polled job. Each request, including the download of the finished video, must complete within eight minutes; see [network behavior](../reference/configuration.md#network-behavior). During generation, Ctrl-C cancels the request or the wait and exits with status 1. It does not retract a job from the provider or guarantee a refund. Once Bildomat has received the video, including any download, Ctrl-C no longer cancels the run: Bildomat saves the video and exits with status 0. See [cancellation and failures](../reference/exit-codes-and-errors.md#cancellation).
 
-Revised 2026-10-01
+Revised 2026-10-06

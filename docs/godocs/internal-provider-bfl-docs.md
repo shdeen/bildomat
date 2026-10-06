@@ -32,6 +32,7 @@ const (
     PollURLMissing           = "%s: no polling_url in the submit response"
     SingleInputOnly          = "%s accepts one input"
     VideoContinuationTimed   = "BFL video continuation cannot be timed"
+    VideoInputRequired       = "This model requires a video. Supply an MP4 file or video URL with --input-media."
     VideoMediaMixed          = "BFL video request mixes image and video inputs"
     VideoOneContinuation     = "BFL video continuation accepts one video"
 )
@@ -78,10 +79,10 @@ type Provider struct {
 func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error)
 ```
 
-AdjustParams returns model\-compatible generation parameters and records describing each adjustment. Video models resolve the first and last frame anchors to keyframe times; image models drop frame prefixes with a record.
+AdjustParams returns model\-compatible generation parameters and records describing each adjustment. Video generation resolves first and last frame anchors to keyframe times; image models drop frame prefixes with a record.
 
 <a name="Provider.Generate"></a>
-### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L69>)
+### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L70>)
 
 ```go
 func (p *Provider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error)

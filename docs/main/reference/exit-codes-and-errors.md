@@ -3,8 +3,8 @@
 | Code | Meaning | Examples |
 | --- | --- | --- |
 | `0` | Command finished successfully, or an interactive prompt was declined | Generation completed; help/catalog displayed; search found no matches; one-word confirmation declined. |
-| `1` | Operational failure or cancellation during generation | Unknown or ambiguous model; missing credential; invalid input file; an input URL that cannot be reached or is neither an image nor a video; conflicting frames; no dimensions that satisfy a model's size bounds; provider rejection; timeout; an empty or unavailable download; output write failure; a results file that cannot be opened or written; failure to remove a temporary download; a search term leaves more than 100 matches. |
-| `2` | Command-line usage error | Missing or blank prompt on a model that reads one; no model given and no keyed provider with a default; a second positional argument to generation; missing required command argument; a search with neither term, or with an empty term; extra catalog arguments; unknown help topic; more than one argument or any option given to `bild help`; a help or version flag beside other input; a flag before a command word; unknown flag; invalid numeric syntax; invalid search expression; blank response to model disambiguation. |
+| `1` | Operational failure or cancellation during generation | Unknown or ambiguous model; missing credential; invalid input file; no video, or an image, supplied to a BFL video tool; an input URL that cannot be reached or is neither an image nor a video; conflicting frames; no dimensions that satisfy a model's size bounds; provider rejection; timeout; an empty or unavailable download; output write failure; a results file that cannot be opened or written; failure to remove a temporary download; a search term leaves more than 100 matches. |
+| `2` | Command-line usage error | Missing or blank prompt on a model that requires one; no model given and no keyed provider with a default; a second positional argument to generation; missing required command argument; a search with neither term, or with an empty term; extra catalog arguments; unknown help topic; more than one argument or any option given to `bild help`; a help or version flag beside other input; a flag before a command word; unknown flag; invalid numeric syntax; invalid search expression; blank response to model disambiguation. |
 
 When one run reports both a usage error and another failure, the exit code is 2. For example, a `--save-results` file that cannot be opened, on a command line that also has an unknown flag, exits 2. Bildomat opens the results file before it checks the prompt and the positional arguments. When the file cannot be opened, those checks do not run, so a missing prompt or an extra argument goes unreported and the run exits 1.
 
@@ -12,7 +12,7 @@ Adjustment notices alone do not fail a run. Unsupported options or values can be
 
 ## Diagnose a Failure
 
-For model lookup failures, run `bild search` and use the exact key from `bild list --models`. For a credential failure, check the selected provider's key and configuration precedence. For media failures, check file existence, format, size, source count, and [frame rules](input-media.md).
+For model lookup failures, run `bild search` and use the exact key from `bild list --models`. For a credential failure, check the selected provider's API key and configuration precedence. For media failures, check file existence, format, size, source count, and [frame rules](input-media.md).
 
 A provider can reject a combination that passes local checks. Inspect `bild info MODEL --json` for declared constraints, then use the reported provider message to correct the request. A request can also fail because the provider returns no usable media, no job identity, an unknown job state, an invalid response, a completed job without its result, or an unavailable download.
 
@@ -32,4 +32,4 @@ Within that span, Ctrl-C stops the network request or wait in progress, records 
 
 Outside that span, Ctrl-C ends Bildomat at once, without a report or a JSON document; a shell reports exit status 130. That includes Ctrl-C during the final report, after the files are saved, so the report or JSON document can be missing or incomplete. Files saved before a failure remain, so do not use cancellation as a promise that no output file exists.
 
-Revised 2026-10-01
+Revised 2026-10-06

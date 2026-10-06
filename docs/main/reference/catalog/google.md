@@ -1,6 +1,6 @@
 # Google Models
 
-Every model that `bild` offers from Google (provider ID `google`, key variable `GOOGLE_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info google/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
+Every model that `bild` offers from Google (provider ID `google`, API key variable `GOOGLE_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info google/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
 4 image models, 5 video models.
 
@@ -26,11 +26,11 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 16:9, 9:16
 `--resolution` | Allowed values: 720p, 1080p, 4k
-`--duration` | Allowed values: 4, 6, 8; Rule: forced to 8 when reference images are supplied, when extending a video, or when the resolution is 1080p or 4k
-`--input-media` | Repeat maximum: 3; Veo 3.1 special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--person-generation` | Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted.
-`--negative-prompt` | 
+`--duration` | Allowed values: 4, 6, 8; Rule: forced to 8 with any input media or resolution 1080p or 4k
+`--input-media` | Repeat maximum: 3; Veo 3.1 special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). A closing image requires an opening image. Unprefixed images are references, not opening frames. Alternatively, supply one video to extend it; images and a video cannot be combined. See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` |
+`--person-generation` | Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted. See https://ai.google.dev/gemini-api/docs/veo.
+`--negative-prompt` |
 
 ## Veo 3.1 fast
 
@@ -42,11 +42,11 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 16:9, 9:16
 `--resolution` | Allowed values: 720p, 1080p, 4k
-`--duration` | Allowed values: 4, 6, 8; Rule: forced to 8 when reference images are supplied, when extending a video, or when the resolution is 1080p or 4k
-`--input-media` | Repeat maximum: 3; Veo 3.1 family special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--person-generation` | Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted.
-`--negative-prompt` | 
+`--duration` | Allowed values: 4, 6, 8; Rule: forced to 8 with any input media or resolution 1080p or 4k
+`--input-media` | Repeat maximum: 3; Veo 3.1 family special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). A closing image requires an opening image. Unprefixed images are references, not opening frames. Alternatively, supply one video to extend it; images and a video cannot be combined. See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` |
+`--person-generation` | Google accepts allow_all for text-to-video and video extension, and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted. See https://ai.google.dev/gemini-api/docs/veo.
+`--negative-prompt` |
 
 ## Veo 3.1 lite
 
@@ -58,10 +58,10 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 16:9, 9:16
 `--resolution` | Allowed values: 720p, 1080p
-`--duration` | Allowed values: 4, 6, 8; Rule: forced to 8 when reference images are supplied or the resolution is 1080p
-`--input-media` | Repeat maximum: 1; Veo 3.1 family special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). See online docs for details on specifying frames for input media: https://bildomat.com/docs.
-`--seed` | 
-`--person-generation` | Google accepts allow_all for text-to-video and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted.
+`--duration` | Allowed values: 4, 6, 8; Rule: forced to 8 with any input media or resolution 1080p
+`--input-media` | Repeat maximum: 1; Veo 3.1 family special usage: <[first:\|last:]media-file>. For the media to be used for the opening or closing frame, add a 'first:' or 'last:' prefix (e.g., first:image.png). An unprefixed image or first: selects the opening frame. A closing image requires an opening image, so the one-input cap prevents using last: successfully. Bildomat can submit one video for extension instead; the provider determines whether Lite accepts that operation. See online docs for details on specifying frames for input media: https://bildomat.com/docs.
+`--seed` |
+`--person-generation` | Google accepts allow_all for text-to-video and only allow_adult for image-to-video, interpolation, and reference-image requests; in the EU, the UK, Switzerland, and the MENA regions only allow_adult is accepted. See https://ai.google.dev/gemini-api/docs/veo.
 
 ## Gemini 3 Pro Image
 
@@ -74,7 +74,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 1K, 2K, 4K
 `--thinking-level` | Allowed values: low, high
-`--include-thoughts` | 
+`--include-thoughts` |
 `--input-media` | Repeat maximum: 14
 
 ## Gemini 3.1 Flash Image
@@ -88,7 +88,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 512, 1K, 2K, 4K
 `--thinking-level` | Allowed values: minimal, high
-`--include-thoughts` | 
+`--include-thoughts` |
 `--input-media` | Repeat maximum: 14
 
 ## Gemini 3.1 Flash Lite Image
@@ -102,7 +102,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
 `--resolution` | Allowed values: 1K
 `--thinking-level` | Allowed values: low, high
-`--include-thoughts` | 
+`--include-thoughts` |
 `--input-media` | Repeat maximum: 14
 
 ## Gemini 2.5 Flash Preview Image
@@ -114,7 +114,7 @@ Gemini 2.5 Flash Preview Image | image | `gemini-2.5`, `gemini-2.5-flash` | `goo
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
-`--input-media` | 
+`--input-media` |
 
 ## Gemini Omni 1.1 Flash
 
@@ -126,7 +126,7 @@ Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 16:9, 9:16
 `--resolution` | Allowed values: 360p, 720p, 1080p, 4k
-`--input-media` | 
+`--input-media` |
 
 ## Gemini Omni Flash Preview
 
@@ -137,6 +137,6 @@ Gemini Omni Flash Preview | video | `gemini-omni`, `gemini-omni-flash` | `google
 Option | Constraints
 -------|------------
 `--aspect-ratio` | Allowed values: 16:9, 9:16
-`--input-media` | 
+`--input-media` |
 
-Revised 2026-10-05
+Revised 2026-10-06

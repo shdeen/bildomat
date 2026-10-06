@@ -1,6 +1,6 @@
 # Kling Models
 
-Every model that `bild` offers from Kling (provider ID `kling`, key variable `KLING_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info kling/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
+Every model that `bild` offers from Kling (provider ID `kling`, API key variable `KLING_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info kling/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
 4 image models, 6 video models.
 
@@ -28,7 +28,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9
 `--resolution` | Allowed values: 1k, 2k
 `--num-images` | Allowed range: 1 to 9
-`--input-media` | Repeat maximum: 1
+`--input-media` | Repeat maximum: 1; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice.
 `--negative-prompt` | Kling refuses --negative-prompt when --input-media is supplied.
 
 ## Kling Image 3.0 Omni
@@ -42,7 +42,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9, auto
 `--resolution` | Allowed values: 1k, 2k, 4k
 `--num-images` | Allowed range: 1 to 9
-`--input-media` | Repeat maximum: 10
+`--input-media` | Repeat maximum: 10; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice.
 
 ## Kling Image O1
 
@@ -55,7 +55,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9, auto
 `--resolution` | Allowed values: 1k, 2k
 `--num-images` | Allowed range: 1 to 9
-`--input-media` | Repeat maximum: 10
+`--input-media` | Repeat maximum: 10; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice.
 
 ## Kling Image 2.1
 
@@ -68,7 +68,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1, 4:3, 3:4, 3:2, 2:3, 21:9
 `--resolution` | Allowed values: 1k, 2k
 `--num-images` | Allowed range: 1 to 9
-`--input-media` | Repeat maximum: 1
+`--input-media` | Repeat maximum: 1; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. Frame prefixes are removed with a notice.
 `--negative-prompt` | Kling refuses --negative-prompt when --input-media is supplied.
 
 ## Kling 3.0
@@ -82,8 +82,8 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p, 4k
 `--duration` | Allowed range: 3 to 15
-`--input-media` | Repeat maximum: 2
-`--generate-audio` | 
+`--input-media` | Repeat maximum: 2; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order.
+`--generate-audio` |
 
 ## Kling 3.0 Turbo
 
@@ -96,7 +96,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed range: 3 to 15
-`--input-media` | Repeat maximum: 1
+`--input-media` | Repeat maximum: 1; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order.
 
 ## Kling 3.0 Omni
 
@@ -109,8 +109,8 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p, 4k
 `--duration` | Allowed range: 3 to 15
-`--input-media` | Repeat maximum: 7
-`--generate-audio` | 
+`--input-media` | Repeat maximum: 7; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes and numeric times select the opening and closing frames, and unprefixed images are references.
+`--generate-audio` |
 
 ## Kling O1
 
@@ -123,7 +123,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed range: 3 to 10
-`--input-media` | Repeat maximum: 7
+`--input-media` | Repeat maximum: 7; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes and numeric times select the opening and closing frames, and unprefixed images are references.
 
 ## Kling 2.6
 
@@ -136,7 +136,7 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 5, 10
-`--input-media` | Repeat maximum: 2
+`--input-media` | Repeat maximum: 2; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order.
 `--generate-audio` | Kling 2.6 requires 1080p for generated audio and frame input.
 
 ## Kling 2.5 Turbo
@@ -150,6 +150,6 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16, 1:1
 `--resolution` | Allowed values: 720p, 1080p
 `--duration` | Allowed values: 5, 10
-`--input-media` | Repeat maximum: 1
+`--input-media` | Repeat maximum: 1; Takes images only. Bildomat rejects a video source before submission: a local MP4, or a URL identified as video. The first: and last: prefixes select the opening and closing frames, numeric times map to those positions, and unprefixed images fill the remaining positions in order.
 
-Revised 2026-10-05
+Revised 2026-10-06

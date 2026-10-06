@@ -20,7 +20,7 @@ bild "A brass lantern on a wooden table" --model gemini --output-path ./lantern.
 bild --model gemini -- "-- a dash-shaped sculpture"
 ```
 
-A missing prompt, or one that is empty after surrounding whitespace is removed, is a usage error, exit code 2. A few models read no prompt at all, and a run on one of them needs no prompt argument; `bild info MODEL` marks such a model. When standard input and standard error are both terminals, a one-word prompt asks for confirmation on standard error. After surrounding whitespace is removed, `n` or `no` in any letter case declines; any other reply, including an empty one, proceeds. Declining exits 0 without generating. When either standard input or standard error is not a terminal, Bildomat skips the confirmation.
+A missing prompt, or one that is empty after surrounding whitespace is removed, is a usage error, exit code 2. A few models do not require a prompt, and a run on one of them needs no prompt argument; `bild info MODEL` marks such a model. When standard input and standard error are both terminals, a one-word prompt asks for confirmation on standard error. After surrounding whitespace is removed, `n` or `no` in any letter case declines; any other reply, including an empty one, proceeds. Declining exits 0 without generating. When either standard input or standard error is not a terminal, Bildomat skips the confirmation.
 
 | Flag | Value and default | Effect |
 | --- | --- | --- |
@@ -36,7 +36,7 @@ A missing prompt, or one that is empty after surrounding whitespace is removed, 
 
 Without `--model`, the model is the configured `default-model`. Without that setting, it is the declared default model of the first provider, in the order `bild list` shows providers, whose API key is available. When no provider qualifies, generation ends in a usage error, exit code 2, and names `--model`. `bild help` shows the model in effect under `-m, --model`. [Generation flags](generation-flags.md) lists model parameters. [Output files](output-files.md) defines destination precedence and how the three output controls combine.
 
-Before submission, Bildomat asks for confirmation of a one-word prompt, resolves the model, reads the local input files that the model will use, and resolves the output path and creates its directory. In text mode it then prints the provider and model. When the provider's key is available, it contacts each input URL to identify its media type. It adjusts parameters, checks the provider credential, submits, waits, and saves returned files. Adjustment notices can therefore precede a missing-credential failure, and a failed run can leave a newly created, empty output directory.
+Before submission, Bildomat asks for confirmation of a one-word prompt, resolves the model, reads the local input files that the model will use, and resolves the output path and creates its directory. In text mode it then prints the provider and model. When the provider's API key is available, it contacts each input URL to identify its media type. It adjusts parameters, checks the provider credential, submits, waits, and saves returned files. Adjustment notices can therefore precede a missing-credential failure, and a failed run can leave a newly created, empty output directory.
 
 Regular results include provider and model identity and saved paths with file sizes. A progress animation appears only when standard output is a terminal and none of `--json`, `--print-filename`, or `--save-results` is active. When the animation is shown and generation succeeds, a completion line with the elapsed time follows it. Notices and failures use standard error. [JSON output](json-output.md) defines structured reporting instead.
 
@@ -79,7 +79,7 @@ Every listing, in text and JSON, orders providers alphabetically by display name
 
 Both media flags, or neither, includes both media. Media filters do not exclude an explicitly selected model. An unknown or ambiguous model exits 1; ambiguity reports candidate keys on standard error, also with `--json`, without asking for a choice.
 
-A model card shows its provider, identity, aliases, medium, and every supported option with constraints. It marks a model that reads no prompt. Model cards and provider pages both carry a documentation address for the provider and name the environment variable and the `api-keys` configuration entry that supply its API key. A provider page groups shared constraints and identifies exceptions. An aggregator receives a text summary instead; JSON still includes full model details. The examples in an aggregator summary can differ between runs. Text pages wrap at 80 columns and use color on a terminal.
+A model card shows its provider, identity, aliases, medium, and every supported option with constraints. It marks a model that does not require a prompt. Model cards and provider pages both carry a documentation address for the provider and name the environment variable and the `api-keys` configuration entry that supply its API key. A provider page groups shared constraints and identifies exceptions. An aggregator receives a text summary instead; JSON still includes full model details. The examples in an aggregator summary can differ between runs.
 
 ## Search
 
@@ -113,4 +113,4 @@ With a search term, more than 100 remaining models after the exclusion and the m
 
 Short names differ between commands. On catalog commands, `-v` means video and `-i` means image. On `list` and `search`, `-p` means providers, `-m` means models, and `-a` means aliases. On `search`, `-r` means regex and `-x` means exclude. On generation, `-v` means version, `-i` input media, `-p` print filename, `-m` model, `-a` aspect ratio, and `-r` resolution.
 
-Revised 2026-10-01
+Revised 2026-10-06

@@ -50,7 +50,7 @@ To outpaint an image into a larger canvas, supply one reference and a size:
 bild --model bfl/flux-tools/outpainting-v1 --input-media portrait.png --size 1536x1024 --output-path ./expanded.png
 ```
 
-This model requires the input image and size, and it reads no prompt, so the command carries none. Check its [catalog constraints](../reference/catalog/bfl.md). An aspect ratio alone does not replace the required canvas size.
+This model requires the input image and a size but not a prompt, so the command carries none. Check its [catalog constraints](../reference/catalog/bfl.md). An aspect ratio alone does not replace the required canvas size.
 
 To add a set number of pixels to particular sides instead, use the expand model with one or more margin options:
 
@@ -62,4 +62,4 @@ This model requires the input image and at least one of `--expand-top`, `--expan
 
 Use [output-file rules](../reference/output-files.md) when the exact destination name matters to another command.
 
-Revised 2026-10-01
+Revised 2026-10-06

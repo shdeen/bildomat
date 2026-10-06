@@ -37,6 +37,6 @@ bild info openrouter/google/veo-3.1
 
 Supporting direct Kling and OpenRouter models use opening and closing positions. Numeric prefixes on these models are converted into those positions, not retained as arbitrary timestamps. For example, a single numeric time at or before half the selected duration becomes the opening frame when both positions are free. A later time becomes the closing frame.
 
-A model that accepts media but no frame placement removes the prefix with a notice and uses an ordinary reference. A model that does not accept input media ignores the inputs without reading them. Check [the complete frame rules](../reference/input-media.md#frame-prefixes), including duplicate positions, input caps, and unprefixed references.
+A model that accepts media but no frame placement removes the prefix with a notice and uses an ordinary reference; the BFL video tools reject a prefix instead. A model that does not accept input media ignores the inputs without reading them. Check [the complete frame rules](../reference/input-media.md#frame-prefixes), including duplicate positions, input caps, and unprefixed references.
 
-Revised 2026-09-22
+Revised 2026-10-06

@@ -79,7 +79,7 @@ const (
     AllowedValues              = "Allowed values: %s"
     AmbiguityCandidate         = "%s%s/%s%s"
     AmbiguityHeading           = "%[1]sThe model specifier %[3]s%[2]s%[4]q%[3]s%[1]s matches more than one model:%[3]s"
-    CardPromptIgnored          = "ignored (this model does not read a prompt)"
+    CardPromptIgnored          = "not required"
     CatalogCountForm           = "%d %s models"
     CatalogCountFormOne        = "%d %s model"
     CatalogSeparator           = "·"

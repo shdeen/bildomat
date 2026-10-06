@@ -2,7 +2,7 @@
 
 Bildomat checks supplied values against the selected model before submitting. An unsupported option is omitted. An unsupported value can be replaced with a nearby allowed value or omitted. Notices describe these decisions on standard error; JSON records them in `adjustments`. A file extension changed after generation is a notice of another kind, which JSON records in `notices`; see [output files](output-files.md#format-and-extension).
 
-Successful adjustment does not guarantee that the provider will accept the request. Account restrictions and combinations that the catalog does not enforce can still produce a provider error. Bildomat does not check for options that the catalog marks required. A request that lacks one is submitted, and the provider can reject it.
+Successful adjustment does not guarantee that the provider will accept the request. Account restrictions and combinations that the catalog does not enforce can still produce a provider error. Bildomat does not check for options that the catalog marks required. A request that lacks one is submitted, and the provider can reject it. The exception is the input video of the direct BFL video tools, FLUX Video Edit and FLUX Video Upscale: a run on either one without a video fails before submission.
 
 ## Order and precedence
 
@@ -70,10 +70,10 @@ Defaults belong to the provider when Bildomat leaves an option unset. Do not int
 
 Direct Google Veo forces duration to 8 seconds whenever input media is supplied or a supported resolution is `1080p` or `4k`. This also supplies a duration when none was requested. Veo Lite has no `4k` option.
 
-Models with frame support resolve prefixes according to [input media](input-media.md). Models without frame support remove prefixes with a notice while retaining supported media. BFL FLUX.3 can retain intermediate timestamps; endpoint models map timestamps to the opening or closing frame.
+Models with frame support resolve prefixes according to [input media](input-media.md). Models without frame support remove prefixes with a notice while retaining supported media. On the direct BFL video tools, a prefix fails the run instead. BFL FLUX.3 can retain intermediate timestamps; endpoint models map timestamps to the opening or closing frame.
 
 Direct OpenAI Sora fits an input image to the requested dimensions. An image of another size is center-cropped, resized, and encoded as PNG. An image that already has those dimensions is sent unchanged, in its own format. Without a selected size, it chooses the listed size matching the image’s orientation with the smallest shorter edge, and among those the size nearest the image’s ratio. Local-image conformance is reported before submission. URL images are downloaded and conformed while the request is prepared. Changes made at that point are reported after generation in text output and are included in JSON `adjustments`.
 
 Direct Kling converts the audio Boolean to the provider’s audio choice. Kling 2.6’s provider requires `1080p` for generated audio or frame input; Bildomat does not automatically raise the resolution for that combination.
 
-Revised 2026-10-01
+Revised 2026-10-06

@@ -196,7 +196,7 @@ In `list` and `search` documents, the `providers` array is in alphabetical order
 | `media` | String | Always | `image` or `video`. |
 | `family` | String | When declared | Model family. |
 | `aliases` | Array of strings | When declared; in `list` and `search`, only with `--aliases` | Alternate values accepted by `--model`. |
-| `promptIgnored` | Boolean | When true | The model reads no prompt, so a run on it needs no prompt argument. |
+| `promptIgnored` | Boolean | When true | The model does not require a prompt, so a run on it needs no prompt argument. |
 | `docsURL` | String | When declared | Address of the model's own documentation. A text page falls back to the provider's address; this field does not. |
 | `params` | Array | In `info` results | Public records for the model's options. |
 
@@ -205,7 +205,7 @@ In `list` and `search` documents, the `providers` array is in alphabetical order
 | Field | Type | Presence | Meaning |
 | --- | --- | --- | --- |
 | `flagID` | String | Always | Public name of the command flag without leading hyphens. |
-| `required` | Boolean | When true | The catalog declares the option required for the model. Bildomat does not check for the option before submission. |
+| `required` | Boolean | When true | The catalog declares the option required for the model. Bildomat does not check for the option before submission, except for the video that the BFL video tools require; see [input media](input-media.md#provider-input-behavior). |
 | `allowedValues` | Array of strings | When declared | Closed set of accepted values. |
 | `minValue` | Number | When declared | Minimum numeric value. |
 | `maxValue` | Number | When declared | Maximum numeric value. |
@@ -252,4 +252,4 @@ When a script also needs saved paths on standard output, combine `--json --save-
 
 Configuration warnings and failures writing or closing a result destination can still appear on standard error. After a failure writing the destination, standard error also lists every saved file. A failure to open the results file produces no JSON document, only a text error on standard error. A JSON result does not make exit-code checks optional. Files saved before a later failure remain in `artifacts`. Defaults not explicitly supplied do not appear in `flags`; use `adjustments` to inspect derived values.
 
-Revised 2026-10-01
+Revised 2026-10-06

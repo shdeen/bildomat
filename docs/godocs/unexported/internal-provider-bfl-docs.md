@@ -13,8 +13,9 @@ Package bfl provides image and video generation through the Black Forest Labs as
 - [Constants](<#constants>)
 - [Variables](<#variables>)
 - [func NewProvider\(providerDescription \*catalog.Provider\) \(generation.Generator, error\)](<#NewProvider>)
-- [func addImageInputs\(body map\[string\]any, model \*catalog.Model, inputs \[\]media.Input\) error](<#addImageInputs>)
-- [func addVideoInputs\(body map\[string\]any, inputs \[\]media.Input, parameterValues params.Values\) error](<#addVideoInputs>)
+- [func addImageInputs\(requestDocument map\[string\]any, model \*catalog.Model, mediaInputs \[\]media.Input\) error](<#addImageInputs>)
+- [func addVideoInputs\(requestDocument map\[string\]any, mediaInputs \[\]media.Input, parameterValues params.Values\) error](<#addVideoInputs>)
+- [func addVideoToolInput\(requestDocument map\[string\]any, inputField string, mediaInputs \[\]media.Input\) error](<#addVideoToolInput>)
 - [func buildKeyframes\(imageInputs \[\]media.Input, parameterValues params.Values\) \(\[\]any, error\)](<#buildKeyframes>)
 - [func checkKeyframeTimes\(times \[\]float64, durationSeconds float64\) error](<#checkKeyframeTimes>)
 - [func classifyPollStatus\(adapterAPI \*catalog.AdapterAPI, jobID string, response pollResp\) \(complete bool, err error\)](<#classifyPollStatus>)
@@ -23,11 +24,12 @@ Package bfl provides image and video generation through the Black Forest Labs as
 - [func fillKeyframeTimes\(times \[\]float64, timeSet \[\]bool, durationSeconds float64\) error](<#fillKeyframeTimes>)
 - [func frameOrderRank\(frameAnchor string\) int](<#frameOrderRank>)
 - [func indexedInputMediaParam\(i int\) string](<#indexedInputMediaParam>)
+- [func isVideoToolInput\(parameterID string\) bool](<#isVideoToolInput>)
 - [func keyframeTimes\(imageInputs \[\]media.Input\) \(times \[\]float64, timeSet \[\]bool\)](<#keyframeTimes>)
 - [func parseDuration\(parameterValues params.Values\) \(float64, bool\)](<#parseDuration>)
 - [func parseWidthHeight\(size string\) \(width, height int, valid bool\)](<#parseWidthHeight>)
-- [func requestBinaryFields\(model \*catalog.Model, inputs \[\]media.Input\) \[\]metadata.BinaryField](<#requestBinaryFields>)
-- [func requestBody\(model \*catalog.Model, prompt string, parameterValues params.Values, inputs \[\]media.Input\) \(map\[string\]any, error\)](<#requestBody>)
+- [func requestBinaryFields\(model \*catalog.Model, mediaInputs \[\]media.Input\) \[\]metadata.BinaryField](<#requestBinaryFields>)
+- [func requestBody\(model \*catalog.Model, prompt string, parameterValues params.Values, mediaInputs \[\]media.Input\) \(map\[string\]any, error\)](<#requestBody>)
 - [func resolveFluxFrameAnchors\(mediaInputs \[\]media.Input, parameterValues params.Values\)](<#resolveFluxFrameAnchors>)
 - [func startJob\(ctx context.Context, base string, cred httpapi.AuthCredential, provModelLabel string, model \*catalog.Model, prompt string, gp params.Values, inputs \[\]media.Input, record \*metadata.Record\) \(jobID, pollURL string, err error\)](<#startJob>)
 - [func timedKeyframes\(imageInputs \[\]media.Input, times \[\]float64\) \[\]any](<#timedKeyframes>)
@@ -47,13 +49,16 @@ Package bfl provides image and video generation through the Black Forest Labs as
 <a name="keyHeader"></a>The BFL adapter's headers, request fields, modes, and error contexts.
 
 - keyHeader: the credential header
-- wireKeyMode: the request field selecting the generation mode
-- wireKeyPrompt: the request field carrying the prompt
-- wireKeyWidth: the request field carrying the width
-- wireKeyHeight: the request field carrying the height
-- wireKeyStartVideo: the request field carrying the continuation video
-- wireKeyKeyframes: the request field carrying the keyframe array
-- wireKeyInputImage: the base name of the indexed input\-image fields
+- fieldMode: the request field selecting the generation mode
+- fieldPrompt: the request field carrying the prompt
+- fieldWidth: the request field carrying the width
+- fieldHeight: the request field carrying the height
+- fieldStartVideo: the request field carrying the continuation video
+- fieldKeyframes: the request field carrying the keyframe array
+- fieldInputImage: the base name of the indexed input\-image fields
+- fieldImages: the ordered image reference array
+- fieldVideo: the video editing input
+- fieldInputVideo: the video upscaling input
 - modeVideoContinuation: the mode value continuing a video
 - modeTextToVideo: the mode value generating from the prompt alone
 - modeImageToVideo: the mode value generating from keyframe images
@@ -63,13 +68,16 @@ Package bfl provides image and video generation through the Black Forest Labs as
 const (
     keyHeader = "x-key"
 
-    wireKeyMode       = "mode"
-    wireKeyPrompt     = "prompt"
-    wireKeyWidth      = "width"
-    wireKeyHeight     = "height"
-    wireKeyStartVideo = "start_video"
-    wireKeyKeyframes  = "keyframes"
-    wireKeyInputImage = "input_image"
+    fieldMode       = "mode"
+    fieldPrompt     = "prompt"
+    fieldWidth      = "width"
+    fieldHeight     = "height"
+    fieldStartVideo = "start_video"
+    fieldKeyframes  = "keyframes"
+    fieldInputImage = "input_image"
+    fieldImages     = "images"
+    fieldVideo      = "video"
+    fieldInputVideo = "input_video"
 
     modeVideoContinuation = "v2v"
     modeTextToVideo       = "t2v"
@@ -91,6 +99,7 @@ const (
     PollURLMissing           = "%s: no polling_url in the submit response"
     SingleInputOnly          = "%s accepts one input"
     VideoContinuationTimed   = "BFL video continuation cannot be timed"
+    VideoInputRequired       = "This model requires a video. Supply an MP4 file or video URL with --input-media."
     VideoMediaMixed          = "BFL video request mixes image and video inputs"
     VideoOneContinuation     = "BFL video continuation accepts one video"
 )
@@ -120,22 +129,31 @@ func NewProvider(providerDescription *catalog.Provider) (generation.Generator, e
 NewProvider returns a generator with owned adapter settings, or a missing\-description error.
 
 <a name="addImageInputs"></a>
-## func [addImageInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L208>)
+## func [addImageInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L235>)
 
 ```go
-func addImageInputs(body map[string]any, model *catalog.Model, inputs []media.Input) error
+func addImageInputs(requestDocument map[string]any, model *catalog.Model, mediaInputs []media.Input) error
 ```
 
-addImageInputs writes images into the model's single declared field or indexed fields. It rejects videos, timed inputs, and multiple inputs for a single field.
+addImageInputs writes an image array, a single declared field, or indexed fields. It rejects videos, timed inputs, and multiple inputs for a single field.
 
 <a name="addVideoInputs"></a>
-## func [addVideoInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L176>)
+## func [addVideoInputs](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L203>)
 
 ```go
-func addVideoInputs(body map[string]any, inputs []media.Input, parameterValues params.Values) error
+func addVideoInputs(requestDocument map[string]any, mediaInputs []media.Input, parameterValues params.Values) error
 ```
 
 addVideoInputs writes continuation media or image keyframes and their mode into the body. It rejects mixed media, multiple videos, and timed continuation videos.
+
+<a name="addVideoToolInput"></a>
+## func [addVideoToolInput](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L305>)
+
+```go
+func addVideoToolInput(requestDocument map[string]any, inputField string, mediaInputs []media.Input) error
+```
+
+addVideoToolInput writes one whole video at the model's declared input field.
 
 <a name="buildKeyframes"></a>
 ## func [buildKeyframes](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/keyframes.go#L15>)
@@ -201,13 +219,22 @@ func frameOrderRank(frameAnchor string) int
 frameOrderRank maps a frame anchor to its position rank in the keyframe order.
 
 <a name="indexedInputMediaParam"></a>
-## func [indexedInputMediaParam](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L238>)
+## func [indexedInputMediaParam](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L276>)
 
 ```go
 func indexedInputMediaParam(i int) string
 ```
 
 indexedInputMediaParam returns the request field name for a zero\-based image index.
+
+<a name="isVideoToolInput"></a>
+## func [isVideoToolInput](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L300>)
+
+```go
+func isVideoToolInput(parameterID string) bool
+```
+
+isVideoToolInput identifies the declared fields that accept a whole video without a mode.
 
 <a name="keyframeTimes"></a>
 ## func [keyframeTimes](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/keyframes.go#L39>)
@@ -228,7 +255,7 @@ func parseDuration(parameterValues params.Values) (float64, bool)
 parseDuration returns duration as seconds when it is numeric.
 
 <a name="parseWidthHeight"></a>
-## func [parseWidthHeight](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L251>)
+## func [parseWidthHeight](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L289>)
 
 ```go
 func parseWidthHeight(size string) (width, height int, valid bool)
@@ -237,19 +264,19 @@ func parseWidthHeight(size string) (width, height int, valid bool)
 parseWidthHeight returns the positive width and height represented by a size value.
 
 <a name="requestBinaryFields"></a>
-## func [requestBinaryFields](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L143>)
+## func [requestBinaryFields](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L158>)
 
 ```go
-func requestBinaryFields(model *catalog.Model, inputs []media.Input) []metadata.BinaryField
+func requestBinaryFields(model *catalog.Model, mediaInputs []media.Input) []metadata.BinaryField
 ```
 
 requestBinaryFields describes the encoded media locations used by BFL's image and video request shapes. URL values at these locations remain URLs.
 
 <a name="requestBody"></a>
-## func [requestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L100>)
+## func [requestBody](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L106>)
 
 ```go
-func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, inputs []media.Input) (map[string]any, error)
+func requestBody(model *catalog.Model, prompt string, parameterValues params.Values, mediaInputs []media.Input) (map[string]any, error)
 ```
 
 requestBody returns the request fields for an image or video job. It omits the prompt field when the supplied prompt is empty.
@@ -264,7 +291,7 @@ func resolveFluxFrameAnchors(mediaInputs []media.Input, parameterValues params.V
 resolveFluxFrameAnchors updates the supplied media in place and clears its frame anchors. With a duration, anchors become zero and duration timestamps; otherwise opening and closing images move to the beginning and end.
 
 <a name="startJob"></a>
-## func [startJob](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L60>)
+## func [startJob](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L66>)
 
 ```go
 func startJob(ctx context.Context, base string, cred httpapi.AuthCredential, provModelLabel string, model *catalog.Model, prompt string, gp params.Values, inputs []media.Input, record *metadata.Record) (jobID, pollURL string, err error)
@@ -309,10 +336,10 @@ type Provider struct {
 func (*Provider) AdjustParams(model *catalog.Model, inputs params.FlagInputs, mediaInputs []media.Input, _ *metadata.Reuse) (generation.Preparation, error)
 ```
 
-AdjustParams returns model\-compatible generation parameters and records describing each adjustment. Video models resolve the first and last frame anchors to keyframe times; image models drop frame prefixes with a record.
+AdjustParams returns model\-compatible generation parameters and records describing each adjustment. Video generation resolves first and last frame anchors to keyframe times; image models drop frame prefixes with a record.
 
 <a name="Provider.Generate"></a>
-### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L69>)
+### func \(\*Provider\) [Generate](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/bfl.go#L70>)
 
 ```go
 func (p *Provider) Generate(ctx context.Context, run *generation.Generation) (generation.Result, error)
@@ -383,7 +410,7 @@ type pollResult struct {
 ```
 
 <a name="submitAck"></a>
-## type [submitAck](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L52-L57>)
+## type [submitAck](<https://github.com/shdeen/bildomat-dev/blob/main/internal/provider/bfl/submit.go#L58-L63>)
 
 submitAck contains the identifiers returned for an asynchronous generation job.
 

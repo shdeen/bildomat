@@ -327,7 +327,7 @@ const (
     AllowedValues              = "Allowed values: %s"
     AmbiguityCandidate         = "%s%s/%s%s"
     AmbiguityHeading           = "%[1]sThe model specifier %[3]s%[2]s%[4]q%[3]s%[1]s matches more than one model:%[3]s"
-    CardPromptIgnored          = "ignored (this model does not read a prompt)"
+    CardPromptIgnored          = "not required"
     CatalogCountForm           = "%d %s models"
     CatalogCountFormOne        = "%d %s model"
     CatalogSeparator           = "·"
@@ -1024,7 +1024,7 @@ func indentTo(column int, text string) string
 indentTo prefixes text with the requested number of spaces.
 
 <a name="innermostMessage"></a>
-## func [innermostMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L433>)
+## func [innermostMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L436>)
 
 ```go
 func innermostMessage(err error) string
@@ -1114,7 +1114,7 @@ func modelListingLines(providers []providerRecord) []string
 modelListingLines returns fully qualified model keys with any included aliases in the supplied order; the flat directory template calls it.
 
 <a name="modelResolveNotice"></a>
-## func [modelResolveNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L348>)
+## func [modelResolveNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L351>)
 
 ```go
 func modelResolveNotice(err error) string
@@ -1267,7 +1267,7 @@ func promptStyleValues(styled bool) (steel, clay, reset string)
 promptStyleValues returns the requested prompt accents, or empty strings.
 
 <a name="provConfigNotice"></a>
-## func [provConfigNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L363>)
+## func [provConfigNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L366>)
 
 ```go
 func provConfigNotice(err error, providerDisplayName string) string
@@ -1276,7 +1276,7 @@ func provConfigNotice(err error, providerDisplayName string) string
 provConfigNotice identifies the provider with invalid configuration and includes its configuration path and problem description when available.
 
 <a name="providerFailureNotice"></a>
-## func [providerFailureNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L393>)
+## func [providerFailureNotice](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L396>)
 
 ```go
 func providerFailureNotice(err error, providerDisplayName, modelName string) string
@@ -1375,7 +1375,7 @@ func sectionOptions(models []catalog.Model, paramFlags []params.Flag, style page
 sectionOptions returns options in flag\-record order and groups differing model constraints. When some models lack an option, its scope note names either the supporting models or the models that lack it, whichever list is shorter.
 
 <a name="serverMessage"></a>
-## func [serverMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L423>)
+## func [serverMessage](<https://github.com/shdeen/bildomat-dev/blob/main/internal/output/errs.go#L426>)
 
 ```go
 func serverMessage(err error) string
