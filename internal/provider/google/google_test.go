@@ -3,7 +3,7 @@ package google
 // Invariants tested:
 //  1. Google generator: Loading the embedded Google configuration must return ID google, display
 //     name Google, and environment variable GOOGLE_API_KEY. NewProvider must construct a nonnil
-//     generator, and veoFamily must classify the configured models as three Veo models and six
+//     generator, and veoFamily must classify the configured models as three Veo models and seven
 //     Interactions models.
 //  2. Google parameter adjustment: For Veo, AdjustParams must snap duration five to four, force
 //     duration eight for 1080p or reference images, report capping five images to three, and snap
@@ -109,7 +109,7 @@ import (
 // What is being tested:
 // Loading the embedded Google configuration must return ID google, display name Google, and
 // environment variable GOOGLE_API_KEY. NewProvider must construct a nonnil generator, and veoFamily
-// must classify the configured models as three Veo models and six Interactions models.
+// must classify the configured models as three Veo models and seven Interactions models.
 //
 // Test class: Expanded.
 // Test layer: Coverage.
@@ -137,12 +137,12 @@ func TestGoogleGenerator(t *testing.T) {
 		}
 	}
 
-	if veoModels != 3 || interactionModels != 6 {
-		t.Errorf("✗ family split = %d veo / %d interactions models, want 3/6", veoModels, interactionModels)
+	if veoModels != 3 || interactionModels != 7 {
+		t.Errorf("✗ family split = %d veo / %d interactions models, want 3/7", veoModels, interactionModels)
 	}
 
 	if !t.Failed() {
-		t.Log("✓ one google config composes one generator over the 3+6 family models")
+		t.Log("✓ one google config composes one generator over the 3+7 family models")
 	}
 }
 
