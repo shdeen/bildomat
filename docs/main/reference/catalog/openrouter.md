@@ -1604,4 +1604,4 @@ Option | Constraints
 `--input-media` | Repeat maximum: 9; Use up to nine image references, or one opening image with first:image.png. Do not combine an opening image with references. Closing frames, video references, and audio references are not supported by this configuration.
 `--seed` |
 
-Revised 2026-10-07
+Revised 2026-10-08

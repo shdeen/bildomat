@@ -37,14 +37,11 @@ See [Providers and API Keys](#providers-and-api-keys) for setting up API keys an
 **Teach your agent to use `bild` for images and illustrations.** With `bild`, a design agent can generate, inspect, and refine images and videos for any design project. Generate images for web design, create uniform stylized illustrations for an app UI, or enhance a newsletter or report with suitable artwork.
 
 <p align="center">
-<picture width="850">
-  <source srcset="assets/agents/cmd.svg" type="image/svg+xml" />
-  <img src="assets/agents/cmd.jpg" alt="bild commands for creating a papercut illustration of two little agents on a desk">
-</picture>
+  <img src="assets/agents/cmd.png" width="850" alt="bild commands for creating a papercut illustration of two little agents on a desk">
 </p>
 
 <p align="center">
-  <img src="assets/agents/papercut.jpg" width="800px" alt="Papercut illustration of two little agents on a desk: one stressed reading API docs and wasting tokens, the other relaxed--he uses 'bild'">
+  <img src="assets/agents/papercut.jpg" width="800" alt="Papercut illustration of two little agents on a desk: one stressed reading API docs and wasting tokens, the other relaxed--he uses 'bild'">
 </p>
 
 ---
@@ -60,10 +57,7 @@ A rainbow spinner becomes a wind turbine, then a papercut illustration, then a l
 </p>
 
 <p align="center">
-<picture width="850">
-  <source srcset="assets/windspin/cmd.svg" type="image/svg+xml" />
-  <img src="assets/windspin/cmd.jpg" alt="bild commands for creating a papercut landscape of colorful wind turbines.">
-</picture>
+  <img src="assets/windspin/cmd.png" width="850" alt="bild commands for creating a papercut landscape of colorful wind turbines.">
 </p>
 
 <p align="center">
@@ -93,7 +87,7 @@ Add an instruction like this to your skill:
 <p align="center">
 <picture width="800">
   <source srcset="assets/agents/app-ui-skill.svg" type="image/svg+xml" />
-  <img src="assets/agents/app-ui-skill.jpg" alt="agent skill for app UI design.">
+  <img src="assets/agents/app-ui-skill.png" width="850" alt="agent skill for app UI design.">
 </picture>
 </p>
 
@@ -108,10 +102,7 @@ Your agent can then generate sets of illustrations for each screen, maintaining 
 ### Turn everyday photos into professional product shots
 
 <p align="center">
-<picture width="800">
-  <source srcset="assets/product/bag-cmd.svg" type="image/svg+xml" />
-  <img src="assets/product/bag-cmd.jpg" alt="bild commands for turning a casual photo into a professional-grade studio shot.">
-</picture>
+  <img src="assets/product/bag-cmd.png"  width="850" alt="bild commands for turning a casual photo into a professional-grade studio shot.">
 </p>
 
 <p align="center">
@@ -155,10 +146,7 @@ For a more advanced workflow, such as creating a fashion ensemble product shot, 
 **Extracting the items**: for best resutls, first create a product shot of each item individually.
 
 <p align="center">
-<picture width="800">
-  <source srcset="assets/ensemble/fashion-cmd.svg" type="image/svg+xml" />
-  <img src="assets/ensemble/fashion-cmd.jpg" alt="bild commands for turning a candid shot of a person in a casual outfit into three individual products shots.">
-</picture>
+  <img src="assets/ensemble/fashion-cmd.png"  width="850" alt="bild commands for turning a candid shot of a person in a casual outfit into three individual products shots.">
 </p>
 
 <p align="center">
@@ -170,10 +158,7 @@ For a more advanced workflow, such as creating a fashion ensemble product shot, 
 **Put it together**: combine the individual product shots into a single ensemble image.
 
 <p align="center">
-<picture width="800">
-  <source srcset="assets/ensemble/ensemble-cmd.svg" type="image/svg+xml" />
-  <img src="assets/ensemble/ensemble-cmd.jpg" alt="bild commands for combining individual product shots into a single ensemble image.">
-</picture>
+  <img src="assets/ensemble/ensemble-cmd.png" width="850" alt="bild commands for combining individual product shots into a single ensemble image.">
 </p>
 
 <p align="center">

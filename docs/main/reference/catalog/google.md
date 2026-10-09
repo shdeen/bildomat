@@ -154,4 +154,4 @@ Option | Constraints
 `--aspect-ratio` | Allowed values: 16:9, 9:16
 `--input-media` |
 
-Revised 2026-10-07
+Revised 2026-10-08
