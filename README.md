@@ -1,5 +1,7 @@
 <!-- markdownlint-disable MD033 MD041 -->
 
+[![release](https://github.com/shdeen/bildomat/actions/workflows/release.yml/badge.svg)](https://github.com/shdeen/bildomat/actions/workflows/release.yml)
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/logo/bildomat-horizontal-dark-transparent.svg">
   <source media="(prefers-color-scheme: dark)" srcset="assets/logo/bildomat-horizontal-dark-transparent.png">
@@ -19,14 +21,14 @@ Bildomat provides a single unified interface to multiple image and video generat
 
 **Supported Providers**:
 
-- **Google**: 9 models (4 image models · 5 video models)
+- **Google**: 10 models (5 image models · 5 video models)
 - **OpenAI**: 9 models (7 image models · 2 video models)
 - **Black Forest Labs**: 25 models (22 image models · 3 video models)
 - **xAI**: 7 models (4 image models · 3 video models)
 - **Sourceful**: 4 models (4 image models)
 - **Recraft**: 21 models (21 image models)
 - **Kling**: 10 models (4 image models · 6 video models)
-- **OpenRouter** (multi-provider aggregator): 86 models (56 image models · 30 video models)
+- **OpenRouter** (multi-provider aggregator): 87 models (57 image models · 30 video models)
 
 See [Providers and API Keys](#providers-and-api-keys) for setting up API keys and configuring them in your environment.
 
@@ -472,3 +474,5 @@ api-keys:
 ---
 
 [MIT license](LICENSE).
+
+Revised 2026-10-07

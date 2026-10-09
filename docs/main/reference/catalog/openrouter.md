@@ -2,7 +2,7 @@
 
 Every model that `bild` offers from OpenRouter (provider ID `openrouter`, API key variable `OPENROUTER_API_KEY`), with every option each model accepts and the constraints the model declares. An option the provider requires opens with **Required.**; every other option is optional. `bild info openrouter/<model>` prints the same facts for the binary you run. What the constraints mean is described in [Parameter adjustment](../parameter-adjustment.md), the flags in [Generation flags](../generation-flags.md), and how to name a model in [Model specifiers](../model-specifiers.md).
 
-56 image models, 30 video models.
+57 image models, 30 video models.
 
 ## Contents
 
@@ -19,6 +19,7 @@ Every model that `bild` offers from OpenRouter (provider ID `openrouter`, API ke
 - [Google: Nano Banana (Gemini 2.5 Flash Image)](#google-nano-banana-gemini-25-flash-image)
 - [Google: Nano Banana Pro (Gemini 3 Pro Image)](#google-nano-banana-pro-gemini-3-pro-image)
 - [Google: Nano Banana Pro (Gemini 3 Pro Image Preview)](#google-nano-banana-pro-gemini-3-pro-image-preview)
+- [Google: Nano Banana 2.1](#google-nano-banana-21)
 - [Google: Nano Banana 2 (Gemini 3.1 Flash Image)](#google-nano-banana-2-gemini-31-flash-image)
 - [Google: Nano Banana 2 (Gemini 3.1 Flash Image Preview)](#google-nano-banana-2-gemini-31-flash-image-preview)
 - [Google: Nano Banana 2 Lite (Gemini 3.1 Flash Lite Image)](#google-nano-banana-2-lite-gemini-31-flash-lite-image)
@@ -334,6 +335,19 @@ Option | Constraints
 `--input-media` | Repeat maximum: 14
 `--background` | Allowed values: auto, transparent, opaque
 `--output-compression` | Allowed range: 0 to 100
+
+## Google: Nano Banana 2.1
+
+Name | Medium | Aliases | Full ID
+-----|--------|---------|--------
+Google: Nano Banana 2.1 | image | none | `openrouter/google/gemini-nano-banana-2.1`
+
+Option | Constraints
+-------|------------
+`--aspect-ratio` | Allowed values: 1:1, 1:4, 1:8, 2:3, 3:2, 3:4, 4:1, 4:3, 4:5, 5:4, 8:1, 9:16, 16:9, 21:9
+`--resolution` | Allowed values: 1K, 2K, 4K
+`--num-images` | Allowed range: 1 to 1
+`--input-media` | Repeat maximum: 14
 
 ## Google: Nano Banana 2 (Gemini 3.1 Flash Image)
 
@@ -1590,4 +1604,4 @@ Option | Constraints
 `--input-media` | Repeat maximum: 9; Use up to nine image references, or one opening image with first:image.png. Do not combine an opening image with references. Closing frames, video references, and audio references are not supported by this configuration.
 `--seed` |
 
-Revised 2026-10-06
+Revised 2026-10-07

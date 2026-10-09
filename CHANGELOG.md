@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Gemini Nano Banana 2.1 through Google (`google/gemini-nano-banana-2.1`) and OpenRouter (`openrouter/google/gemini-nano-banana-2.1`).
+
 ## [0.0.7] - 2026-10-06
 
 ### Added
@@ -43,3 +49,5 @@ First public release. A `bild` command for generating and editing images and vid
 [0.0.7]: https://github.com/shdeen/bildomat/releases/tag/v0.0.7
 [0.0.6]: https://github.com/shdeen/bildomat/releases/tag/v0.0.6
 [0.0.5]: https://github.com/shdeen/bildomat/releases/tag/v0.0.5
+
+Revised 2026-10-07

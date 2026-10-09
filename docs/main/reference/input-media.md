@@ -64,7 +64,7 @@ For example, a ten-second clip with three images at `0`, `3`, and `10` is valid 
 | OpenAI Sora | One image. URLs are downloaded. An image whose dimensions differ from the requested size is center-cropped, resized, and encoded as PNG; an image already at that size is sent unchanged. See [Sora sizing](parameter-adjustment.md#provider-rules). Video input fails. |
 | xAI images / video | Up to three images / one image. Local images are sent inline; URLs are passed to xAI. Video input fails even for a video model. |
 | OpenRouter | Local images or videos are sent inline; URLs are passed through. Actual media and frame support depends on the exact model. Count and required-input constraints are in the catalog. FLUX Video Edit and FLUX Video Upscale each require one video, and the provider accepts it as a public HTTPS URL, not as a local file. HeyGen Avatar IV requires one portrait image. |
-| Google Gemini image | Images and videos, up to 14 inputs on Gemini 3 image models; Gemini 2.5 Flash Image has no declared count maximum. Prefixes become ordinary references. |
+| Google Gemini image | Images and videos, up to 14 inputs on Gemini 3 image models and Nano Banana 2.1; Gemini 2.5 Flash Image has no declared count maximum. Prefixes become ordinary references. |
 | Google Gemini Omni video | Images and videos, with no declared count maximum on either Omni model. One image is used for animation; multiple images supply references. Prefixes become ordinary references. |
 | Google Veo standard / fast | Up to three inputs: images or one video, never both together. A video extends the supplied video. URLs are downloaded. Duration becomes 8 seconds. |
 | Google Veo Lite | One input. URLs are downloaded. An unprefixed image becomes the opening frame. Bildomat can submit one video for extension, but the provider determines whether Lite accepts that operation. Duration becomes 8 seconds with input. |
@@ -80,4 +80,4 @@ Where this table says that a model requires an input or an option, Bildomat does
 
 Use [the catalog](providers-and-models.md) for exact per-model limits and [the keyframe guide](../how-to/use-keyframes.md) for complete examples.
 
-Revised 2026-10-06
+Revised 2026-10-07
